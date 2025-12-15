@@ -36,6 +36,7 @@ import MainDashboard from './component/dashboard/MainDashboard'
 import Order from './component/seller-dasboared/Order'
 import ProductPage from './component/admin-dashboard/ProductPage'
 import SellerDetail from './component/admin-dashboard/SellerDetails'
+import OfferDetailPage from './component/admin-dashboard/OfferDetailPage'
 
 
 function App() {
@@ -63,11 +64,9 @@ function App() {
         <Route path="/dashboard" element={<MainDashboard/>} />
         <Route path="/product" element={<ProductPage/>} />
         <Route path="/seller/:id" element={<SellerDetail />} />
+        <Route path="/offer/:id" element={<OfferDetailPage />} />
 
 
-
-
-        
 
         <Route path="/Ne-how-to-wash" element={<NeWashCloth />} />
         <Route path="/Ne-shop" element={<NeShop />} />

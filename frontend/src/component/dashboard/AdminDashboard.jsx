@@ -403,7 +403,7 @@ export default function AdminDashboard() {
 
   const menuItems = [
     { id: "dashboard", label: "Overview", icon: LayoutDashboard },
-    { id: "analytics", label: "Analytics", icon: BarChart3 },
+    // { id: "analytics", label: "Analytics", icon: BarChart3 },
     { id: "products", label: "All Products", icon: Package },
     { id: "offers", label: "Offers", icon: Tag },
     { id: "orders", label: "Orders", icon: ShoppingBag },

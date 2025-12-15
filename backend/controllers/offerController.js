@@ -5,6 +5,7 @@ import Seller from "../models/Seller.js";
 // CREATE OFFER (Admin)
 export const createOffer = async (req, res) => {
   try {
+    console.log("req body",req.body)
     const offer = await Offer.create(req.body);
     res.status(201).json({ success: true, message: "Offer created", offer });
   } catch (error) {
