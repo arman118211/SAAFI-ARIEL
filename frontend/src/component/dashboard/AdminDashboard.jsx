@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   LayoutDashboard,
@@ -30,6 +30,9 @@ import ProductPage from "../admin-dashboard/ProductPage"
 import AdminOrdersPage from "../admin-dashboard/AdminOrdersPage"
 import AdminOffersPage from "../admin-dashboard/AdminOffersPage"
 import SellerList from "../admin-dashboard/SellerList"
+import { use } from "react"
+import axios from "axios"
+import SellerProfile from "../SellerProfile"
 
 // --- Mock Data ---
 
@@ -119,6 +122,8 @@ const OFFERS = [
   },
 ]
 
+
+
 // --- Components ---
 
 const StatCard = ({ title, value, trend, trendUp, icon: Icon, color }) => (
@@ -152,37 +157,34 @@ const ChartCard = ({ title, children, height = "h-64" }) => (
   </div>
 )
 
-const DashboardHome = () => (
-  <div className="space-y-6">
+const DashboardHome = ({states, salesData, inventoryData, recentData}) => (
+  <div className="space-y-6 p-4">
     {/* Top Stats Row */}
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <StatCard
         title="Total Revenue"
-        value="$45,231.89"
-        trend="+20.1%"
+        value={`₹ ${states.totalRevenue}`}
         trendUp={true}
         icon={DollarSign}
         color="text-blue-600"
       />
       <StatCard
-        title="Liters Distributed"
-        value="12,450 L"
-        trend="+12.5%"
+        title="Total Seller"
+        value={states.totalSellers}
         trendUp={true}
         icon={Droplets}
         color="text-blue-500"
       />
       <StatCard
-        title="Active Orders"
-        value="342"
-        trend="-2.4%"
+        title="Deliverd Orders"
+        value={states.deliveredOrders}
         trendUp={false}
         icon={Package}
         color="text-indigo-600"
       />
       <StatCard
-        title="Quality Alerts"
-        value="3"
+        title="Pending Orders"
+        value={states.pendingAndConfirmedOrders}
         trend="Action Req"
         trendUp={false}
         icon={AlertCircle}
@@ -195,7 +197,7 @@ const DashboardHome = () => (
       <div className="lg:col-span-2">
         <ChartCard title="Sales Velocity (24h)">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={SALES_DATA}>
+            <AreaChart data={salesData}>
               <defs>
                 <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#2563eb" stopOpacity={0.2} />
@@ -244,7 +246,7 @@ const DashboardHome = () => (
       <div className="lg:col-span-1">
         <ChartCard title="Inventory Levels">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={INVENTORY_DATA} layout="vertical" margin={{ left: 0 }}>
+            <BarChart data={inventoryData} layout="vertical" margin={{ left: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" horizontal={true} vertical={false} />
               <XAxis type="number" hide />
               <YAxis
@@ -297,7 +299,7 @@ const DashboardHome = () => (
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {RECENT_ORDERS.map((order) => (
+            {recentData.map((order) => (
               <tr key={order.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4 font-mono text-gray-600">{order.id}</td>
                 <td className="px-6 py-4 text-gray-900 font-medium">{order.customer}</td>
@@ -400,6 +402,61 @@ const OffersPage = () => (
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("dashboard")
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [states, setStates] = useState({})
+  const [salesdata,setSalesData] = useState([])
+  const [inventoryData,setInventoryData] = useState([])
+  const [recentData,setRecentData] = useState([])
+
+
+  
+
+    const getAllStates = async () => {
+      try{
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/products/allStates`)
+        setStates(res.data.states)
+      }catch(err){
+        console.log("something went wrong",err)
+      }
+    }
+
+    const getSalesData = async () => {
+      try{
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/order/getSalesGraphData`)
+        // console.log("salesdata",res)
+        setSalesData(res.data.salesData)
+      }catch(err){
+        console.log("something went wrong",err)
+      }
+    }
+
+    const getInventroryData = async () => {
+      try{
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/products/getInventoryGraphData`)
+        // console.log("salesdata",res)
+        setInventoryData(res.data.inventoryData)
+      }catch(err){
+        console.log("something went wrong",err)
+      }
+    }
+
+    const getRecentData = async () => {
+      try{
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/order/getFormateOrder`)
+        // console.log("order",res)
+        setRecentData(res.data.orders)
+      }catch(err){
+        console.log("something went wrong",err)
+      }
+    }
+
+
+    useEffect(() => {
+      getAllStates()
+      getSalesData()
+      getInventroryData()
+      getRecentData()
+    },[])
+
 
   const menuItems = [
     { id: "dashboard", label: "Overview", icon: LayoutDashboard },
@@ -411,8 +468,8 @@ export default function AdminDashboard() {
   ]
 
   const bottomMenuItems = [
-    { id: "settings", label: "Settings", icon: Settings },
-    { id: "security", label: "Security", icon: Shield },
+    { id: "profile", label: "Profile", icon: Settings },
+    // { id: "security", label: "Security", icon: Shield },
   ]
 
   return (
@@ -558,13 +615,13 @@ export default function AdminDashboard() {
                 transition={{ duration: 0.2 }}
               >
                 {activeTab === "dashboard" ? (
-                  <DashboardHome />
+                  <DashboardHome states = {states} salesData = {salesdata} recentData = {recentData} inventoryData = {inventoryData}  />
                 ) :activeTab==="products"? <ProductPage/>
                 : activeTab === "orders" ? <AdminOrdersPage/>
                 : activeTab === 'customers'? <SellerList/>:
                  activeTab === "offers" ? (
                   <AdminOffersPage />
-                ) : (
+                ) :activeTab === "profile"?<SellerProfile/> : (
                   <div className="h-96 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
                     <Activity className="w-12 h-12 text-gray-300 mb-4" />
                     <h3 className="text-gray-900 font-medium">Module Under Development</h3>

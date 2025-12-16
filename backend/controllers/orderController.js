@@ -135,3 +135,124 @@ export const deleteOrder = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+const getTimeAgo = (date) => {
+  const seconds = Math.floor((Date.now() - new Date(date)) / 1000);
+
+  const intervals = [
+    { label: "y", seconds: 31536000 },
+    { label: "mo", seconds: 2592000 },
+    { label: "d", seconds: 86400 },
+    { label: "h", seconds: 3600 },
+    { label: "m", seconds: 60 },
+  ];
+
+  for (const interval of intervals) {
+    const count = Math.floor(seconds / interval.seconds);
+    if (count >= 1) {
+      return `${count}${interval.label} ago`;
+    }
+  }
+
+  return "just now";
+};
+
+
+export const getFormattedOrders = async (req, res) => {
+  try {
+    const orders = await Order.find()
+      .populate("sellerId", "name")
+      .populate("items.productId", "name unit")
+      .sort({ createdAt: -1 });
+
+    const formattedOrders = orders.map(order => {
+      const firstItem = order.items[0];
+
+      return {
+        id: `ORD-${order._id.toString().slice(-4).toUpperCase()}`,
+        customer: order.sellerId?.name || "Unknown",
+        product: firstItem?.productId
+          ? `${firstItem.productId.name} (${firstItem.qty}${firstItem.productId.unit})`
+          : "N/A",
+        status:
+          order.status === "delivered"
+            ? "Completed"
+            : order.status.charAt(0).toUpperCase() + order.status.slice(1),
+        amount: `₹${order.totalAmount.toFixed(2)}`,
+        date: getTimeAgo(order.createdAt),
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      orders: formattedOrders,
+    });
+
+  } catch (error) {
+    console.error("getFormattedOrders error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+export const getSalesGraphData = async (req, res) => {
+  try {
+    const data = await Order.aggregate([
+      {
+        $match: { status: "delivered" }
+      },
+      {
+        $project: {
+          hour: { $hour: "$createdAt" },
+          totalAmount: 1
+        }
+      },
+      {
+        $bucket: {
+          groupBy: "$hour",
+          boundaries: [0, 4, 8, 12, 16, 20, 24],
+          default: "other",
+          output: {
+            sales: { $sum: "$totalAmount" },
+            orders: { $sum: 1 }
+          }
+        }
+      }
+    ]);
+
+    const timeMap = {
+      0: "00:00",
+      4: "04:00",
+      8: "08:00",
+      12: "12:00",
+      16: "16:00",
+      20: "20:00",
+      24: "23:59"
+    };
+
+    const SALES_DATA = Object.keys(timeMap).map(hour => {
+      const bucket = data.find(d => d._id === Number(hour));
+      return {
+        time: timeMap[hour],
+        sales: bucket?.sales || 0,
+        orders: bucket?.orders || 0
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      salesData: SALES_DATA
+    });
+
+  } catch (error) {
+    console.error("Sales graph error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+};
+
+

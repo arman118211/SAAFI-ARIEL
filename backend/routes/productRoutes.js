@@ -5,7 +5,9 @@ import {
   getProduct,
   updateProduct,
   deleteProduct,
-  toggleActive
+  toggleActive,
+  allStats,
+  getInventoryGraphData
 } from "../controllers/productController.js";
 
 const router = express.Router();
@@ -13,6 +15,10 @@ const router = express.Router();
 // PRODUCT CRUD ROUTES
 router.post("/add", addProduct);
 router.get("/", getProducts);
+router.get("/allStates",allStats)
+router.get("/getInventoryGraphData",getInventoryGraphData)
+
+
 router.get("/:id", getProduct);
 router.put("/:id", updateProduct);
 router.delete("/:id", deleteProduct);

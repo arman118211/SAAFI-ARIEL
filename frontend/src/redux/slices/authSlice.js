@@ -26,6 +26,36 @@ export const loginSeller = createAsyncThunk(
   }
 );
 
+export const updateSellerProfile = createAsyncThunk(
+  "auth/updateSellerProfile",
+  async (
+    { name, address, currentPassword, newPassword },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const {
+        auth: { token },
+      } = getState();
+
+      const res = await axios.put(
+        `${import.meta.env.VITE_BASE_URL}/api/seller/auth/update`,
+        { name, address, currentPassword, newPassword },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return res.data; // { message, seller }
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Profile update failed"
+      );
+    }
+  }
+);
+
 // -----------------------------------
 // AUTH SLICE
 // -----------------------------------
@@ -67,7 +97,30 @@ const authSlice = createSlice({
       .addCase(loginSeller.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+
+      .addCase(updateSellerProfile.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+
+    .addCase(updateSellerProfile.fulfilled, (state, action) => {
+      state.loading = false;
+      state.seller = action.payload.seller;
+
+      // keep token unchanged
+      localStorage.setItem(
+        "sellerInfo",
+        JSON.stringify(action.payload.seller)
+      );
+    })
+
+    .addCase(updateSellerProfile.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
+
+      
   },
 });
 

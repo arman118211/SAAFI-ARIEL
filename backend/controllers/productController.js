@@ -1,4 +1,6 @@
 import Product from "../models/Product.js";
+import Seller from "../models/Seller.js";
+import Order from "../models/Order.js";
 
 // ADD PRODUCT
 export const addProduct = async (req, res) => {
@@ -93,5 +95,111 @@ export const toggleActive = async (req, res) => {
 
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const allStats = async (req, res) => {
+  try {
+    console.log("all stats calling");
+
+    // Run DB queries in parallel
+    const [
+      productResult,
+      totalSellers,
+      orderStatusResult
+    ] = await Promise.all([
+
+      // TOTAL REVENUE (Inventory Value)
+      Product.aggregate([
+        { $match: { isActive: true } },
+        {
+          $group: {
+            _id: null,
+            totalRevenue: {
+              $sum: { $multiply: ["$price", "$stock"] }
+            }
+          }
+        }
+      ]),
+
+      // TOTAL SELLERS (exclude admin)
+      Seller.countDocuments({ role: "seller" }),
+
+      // ORDER STATUS COUNTS
+      Order.aggregate([
+        {
+          $group: {
+            _id: "$status",
+            count: { $sum: 1 }
+          }
+        }
+      ])
+    ]);
+
+    const totalRevenue = productResult[0]?.totalRevenue || 0;
+
+    let delivered = 0;
+    let pendingConfirmed = 0;
+
+    orderStatusResult.forEach(item => {
+      if (item._id === "delivered") delivered = item.count;
+      if (item._id === "pending" || item._id === "confirmed") {
+        pendingConfirmed += item.count;
+      }
+    });
+
+    const states = {
+      totalRevenue,
+      totalSellers,
+      deliveredOrders: delivered,
+      pendingAndConfirmedOrders: pendingConfirmed
+    }
+
+    res.status(200).json({
+      success: true,
+      states
+    });
+
+  } catch (error) {
+    console.error("allStats error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+};
+
+export const getInventoryGraphData = async (req, res) => {
+  try {
+    const inventoryData = await Product.aggregate([
+      {
+        $match: { isActive: true }
+      },
+      {
+        $group: {
+          _id: "$category",
+          value: { $sum: "$stock" }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          name: "$_id",
+          value: 1
+        }
+      }
+    ]);
+
+    res.status(200).json({
+      success: true,
+      inventoryData
+    });
+
+  } catch (error) {
+    console.error("Inventory graph error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
   }
 };

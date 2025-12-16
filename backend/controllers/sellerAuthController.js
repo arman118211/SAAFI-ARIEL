@@ -103,4 +103,54 @@ export const getAllseller = async (req, res) => {
   }
 };
 
+export const updateSellerProfile = async (req, res) => {
+  try {
+    const sellerId = req.user._id; // from auth middleware
+    const { name, address, currentPassword, newPassword } = req.body;
+
+    const seller = await Seller.findById(sellerId);
+    if (!seller) {
+      return res.status(404).json({ message: "Seller not found" });
+    }
+
+    // Update name & address
+    if (name) seller.name = name;
+    if (address) seller.address = address;
+
+    // 🔐 Password update flow
+    if (currentPassword || newPassword) {
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({
+          message: "Both currentPassword and newPassword are required",
+        });
+      }
+
+      const isMatch = await seller.matchPassword(currentPassword);
+      if (!isMatch) {
+        return res.status(401).json({
+          message: "Current password is incorrect",
+        });
+      }
+
+      seller.password = newPassword; // auto-hashed via pre-save hook
+    }
+
+    await seller.save();
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      seller: {
+        _id: seller._id,
+        name: seller.name,
+        email: seller.email,
+        phone: seller.phone,
+        address: seller.address,
+        role: seller.role,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
