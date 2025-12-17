@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, ChevronDown, Globe } from 'lucide-react';
+import { Menu, X, ChevronDown, Globe,User, LogOut, LayoutDashboard  } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
+import { useDispatch,useSelector  } from "react-redux";
+import { logout } from "../redux/slices/authSlice";
+import toast from "react-hot-toast";
+
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,6 +15,9 @@ export default function Navbar() {
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const location = useLocation();
+  const dispatch = useDispatch();
+  const { seller } = useSelector((state) => state.auth);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   // Close mobile menu when route changes
 
@@ -85,9 +92,66 @@ export default function Navbar() {
             {/* Updated links in desktop view */}
             <div className="hidden md:flex items-center space-x-4">
               {/* Added Login link */}
-              <Link to="/login" className="text-blue-700 hover:text-blue-900 font-bold transition-colors text-sm">
-                LOGIN
-              </Link>
+              {/* AUTH SECTION */}
+              {!seller ? (
+                <Link
+                  to="/login"
+                  className="text-blue-700 hover:text-blue-900 font-bold transition-colors text-sm"
+                >
+                  LOGIN
+                </Link>
+              ) : (
+                <div
+                  className="relative"
+                  onMouseEnter={() => setShowUserMenu(true)}
+                  onMouseLeave={() => setShowUserMenu(false)}
+                >
+                  <button className="flex items-center gap-2 text-blue-700 font-bold text-sm">
+                    <User size={16} />
+                    {seller.name}
+                    <ChevronDown size={14} />
+                  </button>
+
+                  <AnimatePresence>
+                    {showUserMenu && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 8 }}
+                        className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border z-50"
+                      >
+                        <Link
+                          to="/dashboard"
+                          className="flex items-center gap-2 px-4 py-2 hover:bg-blue-50 text-sm"
+                        >
+                          <LayoutDashboard size={16} />
+                          Dashboard
+                        </Link>
+
+                        <Link
+                          to="/profile"
+                          className="flex items-center gap-2 px-4 py-2 hover:bg-blue-50 text-sm"
+                        >
+                          <User size={16} />
+                          Profile
+                        </Link>
+
+                        <button
+                          onClick={() => {
+                            dispatch(logout())
+                            toast.success("Logged out successfully 👋");
+                          }}
+                          className="w-full text-left flex items-center gap-2 px-4 py-2 hover:bg-red-50 text-sm text-red-600"
+                        >
+                          <LogOut size={16} />
+                          Logout
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+
               <Link to="/why-choose-us" className="text-blue-700 hover:text-blue-900 font-bold transition-colors text-sm">
                 WHY CHOOSE US
               </Link>
@@ -270,7 +334,36 @@ export default function Navbar() {
             
             <div className="flex flex-col gap-3 mb-6">
               {/* Added Login link to mobile menu */}
-              <Link to="/login" className="text-blue-700 hover:text-blue-900 font-bold text-base">LOGIN</Link>
+              {!seller ? (
+                  <Link to="/login" className="text-blue-700 font-bold text-base">
+                    LOGIN
+                  </Link>
+                ) : (
+                  <>
+                    <div className="text-blue-900 font-bold text-base">
+                      👤 {seller.name}
+                    </div>
+
+                    <Link to="/dashboard" className="text-blue-700 font-bold text-base">
+                      Dashboard
+                    </Link>
+
+                    <Link to="/profile" className="text-blue-700 font-bold text-base">
+                      Profile
+                    </Link>
+
+                    <button
+                      onClick={() => {
+                        dispatch(logout())
+                        toast.success("Logged out successfully 👋");
+                      }}
+                      className="text-red-600 font-bold text-base text-left"
+                    >
+                      Logout
+                    </button>
+                  </>
+                )}
+
               <Link to="/why-choose-us" className="text-blue-700 hover:text-blue-900 font-bold text-base">WHY CHOOSE US</Link>
               <Link to="/contact" className="text-blue-700 hover:text-blue-900 font-bold text-base">CONTACT US</Link>
               

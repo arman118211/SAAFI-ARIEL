@@ -42,6 +42,7 @@ export default function SellerProfile() {
             address:formData.address,
             currentPassword: formData.currentPassword,
             newPassword:formData.newPassword,
+            id:seller._id
             })
         );
         

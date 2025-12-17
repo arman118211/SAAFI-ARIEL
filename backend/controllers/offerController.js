@@ -177,4 +177,32 @@ export const getAllOfferForAdmin = async (req, res) => {
   }
 };
 
+// get all active offer
+export const getActiveOffers = async (req, res) => {
+  try {
+    const now = new Date();
+
+    const offers = await Offer.find({
+      endDate: { $gte: now },          // not crossed deadline
+      status: { $ne: "closed" },       // not closed
+    })
+      .select("-winner")               // exclude winner field
+      .populate("products.productId") // optional
+      .populate("sellerPurchases.sellerId");        // optional
+
+    res.status(200).json({
+      success: true,
+      count: offers.length,
+      offers,
+    });
+
+  } catch (error) {
+    console.error("Error fetching active offers:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch active offers",
+    });
+  }
+};
+
 

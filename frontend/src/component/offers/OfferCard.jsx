@@ -4,7 +4,7 @@ import { Clock, ArrowRight, Tag } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 export default function OfferCard({ offer }) {
-    console.log("offer",offer)
+    // console.log("offer",offer)
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
   if (!offer) return <div>Loading...</div>;
 
@@ -35,6 +35,7 @@ export default function OfferCard({ offer }) {
   const productCount = offer.products.length
 
   return (
+    <Link to={`/offers/${offer._id}`} className="block h-full">
     <motion.div 
       whileHover={{ y: -5 }}
       className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 flex flex-col h-full"
@@ -68,15 +69,15 @@ export default function OfferCard({ offer }) {
             {/* <span className="font-bold text-blue-700 text-lg">${totalPrice.toFixed(2)}</span> */}
           </div>
 
-          <Link 
-            to={`/offers/${offer._id}`}
+          <div 
             className="w-full bg-blue-700 hover:bg-blue-800 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 group"
           >
             Buy Now
             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-          </Link>
+          </div>
         </div>
       </div>
     </motion.div>
+    </Link>
   )
 }

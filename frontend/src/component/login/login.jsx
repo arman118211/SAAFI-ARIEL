@@ -22,6 +22,7 @@ import axios from "axios"
 import { useDispatch, useSelector } from "react-redux";
 import { loginSeller } from "../../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast"
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
@@ -52,37 +53,45 @@ const Login = () => {
   )
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsLoading(true);
-  setMessage("");
-  setMessageType("");
+    try{
+        e.preventDefault();
+        setIsLoading(true);
+        setMessage("");
+        setMessageType("");
 
-  if (!formData.username || !formData.password) {
-    setMessage("Please fill in all fields");
-    setMessageType("error");
-    setIsLoading(false);
-    return;
-  }
+        if (!formData.username || !formData.password) {
+          setMessage("Please fill in all fields");
+          setMessageType("error");
+          setIsLoading(false);
+          return;
+        }
 
-  const result = await dispatch(
-    loginSeller({
-      email: formData.username,
-      password: formData.password,
-    })
-  );
+        const result =  await dispatch(
+          loginSeller({
+            email: formData.username,
+            password: formData.password,
+          })
+        );
 
-  if (result.meta.requestStatus === "fulfilled") {
-    setMessage("Login Success: " + result.payload.seller.name);
-    setMessageType("success");
-    setIsLoading(false);
+        console.log("login result-->",result)
 
-    // Redirect to dashboard
-    navigate("/dashboard");
-  } else {
-    setMessage(result.payload || "Invalid credentials");
-    setMessageType("error");
-    setIsLoading(false);
-  }
+        if (result.meta.requestStatus === "fulfilled") {
+          setMessage("Login Success: " + result.payload.seller.name);
+          toast.success("Login Successfully")
+          setMessageType("success");
+          setIsLoading(false);
+          navigate(localStorage.getItem("current") || "/dashboard");
+        } else {
+          setMessage("Invalid credentials");
+          setMessageType("error");
+          setIsLoading(false);
+        }
+}catch(err){
+   setMessage("Invalid credentials");
+   setMessageType("error");
+   console.log("something went wrong",err)
+   setIsLoading(false);
+}
 };
 
   const handleKeyPress = useCallback((e) => {

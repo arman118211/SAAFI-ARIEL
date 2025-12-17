@@ -105,8 +105,10 @@ export const getAllseller = async (req, res) => {
 
 export const updateSellerProfile = async (req, res) => {
   try {
-    const sellerId = req.user._id; // from auth middleware
-    const { name, address, currentPassword, newPassword } = req.body;
+   
+    const { name, address, currentPassword, newPassword,id } = req.body;
+     console.log("user-->",id)
+    const sellerId = id; // from auth middleware
 
     const seller = await Seller.findById(sellerId);
     if (!seller) {

@@ -33,9 +33,13 @@ import SellerList from "../admin-dashboard/SellerList"
 import { use } from "react"
 import axios from "axios"
 import SellerProfile from "../SellerProfile"
+import { useDispatch,useSelector  } from "react-redux";
+import { logout } from "../../redux/slices/authSlice"; 
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+
 
 // --- Mock Data ---
-
 const SALES_DATA = [
   { time: "00:00", sales: 4000, orders: 240 },
   { time: "04:00", sales: 3000, orders: 139 },
@@ -406,9 +410,8 @@ export default function AdminDashboard() {
   const [salesdata,setSalesData] = useState([])
   const [inventoryData,setInventoryData] = useState([])
   const [recentData,setRecentData] = useState([])
-
-
-  
+  const seller = useSelector((state) => state.auth.seller);
+  console.log("seller--->",seller)
 
     const getAllStates = async () => {
       try{
@@ -466,6 +469,15 @@ export default function AdminDashboard() {
     { id: "orders", label: "Orders", icon: ShoppingBag },
     { id: "customers", label: "Customers", icon: User },
   ]
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const handleLogout = () =>{
+    console.log("logout")
+    dispatch(logout());
+    toast.success("Log out successfully")
+    navigate("/")
+
+  }
 
   const bottomMenuItems = [
     { id: "profile", label: "Profile", icon: Settings },
@@ -544,10 +556,12 @@ export default function AdminDashboard() {
               AU
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-900 truncate">Admin User</p>
-              <p className="text-xs text-gray-500 truncate">admin@sparkle.com</p>
+              <p className="text-sm font-semibold text-gray-900 truncate">{seller.name}</p>
+              <p className="text-xs text-gray-500 truncate">{seller.email}</p>
             </div>
-            <LogOut className="w-4 h-4 text-gray-400 hover:text-gray-900 cursor-pointer" />
+            <LogOut 
+            onClick={handleLogout}
+            className="w-4 h-4 text-gray-400 hover:text-gray-900 cursor-pointer" />
           </div>
         </div>
       </aside>
@@ -589,22 +603,7 @@ export default function AdminDashboard() {
         {/* Content Scroll Area */}
         <div className="flex-1  bg-gray-50">
           <div className="mx-auto">
-            {/* <div className="flex justify-between items-end mb-8">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 capitalize mb-1">{activeTab}</h1>
-                <p className="text-gray-500 text-sm">Manage your detergent production and distribution metrics.</p>
-              </div>
-              <div className="flex gap-3">
-                <button className="px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-colors flex items-center gap-2 shadow-sm">
-                  <Calendar className="w-4 h-4" />
-                  Last 24 Hours
-                </button>
-                <button className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm shadow-blue-200 flex items-center gap-2">
-                  <Download className="w-4 h-4" />
-                  Export Report
-                </button>
-              </div>
-            </div> */}
+
 
             <AnimatePresence mode="wait">
               <motion.div

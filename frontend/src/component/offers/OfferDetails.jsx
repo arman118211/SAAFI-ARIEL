@@ -4,6 +4,7 @@ import { Clock, ShoppingCart, Package, Check, AlertCircle, ArrowLeft, Plus, Minu
 import { motion } from 'framer-motion'
 import axios from 'axios'
 import { useSelector } from "react-redux";
+import toast from 'react-hot-toast'
 
 export default function OfferDetails({ offer, onAddToCart }) {
   const { seller, token } = useSelector((state) => state.auth);
@@ -95,6 +96,11 @@ export default function OfferDetails({ offer, onAddToCart }) {
 
   const handleAddToCart = async () => {
     setLoading(true)
+    if (!seller || !token) {
+      localStorage.setItem("current",location.pathname)
+      navigate("/login");
+    return;
+  }
     try {
       // Prepare order data according to your controller
       const orderData = {
@@ -117,7 +123,9 @@ export default function OfferDetails({ offer, onAddToCart }) {
       }
       
       // Show success message
-      alert('Order created successfully!')
+      toast.success('Order created successfully!')
+      localStorage.removeItem("current")
+      // alert('Order created successfully!')
       
       // Optionally navigate to orders page or clear cart
       // navigate('/orders')

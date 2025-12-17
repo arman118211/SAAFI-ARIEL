@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-
 // -----------------------------------
 // LOAD SAVED AUTH DATA (Fix Refresh)
 // -----------------------------------
@@ -21,6 +20,7 @@ export const loginSeller = createAsyncThunk(
 
       return res.data; // contains { message, seller, token }
     } catch (error) {
+
       return rejectWithValue(error.response?.data || "Login Failed");
     }
   }
@@ -29,7 +29,7 @@ export const loginSeller = createAsyncThunk(
 export const updateSellerProfile = createAsyncThunk(
   "auth/updateSellerProfile",
   async (
-    { name, address, currentPassword, newPassword },
+    { name, address, currentPassword, newPassword,id},
     { getState, rejectWithValue }
   ) => {
     try {
@@ -39,7 +39,7 @@ export const updateSellerProfile = createAsyncThunk(
 
       const res = await axios.put(
         `${import.meta.env.VITE_BASE_URL}/api/seller/auth/update`,
-        { name, address, currentPassword, newPassword },
+        { name, address, currentPassword, newPassword,id },
         {
           headers: {
             Authorization: `Bearer ${token}`,

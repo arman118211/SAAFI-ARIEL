@@ -9,7 +9,7 @@ export default function OfferDetailsPage() {
     const [offers, setOffers] = useState([])
     console.log("BASE URL:", import.meta.env.VITE_BASE_URL);
     const getData = async () =>{
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/offers/offer`);
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/offers/activeOffer`);
         // console.log("res==>",res.data.offers)
         setOffers(res.data.offers)
 
@@ -20,7 +20,7 @@ export default function OfferDetailsPage() {
     },[])
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+      <div className="mx-auto">
         {location.pathname !== "/dashboard" && (
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Exclusive Offers</h1>

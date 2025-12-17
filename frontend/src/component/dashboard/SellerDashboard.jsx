@@ -31,6 +31,8 @@ import SellerDashboardHome from "../seller-dasboared/SellerDashboardHome"
 import { useSelector, useDispatch } from "react-redux"
 import { logout } from "../../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast"
+import SellerProfile from "../SellerProfile"
 // --- Mock Data for Seller ---
 
 const SALES_DATA = [
@@ -163,7 +165,7 @@ export default function SellerDashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  console.log("seller-->",seller)
+  // console.log("seller-->",seller)
 
   const menuItems = [
     { id: "dashboard", label: "Overview", icon: LayoutDashboard },
@@ -175,7 +177,8 @@ export default function SellerDashboard() {
 
   const handleLogout = () => {
     dispatch(logout()); 
-    navigate("/login");
+    toast.success("logout Successfully")
+    navigate("/");
   };
 
   return (
@@ -277,7 +280,7 @@ export default function SellerDashboard() {
 
         {/* Content Scroll Area */}
         <div className="flex-1 overflow-y-auto p-6 lg:p-8 bg-gray-50">
-          <div className="max-w-7xl mx-auto">
+          <div className=" mx-auto">
             <div className="flex justify-between items-end mb-8">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 capitalize mb-1">{activeTab}</h1>
@@ -307,7 +310,7 @@ export default function SellerDashboard() {
                   <SellerDashboardHome />
                 ) : activeTab === "offers" ? (
                   <OffersPage />
-                ) : activeTab === "orders" ? <Order/>: (
+                ) : activeTab === "orders" ? <Order/>:activeTab === "profile" ? <SellerProfile/> : (
                   <div className="h-96 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
                     <Activity className="w-12 h-12 text-gray-300 mb-4" />
                     <h3 className="text-gray-900 font-medium">Module Under Development</h3>
