@@ -10,7 +10,9 @@ import {
   addSellerPurchase,
   declareWinner,
   getAllOfferForAdmin,
-  getActiveOffers
+  getActiveOffers,
+  getWinnerNotification,
+  markWinSeen
 } from "../controllers/offerController.js";
 
 const router = express.Router();
@@ -21,12 +23,17 @@ router.get("/activeOffer", getActiveOffers);
 
 router.get("/offer", getAllOffers);
 router.get("/getAllOffersForAmin", getAllOfferForAdmin);
+
+router.get("/winner-notification/:id", getWinnerNotification);
+router.patch("/mark-win-seen", markWinSeen);
+
 router.get("/:id", getOfferById);
 router.put("/:id", updateOffer);
 router.patch("/activate/:id", activateOffer);
 router.patch("/deactivate/:id", deactivateOffer);
 router.patch("/close/:id", closeOffer);
 router.patch("/winner/:id", declareWinner);
+
 
 
 // SELLER PURCHASE → When order created

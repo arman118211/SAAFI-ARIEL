@@ -30,96 +30,14 @@ import Order from "../seller-dasboared/Order"
 import SellerDashboardHome from "../seller-dasboared/SellerDashboardHome"
 import { useSelector, useDispatch } from "react-redux"
 import { logout } from "../../redux/slices/authSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast"
 import SellerProfile from "../SellerProfile"
-// --- Mock Data for Seller ---
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react"
+import axios from "axios"
+import OfferWinPopup from "../offer/OfferWinPopup"
 
-const SALES_DATA = [
-  { time: "00:00", sales: 4000, orders: 240 },
-  { time: "04:00", sales: 3000, orders: 139 },
-  { time: "08:00", sales: 2000, orders: 980 },
-  { time: "12:00", sales: 2780, orders: 390 },
-  { time: "16:00", sales: 1890, orders: 480 },
-  { time: "20:00", sales: 2390, orders: 380 },
-  { time: "23:59", sales: 3490, orders: 430 },
-]
-
-const INVENTORY_DATA = [
-  { name: "Liquid", value: 85 },
-  { name: "Powder", value: 65 },
-  { name: "Pods", value: 45 },
-  { name: "Softener", value: 90 },
-  { name: "Bleach", value: 30 },
-]
-
-const RECENT_ORDERS = [
-  {
-    id: "ORD-7782",
-    customer: "Sarah Johnson",
-    product: "Lavender Liquid (5L)",
-    status: "Completed",
-    amount: "$42.00",
-    date: "2m ago",
-  },
-  {
-    id: "ORD-7783",
-    customer: "Mike Chen",
-    product: "Oxi-Power Powder",
-    status: "Processing",
-    amount: "$35.50",
-    date: "15m ago",
-  },
-  {
-    id: "ORD-7784",
-    customer: "Emma Davis",
-    product: "Fabric Softener x3",
-    status: "Shipped",
-    amount: "$28.90",
-    date: "1h ago",
-  },
-  {
-    id: "ORD-7785",
-    customer: "James Wilson",
-    product: "Industrial Bleach",
-    status: "Pending",
-    amount: "$120.00",
-    date: "2h ago",
-  },
-]
-
-const OFFERS = [
-  {
-    id: 1,
-    title: "Spring Fresh Bundle",
-    discount: "25% OFF",
-    price: "$24.99",
-    original: "$33.99",
-    image: "/detergent-bottle-blue.jpg",
-    status: "Active",
-    sales: 1240,
-  },
-  {
-    id: 2,
-    title: "Oxi-Power Mega Pack",
-    discount: "BOGO",
-    price: "$45.00",
-    original: "$90.00",
-    image: "/detergent-powder-red.jpg",
-    status: "Scheduled",
-    sales: 0,
-  },
-  {
-    id: 3,
-    title: "Sensitive Skin Liquid",
-    discount: "15% OFF",
-    price: "$18.50",
-    original: "$21.99",
-    image: "/detergent-bottle-white.jpg",
-    status: "Ending Soon",
-    sales: 856,
-  },
-]
 
 // --- Components ---
 
@@ -159,11 +77,32 @@ const OffersPage = () => (
 )
 
 export default function SellerDashboard() {
-  const [activeTab, setActiveTab] = useState("dashboard")
+  const location = useLocation();
+
+  const [activeTab, setActiveTab] = useState(
+    location.state?.activeTab || "dashboard"
+  );
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { seller, token } = useSelector((state) => state.auth)
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const[notificationData,setNotificationData] = useState({})
+
+  // const getWinnerNotification = async () => {
+  //   try{
+  //     const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/offers/winner-notification/${seller._id}`)
+  //     console.log("notification response -->", res.data)
+  //     setNotificationData(res.data)
+  //   }catch(err){
+  //     console.log("something went wrong could not found notification")
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   getWinnerNotification()
+
+  // },[])
 
   // console.log("seller-->",seller)
 
@@ -183,6 +122,7 @@ export default function SellerDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-sans flex">
+      <OfferWinPopup/>
       {/* Sidebar */}
       <aside
         className={`
@@ -191,14 +131,19 @@ export default function SellerDashboard() {
       `}
       >
         <div className="h-16 flex items-center px-6 border-b border-gray-100 sticky top-0 z-50 bg-white">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm shadow-blue-200">
-              <Droplets className="w-5 h-5 text-white" />
+          <Link to='/'>
+         <div className="flex items-center gap-2">
+          
+            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm shadow-blue-200">
+              {/* <Droplets className="w-5 h-5 text-white" /> */}
+              <img src="/logo.jpg" alt="" className="w-10 h-10" />
             </div>
             <span className="font-bold text-gray-900 tracking-tight text-lg">
               Saafi <span className="text-blue-600">Ariel</span>
             </span>
+         
           </div>
+           </Link>
           <button
             onClick={() => setIsMobileMenuOpen(false)}
             className="ml-auto lg:hidden text-gray-400 hover:text-gray-900"
@@ -230,7 +175,7 @@ export default function SellerDashboard() {
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100 bg-gray-50/50">
+        <div className="max-h-screen absolute  left-0 right-0 p-4 border-t border-gray-100 bg-gray-50/50">
           <div className="flex items-center gap-3 px-2">
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-blue-400 flex items-center justify-center text-xs font-bold text-white shadow-sm">
               SJ
@@ -281,22 +226,20 @@ export default function SellerDashboard() {
         {/* Content Scroll Area */}
         <div className="flex-1 overflow-y-auto p-6 lg:p-8 bg-gray-50">
           <div className=" mx-auto">
-            <div className="flex justify-between items-end mb-8">
+            {activeTab !== "profile" && <div className="flex justify-between items-end mb-8">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 capitalize mb-1">{activeTab}</h1>
                 <p className="text-gray-500 text-sm">Manage your detergent production and distribution metrics.</p>
               </div>
               <div className="flex gap-3">
-                <button className="px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-colors flex items-center gap-2 shadow-sm">
-                  <Calendar className="w-4 h-4" />
-                  Last 24 Hours
-                </button>
+                <Link to="/shop">
                 <button className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm shadow-blue-200 flex items-center gap-2">
                   <Plus className="w-4 h-4" />
                   Buy More Product
                 </button>
+                </Link>
               </div>
-            </div>
+            </div>}
 
             <AnimatePresence mode="wait">
               <motion.div

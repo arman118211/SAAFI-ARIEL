@@ -52,7 +52,8 @@ const offerSchema = new mongoose.Schema(
             qty: Number,
             date: { type: Date, default: Date.now },
           }
-        ]
+        ],
+        hasSeenWin: { type: Boolean, default: false }
       }
     ],
 

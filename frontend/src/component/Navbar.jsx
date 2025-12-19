@@ -129,7 +129,8 @@ export default function Navbar() {
                         </Link>
 
                         <Link
-                          to="/profile"
+                          to="/dashboard"
+                          state={{ activeTab: "profile" }}
                           className="flex items-center gap-2 px-4 py-2 hover:bg-blue-50 text-sm"
                         >
                           <User size={16} />

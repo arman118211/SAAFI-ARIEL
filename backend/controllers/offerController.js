@@ -206,3 +206,100 @@ export const getActiveOffers = async (req, res) => {
 };
 
 
+export const getWinnerNotification = async (req, res) => {
+  try {
+    console.log("winner notification is called")
+
+    const {id} = req.params;
+    const sellerId = id
+    console.log("sellerid", sellerId)
+    
+
+    const offer = await Offer.findOne({
+      winner: sellerId,
+      sellerPurchases: {
+        $elemMatch: {
+          sellerId: sellerId,
+          hasSeenWin: false
+        }
+      }
+    })
+      .select("title description startDate endDate")
+      .lean();
+    
+
+    console.log("offer-->",offer)
+    if (!offer) {
+      return res.status(200).json({
+        success: true,
+        show: false
+      });
+    }
+
+    console.log("offer --->",offer)
+
+    res.status(200).json({
+      success: true,
+      show: true,
+      offer
+    });
+
+  } catch (error) {
+    console.error("Winner notification error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+
+
+export const markWinSeen = async (req, res) => {
+  try {
+    const { offerId, sellerId } = req.body;
+
+    if (!offerId) {
+      return res.status(400).json({
+        success: false,
+        message: "offerId is required"
+      });
+    }
+
+    const result = await Offer.updateOne(
+      {
+        _id: offerId,
+        winner: sellerId,
+        "sellerPurchases.sellerId": sellerId
+      },
+      {
+        $set: {
+          "sellerPurchases.$.hasSeenWin": true
+        }
+      }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No pending winner notification found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Winner notification marked as seen"
+    });
+
+  } catch (error) {
+    console.error("Mark win seen error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+
+
+

@@ -35,6 +35,47 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState("")
   const [messageType, setMessageType] = useState("")
+  const [isSignup, setIsSignup] = useState(false)
+
+  const [signupData, setSignupData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+  })
+
+  const handleSignupChange = (e) => {
+    const { name, value } = e.target
+      setSignupData((prev) => ({
+        ...prev,
+        [name]: value,
+      }))
+  }
+
+  const handleSignupSubmit = async (e) => {
+    e.preventDefault()
+
+    try {
+      setIsLoading(true)
+
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/seller/auth/register`,
+        signupData
+      )
+
+      toast.success("Signup successful! Please login.")
+      setIsSignup(false) // switch back to login
+      setIsLoading(false)
+
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Signup failed")
+      setIsLoading(false)
+    }
+  }
+
+
+
+
 
   const handleInputChange = useCallback(
     (e) => {
@@ -205,6 +246,54 @@ const Login = () => {
     [message, messageType, formData, showPassword, isLoading, handleInputChange, handleKeyPress],
   )
 
+  const SignupForm = (
+    <div className="space-y-3">
+      <input
+        type="text"
+        name="name"
+        placeholder="Full Name"
+        value={signupData.name}
+        onChange={handleSignupChange}
+        className="w-full px-4 py-2 border rounded-lg"
+      />
+
+      <input
+        type="email"
+        name="email"
+        placeholder="Email"
+        value={signupData.email}
+        onChange={handleSignupChange}
+        className="w-full px-4 py-2 border rounded-lg"
+      />
+
+      <input
+        type="text"
+        name="phone"
+        placeholder="Phone"
+        value={signupData.phone}
+        onChange={handleSignupChange}
+        className="w-full px-4 py-2 border rounded-lg"
+      />
+
+      <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        value={signupData.password}
+        onChange={handleSignupChange}
+        className="w-full px-4 py-2 border rounded-lg"
+      />
+
+      <button
+        onClick={handleSignupSubmit}
+        className="w-full bg-blue-600 text-white py-2 rounded-lg"
+      >
+        Create Account
+      </button>
+    </div>
+  )
+
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#2979FF] via-[#1565C0] to-[#0D47A1] flex items-center justify-center p-3 sm:p-4 lg:p-6 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -306,14 +395,16 @@ const Login = () => {
               {/* Login Form Header */}
               <div className="p-4 sm:p-5 lg:p-4 pb-0">
                 <div className="text-center mb-3 sm:mb-4">
-                  <h3 className="text-lg sm:text-xl lg:text-xl font-bold text-gray-800 mb-1">Seller Sign In</h3>
-                  <p className="text-xs sm:text-sm lg:text-sm text-gray-600">Access your healthcare dashboard</p>
+                  <h3 className="text-lg font-bold">
+                    {isSignup ? "Create Seller Account" : "Seller Sign In"}
+                  </h3>
+                  <p className="text-xs sm:text-sm lg:text-sm text-gray-600">Access your dashboard</p>
                 </div>
               </div>
 
               {/* Login Form Content */}
               <div className="px-4 sm:px-5 lg:px-4 pb-4 sm:pb-5 lg:pb-4">
-                {LoginForm}
+                {isSignup ? SignupForm : LoginForm}
 
                 {/* Additional Options */}
                 <div className="mt-3 sm:mt-4 space-y-2 sm:space-y-3">
@@ -321,8 +412,11 @@ const Login = () => {
                     <button className="text-[#2979FF] hover:text-[#1565C0] font-medium hover:underline transition-colors">
                       Forgot Password?
                     </button>
-                    <button className="text-[#2979FF] hover:text-[#1565C0] font-medium hover:underline transition-colors">
-                      Need Help?
+                    <button
+                      onClick={() => setIsSignup(true)}
+                      className="text-[#2979FF] hover:underline font-medium"
+                    >
+                      Sign Up
                     </button>
                   </div>
                   <div className="text-center pt-2 sm:pt-3 border-t border-gray-200">

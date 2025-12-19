@@ -181,19 +181,28 @@ const OfferDetailPage = () => {
   console.log("offers ==>",offers)
   console.log("mock offer",mockOffers)
 
-  const getAllOffer = async () =>{
-    console.log("Api calling")
-    const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/offers/getAllOffersForAmin`)
-    console.log("response data",res.data)
-    dispatch(setOffers(res.data.data))
-    setmockOffers(res.data.data)
-  
-  }
+   useEffect(() => {
+    const getAllOffer = async () => {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/offers/getAllOffersForAmin`
+      )
+      dispatch(setOffers(res.data.data))
+      setmockOffers(res.data.data)
+    }
 
-  useEffect(() => {
-    console.log("use effect")
-      getAllOffer()
+    getAllOffer()
   }, [])
+
+const offer = mockOffers.find((o) => o._id === id);
+
+useEffect(() => {
+    if (offer?.winner && offer?.sellerPurchases?.length) {
+      const seller = offer.sellerPurchases.find(
+        item => item.sellerId._id === offer.winner
+      )
+      setSelectedWinner(seller || null)
+    }
+  }, [offer])
   
   if (!mockOffers.length) {
   return (
@@ -203,7 +212,6 @@ const OfferDetailPage = () => {
   );
 }
 
-const offer = mockOffers.find((o) => o._id === id);
 
 console.log("original offer==>",offer)
 
@@ -217,16 +225,7 @@ if (!offer) {
 }
 
 
-  // const offer = mockOffers.find((o) => o._id === id) || mockOffers[0]
   console.log("offer==>",offer)
-  useEffect(() => {
-    if (offer?.winner && offer?.sellerPurchases?.length) {
-      const seller = offer.sellerPurchases.find(
-        item => item.sellerId._id === offer.winner
-      );
-      setSelectedWinner(seller || null);
-    }
-  }, [offer?.winner, offer?.sellerPurchases]);
 
   const totalRevenue = offer.sellerPurchases.reduce(
     (sum, sp) => sum + sp.orders.reduce((s, ord) => s + ord.orderId.totalAmount, 0),

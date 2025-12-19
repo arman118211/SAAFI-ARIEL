@@ -25,18 +25,19 @@ import {
   Settings,
   Shield,
 } from "lucide-react"
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts"
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Line } from "recharts"
 import ProductPage from "../admin-dashboard/ProductPage"
 import AdminOrdersPage from "../admin-dashboard/AdminOrdersPage"
 import AdminOffersPage from "../admin-dashboard/AdminOffersPage"
 import SellerList from "../admin-dashboard/SellerList"
-import { use } from "react"
 import axios from "axios"
 import SellerProfile from "../SellerProfile"
 import { useDispatch,useSelector  } from "react-redux";
 import { logout } from "../../redux/slices/authSlice"; 
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useLocation } from "react-router-dom";
+
 
 
 // --- Mock Data ---
@@ -404,14 +405,18 @@ const OffersPage = () => (
 // --- Main Layout ---
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState("dashboard")
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState(
+    location.state?.activeTab || "dashboard"
+  );
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [states, setStates] = useState({})
   const [salesdata,setSalesData] = useState([])
   const [inventoryData,setInventoryData] = useState([])
   const [recentData,setRecentData] = useState([])
   const seller = useSelector((state) => state.auth.seller);
-  console.log("seller--->",seller)
+  // console.log("seller--->",seller)
 
     const getAllStates = async () => {
       try{
@@ -494,6 +499,7 @@ export default function AdminDashboard() {
       `}
       >
         <div className="h-16 flex items-center px-6 border-b border-gray-100 sticky top-0 z-50 bg-white">
+          <Link to='/'>
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm shadow-blue-200">
               {/* <Droplets className="w-5 h-5 text-white" /> */}
@@ -503,6 +509,7 @@ export default function AdminDashboard() {
               Saafi <span className="text-blue-600">Ariel</span>
             </span>
           </div>
+          </Link>
           <button
             onClick={() => setIsMobileMenuOpen(false)}
             className="ml-auto lg:hidden text-gray-400 hover:text-gray-900"
@@ -550,7 +557,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100 bg-gray-50/50">
+        <div className=" absolute left-0 right-0 p-4 border-t border-gray-100 bg-gray-50/50">
           <div className="flex items-center gap-3 px-2">
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-blue-400 flex items-center justify-center text-xs font-bold text-white shadow-sm">
               AU
