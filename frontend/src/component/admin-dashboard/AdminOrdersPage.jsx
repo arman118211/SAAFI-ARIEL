@@ -123,7 +123,7 @@ const AdminOrdersPage = () => {
           className="mb-6"
         >
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 bg-gradient-to-br from-red-500 to-blue-600 rounded-lg shadow-lg">
+            <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow-lg">
               <Package className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -209,7 +209,7 @@ const AdminOrdersPage = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.5 }}
-            className="col-span-2 md:col-span-1 bg-gradient-to-br from-red-500 via-rose-500 to-blue-600 rounded-lg p-4 shadow-md text-white hover:shadow-lg transition-shadow"
+            className="col-span-2 md:col-span-1 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-4 shadow-md text-white hover:shadow-lg transition-shadow"
           >
             <div className="flex items-center justify-between">
               <div>
@@ -297,10 +297,11 @@ const AdminOrdersPage = () => {
                 transition={{ delay: index * 0.05 }}
                 className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden border border-gray-100"
               >
-                <div className="p-4">
+                <div className="p-4 "
+                 onClick={() => setSelectedOrder(selectedOrder === order._id ? null : order._id)}>
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-3">
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-red-500 via-rose-500 to-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-base shadow-md flex-shrink-0">
+                      <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg flex items-center justify-center text-white font-bold text-base shadow-md flex-shrink-0">
                         {order.sellerId.name.charAt(0)}
                       </div>
                       <div className="min-w-0">

@@ -192,7 +192,7 @@ function Order() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8">
       <div className=" mx-auto">
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -269,13 +269,32 @@ function Order() {
         <div className="space-y-6">
           {orders.length === 0 ? (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="bg-white rounded-xl shadow-lg p-12 text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="bg-white rounded-2xl shadow-lg p-16 text-center flex flex-col items-center"
             >
-              <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Orders Yet</h3>
-              <p className="text-gray-600">Orders will appear here once customers start purchasing.</p>
+              {/* Icon */}
+              <div className="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center mb-6">
+                <Package className="w-12 h-12 text-blue-600" />
+              </div>
+
+              {/* Title */}
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                No Orders Yet
+              </h3>
+
+              {/* Description */}
+              <p className="text-gray-600 max-w-md mb-6">
+                You haven’t received any orders yet. Once customers start purchasing,
+                all your orders will appear here.
+              </p>
+
+              {/* Optional Hint */}
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <Clock className="w-4 h-4" />
+                <span>Stay active to receive new orders</span>
+              </div>
             </motion.div>
           ) : (
             orders.map((order, index) => (
@@ -287,7 +306,8 @@ function Order() {
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
               >
                 {/* Order Header */}
-                <div className="p-6 border-b border-gray-200">
+                <div className="p-6 border-b border-gray-200"
+                 onClick={() => toggleOrderExpansion(order._id)}>
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center flex-shrink-0">

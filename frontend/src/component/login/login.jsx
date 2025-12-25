@@ -41,6 +41,8 @@ const Login = () => {
     name: "",
     email: "",
     phone: "",
+    companyName:"",
+    address:"",
     password: "",
   })
 
@@ -271,6 +273,22 @@ const Login = () => {
         name="phone"
         placeholder="Phone"
         value={signupData.phone}
+        onChange={handleSignupChange}
+        className="w-full px-4 py-2 border rounded-lg"
+      />
+      <input
+        type="text"
+        name="companyName"
+        placeholder="Company Name"
+        value={signupData.companyName}
+        onChange={handleSignupChange}
+        className="w-full px-4 py-2 border rounded-lg"
+      />
+      <input
+        type="text"
+        name="address"
+        placeholder="Address"
+        value={signupData.address}
         onChange={handleSignupChange}
         className="w-full px-4 py-2 border rounded-lg"
       />

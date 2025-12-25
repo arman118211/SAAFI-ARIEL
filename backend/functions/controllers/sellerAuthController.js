@@ -10,12 +10,12 @@ const generateToken = (id) => {
 // REGISTER SELLER
 export const registerSeller = async (req, res) => {
   try {
-    const { name, email, phone, password } = req.body;
+    const { name, email, phone, password,companyName,address } = req.body;
 
     const existing = await Seller.findOne({ email });
     if (existing) return res.status(400).json({ message: "Seller already exists" });
 
-    const seller = await Seller.create({ name, email, phone, password});
+    const seller = await Seller.create({ name, email, phone,companyName,address,password});
 
     res.json({
       message: "Seller registered successfully",

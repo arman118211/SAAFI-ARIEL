@@ -64,6 +64,7 @@ export const createOrder = async (req, res) => {
 export const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
+      .sort({ createdAt: -1 }) // latest first
       .populate("sellerId")
       .populate("items.productId")
       .populate("offerId");
@@ -73,6 +74,7 @@ export const getAllOrders = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // GET SINGLE ORDER
 export const getSingleOrder = async (req, res) => {
@@ -94,6 +96,7 @@ export const getSingleOrder = async (req, res) => {
 export const getSellerOrders = async (req, res) => {
   try {
     const orders = await Order.find({ sellerId: req.params.sellerId })
+      .sort({ createdAt: -1 }) // latest order first
       .populate("items.productId")
       .populate("offerId");
 
@@ -102,6 +105,7 @@ export const getSellerOrders = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // UPDATE ORDER STATUS
 export const updateOrderStatus = async (req, res) => {

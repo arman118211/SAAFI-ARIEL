@@ -49,8 +49,9 @@ const ProductManager = () => {
     })
   }
 
-  const handleSubmit = async(e) => { k
+  const handleSubmit = async(e) => {
     e.preventDefault()
+    console.log("calling handleSubmit")
     if (editingProduct) {
       console.log("editing form==>",editingProduct)
       try{
@@ -421,7 +422,7 @@ const ProductManager = () => {
             >
               {/* Modal Header */}
               <div className="px-4 md:px-6 py-4 md:py-5 border-b border-gray-200 flex justify-between items-center bg-gradient-to-r from-blue-50 to-red-50">
-                <h2 className="text-lg md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">
+                <h2 className="text-lg md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
                   {editingProduct ? "Edit Product" : "Add New Product"}
                 </h2>
                 <motion.button
@@ -435,9 +436,9 @@ const ProductManager = () => {
 
               {/* Modal Body */}
               <div className="overflow-y-auto flex-1 px-4 md:px-6 py-4 md:py-6">
-                <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5 ">
                   <div>
-                    <label className="block text-xs md:text-sm font-bold text-gray-700 mb-2">
+                    <label className="block text-xs md:text-sm font-bold text-gray-700 mb-2 ">
                       Product Name <span className="text-red-600">*</span>
                     </label>
                     <input

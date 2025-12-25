@@ -5,6 +5,7 @@ import Order from "../models/Order.js";
 // ADD PRODUCT
 export const addProduct = async (req, res) => {
   try {
+    console.log("add product cxalling",req.body)
     const product = new Product(req.body);
     await product.save();
 
