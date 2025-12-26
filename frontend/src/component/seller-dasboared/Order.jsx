@@ -403,18 +403,18 @@ function Order() {
                                   <Package className="w-8 h-8 text-gray-400" />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <h5 className="font-semibold text-gray-900 mb-1 truncate">{item.productId.name}</h5>
+                                  <h5 className="font-semibold text-gray-900 mb-1 truncate">{item.productId?.name}</h5>
                                   <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                                    {item.productId.description}
+                                    {item.productId?.description}
                                   </p>
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3 text-sm">
                                       <span className="font-medium text-blue-600">
-                                        Qty: {item.qty} {item.productId.unit}
+                                        Qty: {item.qty} {item.productId?.unit}
                                       </span>
                                       <span className="text-gray-400">|</span>
                                       <span className="text-gray-600">
-                                        ₹{item.price}/{item.productId.unit}
+                                        ₹{item.price}/{item.productId?.unit}
                                       </span>
                                     </div>
                                   </div>

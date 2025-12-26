@@ -3,27 +3,34 @@
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Plus, Edit2, Trash2, Package, Search, Filter, X, ImageIcon, AlertCircle, TrendingUp } from "lucide-react"
+import { uploadImage } from "../../utils/uploadImage";
+import toast from "react-hot-toast";
+
+
 import axios from "axios"
 
 const ProductManager = () => {
 
   const [products, setProducts] = useState([])
+  const [deletingId, setDeletingId] = useState(null);
+
 
   const getProductData = async () => {
-    try{
+    try {
       const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/products`)
-      console.log("response",res.data)
+      console.log("response", res.data)
       setProducts(res.data.products)
 
-    }catch(err){
-      console.log("something went wrong",err)
+    } catch (err) {
+      // console.log("something went wrong", err)
+      toast.error("Failed to load products");
     }
   }
 
   useEffect(() => {
     getProductData()
 
-  },[])
+  }, [])
 
 
 
@@ -41,6 +48,10 @@ const ProductManager = () => {
     isActive: true,
   })
 
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imageUploading, setImageUploading] = useState(false);
+
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
     setFormData({
@@ -49,59 +60,157 @@ const ProductManager = () => {
     })
   }
 
-  const handleSubmit = async(e) => {
-    e.preventDefault()
-    console.log("calling handleSubmit")
-    if (editingProduct) {
-      console.log("editing form==>",editingProduct)
-      try{
-        const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/products/${editingProduct._id}`,
-          formData
-        )
-        console.log("sucessfully upadted",res)
-        setProducts(products.map((p) => (p._id === editingProduct._id ? { ...formData, _id: editingProduct._id } : p)))
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault()
+  //   console.log("calling handleSubmit")
+  //   if (editingProduct) {
+  //     console.log("editing form==>", editingProduct)
+  //     try {
+  //       const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/products/${editingProduct._id}`,
+  //         formData
+  //       )
+  //       console.log("sucessfully upadted", res)
+  //       setProducts(products.map((p) => (p._id === editingProduct._id ? { ...formData, _id: editingProduct._id } : p)))
 
-      }catch(err){
-        console.log("failed to update the product",err)
+  //     } catch (err) {
+  //       console.log("failed to update the product", err)
+  //     }
+  //   } else {
+  //     console.log("creating new product")
+  //     try {
+  //       const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/products/add`,
+  //         formData
+  //       )
+  //       console.log("added data successfully", res)
+  //       getProductData()
+
+  //     } catch (err) {
+
+  //     }
+  //     setProducts([...products, { ...formData, _id: Date.now().toString() }])
+  //   }
+  //   resetForm()
+  // }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      let imageUrl = formData.imageUrl;
+
+      // 🔥 Upload image if selected
+      if (selectedImage) {
+        setImageUploading(true);
+        imageUrl = await uploadImage(selectedImage, "products");
+        setImageUploading(false);
       }
-    } else {
-      console.log("creating new product")
-      try{
-        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/products/add`,
-          formData
-        )
-        console.log("added data successfully",res)
-        getProductData()
 
-      }catch(err){
+      const payload = {
+        ...formData,
+        imageUrl,
+      };
 
+      if (editingProduct) {
+        await axios.put(
+          `${import.meta.env.VITE_BASE_URL}/products/${editingProduct._id}`,
+          payload
+        );
+         toast.success("Product added successfully");
+      } else {
+        await axios.post(
+          `${import.meta.env.VITE_BASE_URL}/products/add`,
+          payload
+        );
+        toast.success("Product added successfully");
       }
-      setProducts([...products, { ...formData, _id: Date.now().toString() }])
+
+      getProductData();
+      resetForm();
+    } catch (err) {
+      // console.error("Product save failed", err);
+      setImageUploading(false);
+      // alert("Failed to save product");
+      toast.error("Failed to save product");
     }
-    resetForm()
-  }
+  };
+
+
 
   const handleEdit = (product) => {
-    console.log("editing product==>",product)
+    console.log("editing product==>", product)
     setEditingProduct(product)
     setFormData({ ...product })
     setShowForm(true)
   }
 
-  const handleDelete = async (id) => {
-    
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      try {
-        const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/products/${id}`)
-        console.log("successfully deleted",id)
-        getProductData()
-        
-      } catch (error) {
-        console.log("delete falied",error)
-        
-      }
-    }
-  }
+  // const handleDelete = async (id) => {
+
+  //   if (window.confirm("Are you sure you want to delete this product?")) {
+  //     try {
+  //       const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/products/${id}`)
+  //       // console.log("successfully deleted", id)
+  //       toast.success("Product deleted");
+  //       getProductData()
+
+  //     } catch (error) {
+  //       toast.error("Failed to delete product");
+  //       // console.log("delete falied", error)
+
+  //     }
+  //   }
+  // }
+ 
+  const handleDelete = (id) => {
+  toast.custom(
+    (t) => (
+      <div
+        className={`${
+          t.visible ? "animate-enter" : "animate-leave"
+        } bg-white shadow-xl rounded-xl border border-gray-200 p-4 w-[320px]`}
+      >
+        <h3 className="text-sm font-bold text-gray-900 mb-1">
+          Delete Product?
+        </h3>
+        <p className="text-xs text-gray-600 mb-4">
+          This action cannot be undone.
+        </p>
+
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700"
+          >
+            Cancel
+          </button>
+
+          <button
+            onClick={async () => {
+              try {
+                toast.dismiss(t.id);
+                setDeletingId(id);
+
+                await axios.delete(
+                  `${import.meta.env.VITE_BASE_URL}/products/${id}`
+                );
+
+                toast.success("Product deleted successfully");
+                getProductData();
+              } catch (err) {
+                toast.error("Failed to delete product");
+              } finally {
+                setDeletingId(null);
+              }
+            }}
+            className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-red-600 hover:bg-red-700 text-white"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    ),
+    { duration: 5000 }
+  );
+};
 
   const resetForm = () => {
     setFormData({
@@ -150,11 +259,11 @@ const ProductManager = () => {
                 <div className="p-2 md:p-3 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg md:rounded-xl shadow-lg">
                   <Package className="text-white" size={20} />
                 </div>
-                <h1 className="text-2xl md:text-2xl font-black bg-gradient-to-r from-blue-600 via-blue-600 to-red-600 bg-clip-text text-transparent">
+                <h1 className="text-3xl md:text-3xl font-bold text-slate-900">
                   Product Hub
                 </h1>
               </div>
-              <p className="text-gray-600 text-xs md:text-sm font-light">Manage inventory with precision and control</p>
+              <p className="text-slate-600 text-base md:text-lg">Manage inventory with precision and control</p>
             </div>
             <motion.button
               whileHover={{ scale: 1.03 }}
@@ -172,7 +281,7 @@ const ProductManager = () => {
           </div>
         </motion.div>
 
-          
+
 
         <motion.div
           variants={containerVariants}
@@ -244,31 +353,31 @@ const ProductManager = () => {
           </motion.div>
         </motion.div>
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-white rounded-lg md:rounded-xl shadow-md p-3 md:p-4 mb-6 md:mb-8 border border-gray-200 "
-          >
-            <div className="flex flex-col sm:flex-row gap-2 md:gap-4 items-center">
-              <div className="flex-1 w-full relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search by name or category..."
-                  className="w-full pl-9 pr-3 py-2 md:py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 placeholder-gray-500 text-sm transition-all duration-300"
-                />
-              </div>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                className="w-full sm:w-auto px-4 md:px-5 py-2 md:py-2.5 bg-white hover:bg-gray-50 border-2 border-gray-300 rounded-lg md:rounded-xl transition-all flex items-center justify-center gap-2 text-gray-700 font-semibold text-sm"
-              >
-                <Filter size={16} />
-                Filter
-              </motion.button>
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white rounded-lg md:rounded-xl shadow-md p-3 md:p-4 mb-6 md:mb-8 border border-gray-200 "
+        >
+          <div className="flex flex-col sm:flex-row gap-2 md:gap-4 items-center">
+            <div className="flex-1 w-full relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by name or category..."
+                className="w-full pl-9 pr-3 py-2 md:py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 placeholder-gray-500 text-sm transition-all duration-300"
+              />
             </div>
-          </motion.div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              className="w-full sm:w-auto px-4 md:px-5 py-2 md:py-2.5 bg-white hover:bg-gray-50 border-2 border-gray-300 rounded-lg md:rounded-xl transition-all flex items-center justify-center gap-2 text-gray-700 font-semibold text-sm"
+            >
+              <Filter size={16} />
+              Filter
+            </motion.button>
+          </div>
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -352,11 +461,10 @@ const ProductManager = () => {
                       </td>
                       <td className="hidden sm:table-cell px-3 md:px-4 py-3 md:py-3.5">
                         <span
-                          className={`inline-flex px-2.5 py-1 text-xs font-bold rounded-lg ${
-                            product.isActive
+                          className={`inline-flex px-2.5 py-1 text-xs font-bold rounded-lg ${product.isActive
                               ? "bg-emerald-100 text-emerald-700 border border-emerald-300"
                               : "bg-gray-100 text-gray-600 border border-gray-300"
-                          }`}
+                            }`}
                         >
                           {product.isActive ? "✓ Active" : "○ Inactive"}
                         </span>
@@ -372,13 +480,24 @@ const ProductManager = () => {
                             <Edit2 size={14} />
                           </motion.button>
                           <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            onClick={() => handleDelete(product._id)}
-                            className="p-1.5 md:p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all shadow-md"
-                          >
+                          whileHover={{ scale: deletingId === product._id ? 1 : 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          disabled={deletingId === product._id}
+                          onClick={() => handleDelete(product._id)}
+                          className={`p-1.5 md:p-2 rounded-lg transition-all shadow-md
+                            ${
+                              deletingId === product._id
+                                ? "bg-red-400 cursor-not-allowed"
+                                : "bg-red-600 hover:bg-red-700"
+                            } text-white`}
+                        >
+                          {deletingId === product._id ? (
+                            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin block"></span>
+                          ) : (
                             <Trash2 size={14} />
-                          </motion.button>
+                          )}
+                        </motion.button>
+
                         </div>
                       </td>
                     </motion.tr>
@@ -523,7 +642,7 @@ const ProductManager = () => {
                     </div>
                   </div>
 
-                  <div>
+                  {/* <div>
                     <label className="block text-xs md:text-sm font-bold text-gray-700 mb-2">Image URL</label>
                     <input
                       type="url"
@@ -533,7 +652,119 @@ const ProductManager = () => {
                       className="w-full px-3 md:px-4 py-2 md:py-2.5 bg-gray-50 border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 placeholder-gray-500 text-sm"
                       placeholder="https://..."
                     />
+                  </div> */}
+                  {/* <div>
+                    <label className="block text-xs md:text-sm font-bold text-gray-700 mb-2">
+                      Product Image
+                    </label>
+
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => setSelectedImage(e.target.files[0])}
+                      className="w-full px-3 md:px-4 py-2 md:py-2.5 bg-gray-50 border-2 border-gray-300 rounded-lg"
+                    />
+
+                    {imageUploading && (
+                      <p className="text-xs text-blue-600 mt-1">Uploading image...</p>
+                    )}
+
+                    {formData.imageUrl && (
+                      <img
+                        src={formData.imageUrl}
+                        alt="Preview"
+                        className="mt-2 w-20 h-20 object-cover rounded-lg border"
+                      />
+                    )}
+                  </div> */}
+                  <div>
+                    <label className="block text-xs md:text-sm font-bold text-gray-700 mb-2">
+                      Product Image
+                    </label>
+
+                    {/* Upload Box */}
+                    <div className="relative">
+                      <label
+                        htmlFor="product-image"
+                        className="group flex flex-col items-center justify-center w-full h-36 md:h-40
+                        border-2 border-dashed border-gray-300 rounded-xl cursor-pointer
+                        bg-gradient-to-br from-gray-50 to-white
+                        hover:border-blue-500 hover:bg-blue-50/40
+                        transition-all duration-300 shadow-sm"
+                      >
+                        <div className="flex flex-col items-center justify-center text-center px-4">
+                          <ImageIcon
+                            size={36}
+                            className="text-gray-400 group-hover:text-blue-600 transition-colors mb-2"
+                          />
+                          <p className="text-xs md:text-sm font-semibold text-gray-600 group-hover:text-blue-700">
+                            Click to upload image
+                          </p>
+                          <p className="text-[11px] text-gray-400 mt-1">
+                            PNG, JPG up to 5MB
+                          </p>
+                        </div>
+
+                        <input
+                          id="product-image"
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => setSelectedImage(e.target.files[0])}
+                        />
+                      </label>
+                    </div>
+
+                    {/* Uploading state */}
+                    {imageUploading && (
+                      <div className="flex items-center gap-2 mt-2 text-xs text-blue-600 font-semibold">
+                        <span className="w-3 h-3 rounded-full border-2 border-blue-500 border-t-transparent animate-spin"></span>
+                        Uploading image...
+                      </div>
+                    )}
+
+                    {/* Image Preview */}
+                    {(selectedImage || formData.imageUrl) && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="mt-4 flex items-center gap-4 p-3 border border-gray-200 rounded-xl bg-white shadow-md"
+                      >
+                        <img
+                          src={
+                            selectedImage
+                              ? URL.createObjectURL(selectedImage)
+                              : formData.imageUrl
+                          }
+                          alt="Preview"
+                          className="w-20 h-20 rounded-lg object-cover border"
+                        />
+
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold text-gray-800 truncate">
+                            {selectedImage?.name || "Current image"}
+                          </p>
+                          <p className="text-[11px] text-gray-500 mt-1">
+                            Click upload again to replace
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedImage(null);
+                            setFormData({ ...formData, imageUrl: "" });
+                          }}
+                          className="p-2 rounded-lg bg-red-100 hover:bg-red-200 text-red-600 transition"
+                          title="Remove image"
+                        >
+                          <X size={16} />
+                        </button>
+                      </motion.div>
+                    )}
                   </div>
+
+
 
                   <label className="flex items-center gap-2 md:gap-3 cursor-pointer">
                     <input

@@ -74,10 +74,10 @@ export default function SellerList() {
         className="mb-12"
       >
         <div className="flex items-center gap-3 mb-4">
-          <Users className="w-10 h-10 text-red-600" />
-          <h1 className="text-4xl font-bold text-gray-900">Seller Management</h1>
+          <Users className="w-8 h-8 text-blue-700" />
+          <h1 className="text-3xl font-bold text-gray-900">Seller Management</h1>
         </div>
-        <p className="text-blue-700 text-lg">Manage and track all your sellers and their orders</p>
+        <p className="text-blue-700 text-md">Manage and track all your sellers and their orders</p>
       </motion.div>
 
       {/* Search Bar */}

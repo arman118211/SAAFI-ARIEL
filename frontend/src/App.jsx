@@ -37,6 +37,7 @@ import Order from './component/seller-dasboared/Order'
 import ProductPage from './component/admin-dashboard/ProductPage'
 import SellerDetail from './component/admin-dashboard/SellerDetails'
 import OfferDetailPage from './component/admin-dashboard/OfferDetailPage'
+import ImageUpload from './component/ImageUpload'
 
 
 function App() {
@@ -65,6 +66,7 @@ function App() {
         <Route path="/product" element={<ProductPage/>} />
         <Route path="/seller/:id" element={<SellerDetail />} />
         <Route path="/offer/:id" element={<OfferDetailPage />} />
+        <Route path="/upload" element={<ImageUpload />} />
 
 
 

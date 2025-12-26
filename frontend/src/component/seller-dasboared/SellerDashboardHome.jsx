@@ -147,13 +147,13 @@ const SellerDashboardHome = () => {
     totalRevenue: orders.reduce((sum, order) => sum + order.totalAmount, 0),
     litersSold: orders.reduce((sum, order) => {
       const liquidItems = order.items.filter(item => 
-        item.productId.unit === 'liter' || item.productId.unit === 'liters'
+        item.productId?.unit === 'liter' || item.productId?.unit === 'liters'
       )
       return sum + liquidItems.reduce((itemSum, item) => itemSum + item.qty, 0)
     }, 0),
     activeOrders: orders.filter((order) => order.status === "pending").length,
     qualityAlerts: orders.filter((order) => 
-      order.items.some(item => item.productId.stock < 10)
+      order.items.some(item => item.productId?.stock < 10)
     ).length,
   }
 
@@ -166,14 +166,33 @@ const SellerDashboardHome = () => {
     sales: order.totalAmount,
     orders: order.totalQty
   }))
-
+  console.log("orders data", orders)
   // Generate inventory data from products in orders
-  const INVENTORY_DATA = Array.from(new Set(
-    orders.flatMap(order => order.items.map(item => item.productId))
-  )).map(product => ({
-    name: product.name.length > 12 ? product.name.substring(0, 12) + '...' : product.name,
-    value: product.stock
-  })).slice(0, 5) // Take top 5 products
+  // const INVENTORY_DATA = Array.from(new Set(
+  //   orders.flatMap(order => order.items.map(item => item.productId))
+  // )).map(product => ({
+  //   name: product.name?.length > 12  ? product?.name?.substring(0, 12) + '...' : product?.name,
+  //   value: product?.stock
+  // })).slice(0, 5) // Take top 5 products
+
+  const INVENTORY_DATA = Array.from(
+    new Set(
+      orders.flatMap(order =>
+        order.items
+          .map(item => item.productId)
+          .filter(Boolean) // ✅ removes null / undefined
+      )
+    )
+  )
+  .map(product => ({
+    name:
+      product?.name?.length > 12
+        ? product.name.substring(0, 12) + "..."
+        : product?.name,
+    value: product?.stock
+  }))
+  .slice(0, 5);
+
 
   // Recent transactions data
   const RECENT_ORDERS = orders.slice(0, 5).map(order => ({

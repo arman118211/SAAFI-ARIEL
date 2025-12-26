@@ -3,21 +3,26 @@
 import { useState, useMemo, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
-import { Search, Filter, Plus, Trophy, Clock, Users, TrendingUp, ChevronRight, Award } from "lucide-react"
+import { Search, Filter, Plus, Trophy, Clock, Users, TrendingUp, ChevronRight, Award, TicketPercent } from "lucide-react"
 import CreateOfferForm from "./OfferFormPage"
 import axios from "axios"
 import { useDispatch } from "react-redux";
-import {setOffers as setOffer } from "../../redux/slices/offersSlice";
+import {setOffers as setOffer, addOffer } from "../../redux/slices/offersSlice";
+import toast from "react-hot-toast"
 
 const AdminOfferPage = () => {
   const dispatch = useDispatch();
   const [offers, setOffers] = useState([])
 
   const getAllOffer = async () =>{
-    const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/offers/getAllOffersForAmin`)
-    console.log(res.data)
+   try{const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/offers/getAllOffersForAmin`)
+    // console.log(res.data)
     dispatch(setOffer(res.data.data))
-    setOffers(res.data.data)
+    setOffers(res.data.data)}
+    catch(err){
+      toast.error("Failed to fetch offers")
+      // console.log(err)
+    }
   }
   useEffect(() => {
     getAllOffer()
@@ -63,11 +68,15 @@ const AdminOfferPage = () => {
     }
     try{
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/offers`,newOffer)
-      console.log("craeted successfully ,",response)
-      setOffers([newOffer, ...offers])
+      // console.log("craeted successfully ,",response)
+      toast.success("Offer created successfully")
+      // console.log("new offewr",newOffer,response.data.offer)
+      dispatch(addOffer(response.data.offer))
+      setOffers([response.data.offer, ...offers])
 
     }catch(err){
-      console.log("offer creation failed please try again")
+      // console.log("offer creation failed please try again",err)
+      toast.error("Offer creation failed please try again")
     }
     
   }
@@ -78,7 +87,8 @@ const AdminOfferPage = () => {
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
         <div className="flex justify-between items-start md:items-center mb-8 flex-col md:flex-row gap-4">
           <div>
-            <h1 className="text-3xl md:text-5xl font-bold text-slate-900 mb-2">Offers Management</h1>
+              
+            <h1 className="text-3xl md:text-3xl font-bold text-slate-900 mb-2">Offers Management</h1>
             <p className="text-slate-600 text-base md:text-lg">Manage bulk purchase campaigns with confidence</p>
           </div>
           <motion.button
