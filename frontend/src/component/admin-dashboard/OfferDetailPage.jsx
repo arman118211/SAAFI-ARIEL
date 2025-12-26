@@ -184,7 +184,7 @@ const OfferDetailPage = () => {
    useEffect(() => {
     const getAllOffer = async () => {
       const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/offers/getAllOffersForAmin`
+        `${import.meta.env.VITE_BASE_URL}/offers/getAllOffersForAmin`
       )
       dispatch(setOffers(res.data.data))
       setmockOffers(res.data.data)
@@ -235,7 +235,7 @@ if (!offer) {
   const handleSelectWinner = async (seller) => {
     console.log("winner seller data ==>",seller)
     try{
-      const response = await axios.patch(`${import.meta.env.VITE_BASE_URL}/api/offers/winner/${offer._id}`,{
+      const response = await axios.patch(`${import.meta.env.VITE_BASE_URL}/offers/winner/${offer._id}`,{
         winnerId:seller.sellerId._id
       })
       console.log("winner declare successfully")

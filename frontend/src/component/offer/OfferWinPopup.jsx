@@ -12,7 +12,7 @@ const OfferWinPopup = () => {
   // Sample data - replace with your actual API response
   const getWinnerNotification = async () => {
     try{
-      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/offers/winner-notification/${seller._id}`)
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/offers/winner-notification/${seller._id}`)
       console.log("notification response -->", res.data)
       setApiResponse(res.data)
     }catch(err){
@@ -54,7 +54,7 @@ useEffect(() => {
         setAnimate(false);
 
         await axios.patch(
-        `${import.meta.env.VITE_BASE_URL}/api/offers/mark-win-seen`,
+        `${import.meta.env.VITE_BASE_URL}/offers/mark-win-seen`,
         { offerId: apiResponse?.offer?._id,
           sellerId: seller._id
          },

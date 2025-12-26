@@ -11,7 +11,7 @@ const ProductManager = () => {
 
   const getProductData = async () => {
     try{
-      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/products`)
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/products`)
       console.log("response",res.data)
       setProducts(res.data.products)
 
@@ -55,7 +55,7 @@ const ProductManager = () => {
     if (editingProduct) {
       console.log("editing form==>",editingProduct)
       try{
-        const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/api/products/${editingProduct._id}`,
+        const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/products/${editingProduct._id}`,
           formData
         )
         console.log("sucessfully upadted",res)
@@ -67,7 +67,7 @@ const ProductManager = () => {
     } else {
       console.log("creating new product")
       try{
-        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/products/add`,
+        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/products/add`,
           formData
         )
         console.log("added data successfully",res)
@@ -92,7 +92,7 @@ const ProductManager = () => {
     
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/products/${id}`)
+        const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/products/${id}`)
         console.log("successfully deleted",id)
         getProductData()
         

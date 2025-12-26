@@ -13,7 +13,7 @@ export const loginSeller = createAsyncThunk(
   "auth/loginSeller",
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/seller/auth/login`, {
+      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/seller/auth/login`, {
         email,
         password,
       });
@@ -38,7 +38,7 @@ export const updateSellerProfile = createAsyncThunk(
       } = getState();
 
       const res = await axios.put(
-        `${import.meta.env.VITE_BASE_URL}/api/seller/auth/update`,
+        `${import.meta.env.VITE_BASE_URL}/seller/auth/update`,
         { name, address, currentPassword, newPassword,id },
         {
           headers: {

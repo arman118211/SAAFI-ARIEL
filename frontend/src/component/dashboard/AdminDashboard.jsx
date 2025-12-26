@@ -420,7 +420,7 @@ export default function AdminDashboard() {
 
     const getAllStates = async () => {
       try{
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/products/allStates`)
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/products/allStates`)
         setStates(res.data.states)
       }catch(err){
         console.log("something went wrong",err)
@@ -429,7 +429,7 @@ export default function AdminDashboard() {
 
     const getSalesData = async () => {
       try{
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/order/getSalesGraphData`)
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/order/getSalesGraphData`)
         // console.log("salesdata",res)
         setSalesData(res.data.salesData)
       }catch(err){
@@ -439,7 +439,7 @@ export default function AdminDashboard() {
 
     const getInventroryData = async () => {
       try{
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/products/getInventoryGraphData`)
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/products/getInventoryGraphData`)
         // console.log("salesdata",res)
         setInventoryData(res.data.inventoryData)
       }catch(err){
@@ -449,7 +449,7 @@ export default function AdminDashboard() {
 
     const getRecentData = async () => {
       try{
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/order/getFormateOrder`)
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/order/getFormateOrder`)
         // console.log("order",res)
         setRecentData(res.data.orders)
       }catch(err){

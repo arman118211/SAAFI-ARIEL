@@ -14,7 +14,7 @@ export default function OfferDetailsPage() {
     const getData = async () => {
     try {
       const res = await axios.get(
-            `${import.meta.env.VITE_BASE_URL}/api/offers/activeOffer`
+            `${import.meta.env.VITE_BASE_URL}/offers/activeOffer`
           );
           setOffers(res.data.offers || []);
         } catch (error) {

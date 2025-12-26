@@ -61,7 +61,7 @@ const Login = () => {
       setIsLoading(true)
 
       const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/seller/auth/register`,
+        `${import.meta.env.VITE_BASE_URL}/seller/auth/register`,
         signupData
       )
 

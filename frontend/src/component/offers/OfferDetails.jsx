@@ -141,7 +141,7 @@ export default function OfferDetails({ offer, onAddToCart }) {
   // API call to create order
   const createOrder = async (orderData) => {
     console.log("create order called")
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/order/create`, orderData, {
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/order/create`, orderData, {
       headers: {
         'Content-Type': 'application/json',
       }

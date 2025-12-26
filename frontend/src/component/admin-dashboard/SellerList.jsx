@@ -14,7 +14,7 @@ export default function SellerList() {
 
   const getSellerData = async () => {
     try{
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/seller/auth/getAllSeller`)
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/seller/auth/getAllSeller`)
         console.log("response data ==<",res.data.data)
         setSellerData(res.data.data)
         dispatch(setSellers(res.data.data));

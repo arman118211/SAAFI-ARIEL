@@ -139,7 +139,7 @@ function Order() {
 
   const getorder = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/order/seller/${seller._id}`)
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/order/seller/${seller._id}`)
       console.log("response", response.data)
       setOrders(response.data)
       setLoading(false)

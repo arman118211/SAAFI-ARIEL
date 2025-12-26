@@ -14,7 +14,7 @@ const AdminOfferPage = () => {
   const [offers, setOffers] = useState([])
 
   const getAllOffer = async () =>{
-    const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/offers/getAllOffersForAmin`)
+    const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/offers/getAllOffersForAmin`)
     console.log(res.data)
     dispatch(setOffer(res.data.data))
     setOffers(res.data.data)
@@ -62,7 +62,7 @@ const AdminOfferPage = () => {
       updatedAt: new Date().toISOString(),
     }
     try{
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/offers`,newOffer)
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/offers`,newOffer)
       console.log("craeted successfully ,",response)
       setOffers([newOffer, ...offers])
 

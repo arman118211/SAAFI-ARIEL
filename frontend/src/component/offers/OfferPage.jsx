@@ -10,7 +10,7 @@ export default function OfferPage() {
   const [offer, setOffer] = useState()
 
   const getSingleData = async () => {
-    const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/offers/${id}`)
+    const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/offers/${id}`)
     console.log("single data=>",res.data.offer)
     setOffer(res.data.offer)
   }

@@ -26,7 +26,7 @@ const AdminOrdersPage = () => {
 
   const getAllOrder = async () => {
     try{
-      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/order/all`)
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/order/all`)
       setOrders(res.data)
 
     }catch(err){
@@ -43,7 +43,7 @@ const AdminOrdersPage = () => {
   const updateOrderStatus = async (orderId, newStatus) => {
     console.log("orderId",orderId,"newStatus",newStatus)
     try{
-      const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/api/order/status/${orderId}`,{
+      const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/order/status/${orderId}`,{
         status:newStatus
       })
       console.log("updated successfully",res)

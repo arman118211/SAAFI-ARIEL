@@ -11,7 +11,7 @@ const SellerDashboardHome = () => {
 
   const getOrders = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/order/seller/${seller._id}`)
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/order/seller/${seller._id}`)
       setOrders(response.data)
     } catch (err) {
       console.log("Error fetching orders, using mock data", err)

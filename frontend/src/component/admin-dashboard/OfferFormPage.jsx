@@ -27,7 +27,7 @@ const CreateOfferForm = ({ onClose, onSubmit }) => {
       try {
         setLoading(true)
         // Replace with your actual API endpoint
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/products`)
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/products`)
         console.log("product data -->",response)
         const data = response.data
         if (data.success) {
