@@ -1,4 +1,5 @@
 import Offer from "../models/Offer.js";
+import mongoose from "mongoose";
 import Product from "../models/Product.js";
 import Seller from "../models/Seller.js";
 
@@ -296,6 +297,43 @@ export const markWinSeen = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Server error"
+    });
+  }
+};
+
+//winner details of the user 
+export const getWinningOffersForSeller = async (req, res) => {
+  try {
+    const sellerId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(sellerId)) {
+      return res.status(400).json({ message: "Invalid seller ID" });
+    }
+
+    const winningOffers = await Offer.find({ winner: sellerId })
+      .select(
+        "title description startDate endDate status products createdAt"
+      )
+      .populate({
+        path: "products.productId",
+        select: "name price imageUrl",
+      })
+      .populate({
+        path: "winner",
+        select: "name email",
+      })
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: winningOffers.length,
+      offers: winningOffers,
+    });
+  } catch (error) {
+    console.error("Error fetching winning offers:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch winning offers",
     });
   }
 };

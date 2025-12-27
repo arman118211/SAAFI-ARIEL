@@ -4,6 +4,41 @@ import { useSelector } from "react-redux"
 import { DollarSign, Droplets, Package, AlertCircle, Filter, Download } from "lucide-react"
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip } from "recharts"
 
+const SellerStatShimmer = () => (
+  <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm relative overflow-hidden">
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide" />
+    <div className="flex items-center justify-between">
+      <div className="space-y-2">
+        <div className="h-4 w-24 bg-gray-200 rounded"></div>
+        <div className="h-7 w-20 bg-gray-300 rounded"></div>
+        <div className="h-3 w-16 bg-gray-200 rounded"></div>
+      </div>
+      <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
+    </div>
+  </div>
+);
+
+
+const SellerChartShimmer = () => (
+  <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm h-80 relative overflow-hidden">
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide" />
+    <div className="h-4 w-40 bg-gray-200 rounded mb-4"></div>
+    <div className="h-full bg-gray-100 rounded-lg"></div>
+  </div>
+);
+
+
+const SellerTableRowShimmer = () => (
+  <tr className="animate-pulse">
+    <td className="px-6 py-4"><div className="h-3 w-24 bg-gray-200 rounded"></div></td>
+    <td className="px-6 py-4"><div className="h-3 w-32 bg-gray-200 rounded"></div></td>
+    <td className="px-6 py-4"><div className="h-3 w-28 bg-gray-200 rounded"></div></td>
+    <td className="px-6 py-4"><div className="h-5 w-20 bg-gray-200 rounded-full"></div></td>
+    <td className="px-6 py-4 text-right"><div className="h-3 w-20 bg-gray-200 rounded ml-auto"></div></td>
+  </tr>
+);
+
+
 const SellerDashboardHome = () => {
   const { seller, token } = useSelector((state) => state.auth)
   const [orders, setOrders] = useState([])
@@ -229,135 +264,156 @@ const SellerDashboardHome = () => {
     </div>
   )
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-gray-600 font-medium">Loading dashboard...</p>
-        </div>
-      </div>
-    )
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+  //       <div className="flex flex-col items-center gap-4">
+  //         <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+  //         <p className="text-gray-600 font-medium">Loading dashboard...</p>
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className="space-y-6">
       {/* Top Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="My Revenue"
-          value={`₹${stats.totalRevenue.toLocaleString()}`}
-          trend="+20.1%"
-          trendUp={true}
-          icon={DollarSign}
-          color="text-blue-600"
-        />
-        <StatCard
-          title="Liters Sold"
-          value={`${stats.litersSold.toLocaleString()} L`}
-          trend="+12.5%"
-          trendUp={true}
-          icon={Droplets}
-          color="text-blue-500"
-        />
-        <StatCard
-          title="Active Orders"
-          value={stats.activeOrders.toString()}
-          trend="-2.4%"
-          trendUp={false}
-          icon={Package}
-          color="text-indigo-600"
-        />
-        <StatCard
-          title="Quality Alerts"
-          value={stats.qualityAlerts.toString()}
-          trend="Action Req"
-          trendUp={false}
-          icon={AlertCircle}
-          color="text-red-600"
-        />
+        {loading?(
+          Array.from({ length: 4 }).map((_, i) => (
+            <SellerStatShimmer key={i} />
+          ))
+        ):(
+        <>
+          <StatCard
+            title="My Revenue"
+            value={`₹${stats.totalRevenue.toLocaleString()}`}
+            trend="+20.1%"
+            trendUp={true}
+            icon={DollarSign}
+            color="text-blue-600"
+          />
+          <StatCard
+            title="Liters Sold"
+            value={`${stats.litersSold.toLocaleString()} L`}
+            trend="+12.5%"
+            trendUp={true}
+            icon={Droplets}
+            color="text-blue-500"
+          />
+          <StatCard
+            title="Active Orders"
+            value={stats.activeOrders.toString()}
+            trend="-2.4%"
+            trendUp={false}
+            icon={Package}
+            color="text-indigo-600"
+          />
+          <StatCard
+            title="Quality Alerts"
+            value={stats.qualityAlerts.toString()}
+            trend="Action Req"
+            trendUp={false}
+            icon={AlertCircle}
+            color="text-red-600"
+          />
+        </>)
+        }
       </div>
 
       {/* Main Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <ChartCard title="Sales Velocity (24h)">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={SALES_DATA}>
-                <defs>
-                  <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#2563eb" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
-                <XAxis dataKey="time" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis
-                  stroke="#9ca3af"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(value) => `₹${value}`}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#ffffff",
-                    borderColor: "#e5e7eb",
-                    color: "#111827",
-                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                  }}
-                  itemStyle={{ color: "#111827" }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="sales"
-                  stroke="#2563eb"
-                  strokeWidth={2}
-                  fillOpacity={1}
-                  fill="url(#colorSales)"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="orders"
-                  stroke="#ef4444"
-                  strokeWidth={2}
-                  fill="transparent"
-                  strokeDasharray="5 5"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </ChartCard>
-        </div>
+        {loading?
+        (
+          <>
+            <div className="lg:col-span-2">
+              <SellerChartShimmer />
+            </div>
+            <div className="lg:col-span-1">
+              <SellerChartShimmer />
+            </div>
+          </>
+        ) :(<>
+            <div className="lg:col-span-2">
+            <ChartCard title="Sales Velocity (24h)">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={SALES_DATA}>
+                  <defs>
+                    <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#2563eb" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+                  <XAxis dataKey="time" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis
+                    stroke="#9ca3af"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `₹${value}`}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#ffffff",
+                      borderColor: "#e5e7eb",
+                      color: "#111827",
+                      boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                    }}
+                    itemStyle={{ color: "#111827" }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="sales"
+                    stroke="#2563eb"
+                    strokeWidth={2}
+                    fillOpacity={1}
+                    fill="url(#colorSales)"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="orders"
+                    stroke="#ef4444"
+                    strokeWidth={2}
+                    fill="transparent"
+                    strokeDasharray="5 5"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </ChartCard>
+          </div>
 
-        <div className="lg:col-span-1">
-          <ChartCard title="Inventory Levels">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={INVENTORY_DATA} layout="vertical" margin={{ left: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" horizontal={true} vertical={false} />
-                <XAxis type="number" hide />
-                <YAxis
-                  dataKey="name"
-                  type="category"
-                  stroke="#6b7280"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                  width={60}
-                />
-                <Tooltip
-                  cursor={{ fill: "#f3f4f6" }}
-                  contentStyle={{
-                    backgroundColor: "#ffffff",
-                    borderColor: "#e5e7eb",
-                    color: "#111827",
-                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                  }}
-                />
-                <Bar dataKey="value" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={20} />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartCard>
-        </div>
+          <div className="lg:col-span-1">
+            <ChartCard title="Inventory Levels">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={INVENTORY_DATA} layout="vertical" margin={{ left: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" horizontal={true} vertical={false} />
+                  <XAxis type="number" hide />
+                  <YAxis
+                    dataKey="name"
+                    type="category"
+                    stroke="#6b7280"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    width={60}
+                  />
+                  <Tooltip
+                    cursor={{ fill: "#f3f4f6" }}
+                    contentStyle={{
+                      backgroundColor: "#ffffff",
+                      borderColor: "#e5e7eb",
+                      color: "#111827",
+                      boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                    }}
+                  />
+                  <Bar dataKey="value" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={20} />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartCard>
+          </div>
+        </>)
+        }
       </div>
 
       {/* Recent Orders Table */}
@@ -385,7 +441,12 @@ const SellerDashboardHome = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {RECENT_ORDERS.map((order) => (
+              {loading?(
+                Array.from({ length: 5 }).map((_, i) => (
+                  <SellerTableRowShimmer key={i} />
+                ))
+              ) :
+              RECENT_ORDERS.map((order) => (
                 <tr key={order.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 font-mono text-gray-600">{order.id}</td>
                   <td className="px-6 py-4 text-gray-900 font-medium">{order.customer}</td>

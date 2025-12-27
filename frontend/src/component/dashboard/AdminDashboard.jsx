@@ -162,121 +162,140 @@ const ChartCard = ({ title, children, height = "h-64" }) => (
   </div>
 )
 
-const DashboardHome = ({states, salesData, inventoryData, recentData}) => (
+const DashboardHome = ({states, salesData, inventoryData, recentData, loading}) => (
+  
   <div className="space-y-6 p-4">
     {/* Top Stats Row */}
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <StatCard
-        title="Total Revenue"
-        value={`₹ ${states.totalRevenue}`}
-        trendUp={true}
-        icon={DollarSign}
-        color="text-blue-600"
-      />
-      <StatCard
-        title="Total Seller"
-        value={states.totalSellers}
-        trendUp={true}
-        icon={Droplets}
-        color="text-blue-500"
-      />
-      <StatCard
-        title="Deliverd Orders"
-        value={states.deliveredOrders}
-        trendUp={false}
-        icon={Package}
-        color="text-indigo-600"
-      />
-      <StatCard
-        title="Pending Orders"
-        value={states.pendingAndConfirmedOrders}
-        trend="Action Req"
-        trendUp={false}
-        icon={AlertCircle}
-        color="text-red-600"
-      />
+      {loading? (
+        Array.from({ length: 4 }).map((_, i) => <StatCardShimmer key={i} />)
+      ) :(
+      <>
+        <StatCard
+          title="Total Revenue"
+          value={`₹ ${states.totalRevenue}`}
+          trendUp={true}
+          icon={DollarSign}
+          color="text-blue-600"
+        />
+        <StatCard
+          title="Total Seller"
+          value={states.totalSellers}
+          trendUp={true}
+          icon={Droplets}
+          color="text-blue-500"
+        />
+        <StatCard
+          title="Deliverd Orders"
+          value={states.deliveredOrders}
+          trendUp={false}
+          icon={Package}
+          color="text-indigo-600"
+        />
+        <StatCard
+          title="Pending Orders"
+          value={states.pendingAndConfirmedOrders}
+          trend="Action Req"
+          trendUp={false}
+          icon={AlertCircle}
+          color="text-red-600"
+        />
+      </>
+      )
+     } 
     </div>
 
     {/* Main Charts Row */}
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div className="lg:col-span-2">
-        <ChartCard title="Sales Velocity (24h)">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={salesData}>
-              <defs>
-                <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#2563eb" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
-              <XAxis dataKey="time" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
-              <YAxis
-                stroke="#9ca3af"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) => `$${value}`}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#ffffff",
-                  borderColor: "#e5e7eb",
-                  color: "#111827",
-                  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                }}
-                itemStyle={{ color: "#111827" }}
-              />
-              <Area
-                type="monotone"
-                dataKey="sales"
-                stroke="#2563eb"
-                strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#colorSales)"
-              />
-              <Area
-                type="monotone"
-                dataKey="orders"
-                stroke="#ef4444"
-                strokeWidth={2}
-                fill="transparent"
-                strokeDasharray="5 5"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartCard>
-      </div>
+      {loading?
+      (
+        <>
+          <div className="lg:col-span-2"><ChartShimmer /></div>
+          <div className="lg:col-span-1"><ChartShimmer /></div>
+        </>
+      ) :(
+      <>
+        <div className="lg:col-span-2">
+          <ChartCard title="Sales Velocity (24h)">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={salesData}>
+                <defs>
+                  <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#2563eb" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+                <XAxis dataKey="time" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis
+                  stroke="#9ca3af"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(value) => `$${value}`}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#ffffff",
+                    borderColor: "#e5e7eb",
+                    color: "#111827",
+                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                  }}
+                  itemStyle={{ color: "#111827" }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="sales"
+                  stroke="#2563eb"
+                  strokeWidth={2}
+                  fillOpacity={1}
+                  fill="url(#colorSales)"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="orders"
+                  stroke="#ef4444"
+                  strokeWidth={2}
+                  fill="transparent"
+                  strokeDasharray="5 5"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </ChartCard>
+        </div>
 
-      <div className="lg:col-span-1">
-        <ChartCard title="Inventory Levels">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={inventoryData} layout="vertical" margin={{ left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" horizontal={true} vertical={false} />
-              <XAxis type="number" hide />
-              <YAxis
-                dataKey="name"
-                type="category"
-                stroke="#6b7280"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                width={60}
-              />
-              <Tooltip
-                cursor={{ fill: "#f3f4f6" }}
-                contentStyle={{
-                  backgroundColor: "#ffffff",
-                  borderColor: "#e5e7eb",
-                  color: "#111827",
-                  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                }}
-              />
-              <Bar dataKey="value" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={20} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-      </div>
+        <div className="lg:col-span-1">
+          <ChartCard title="Inventory Levels">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={inventoryData} layout="vertical" margin={{ left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" horizontal={true} vertical={false} />
+                <XAxis type="number" hide />
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  stroke="#6b7280"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                  width={60}
+                />
+                <Tooltip
+                  cursor={{ fill: "#f3f4f6" }}
+                  contentStyle={{
+                    backgroundColor: "#ffffff",
+                    borderColor: "#e5e7eb",
+                    color: "#111827",
+                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                  }}
+                />
+                <Bar dataKey="value" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={20} />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+        </div>
+      </>
+      )
+      }
     </div>
 
     {/* Recent Orders Table */}
@@ -304,7 +323,10 @@ const DashboardHome = ({states, salesData, inventoryData, recentData}) => (
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {recentData.map((order) => (
+            {loading?
+            (
+              Array.from({ length: 5 }).map((_, i) => <TableRowShimmer key={i} />)
+            ) :(recentData.map((order) => (
               <tr key={order.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4 font-mono text-gray-600">{order.id}</td>
                 <td className="px-6 py-4 text-gray-900 font-medium">{order.customer}</td>
@@ -330,7 +352,7 @@ const DashboardHome = ({states, salesData, inventoryData, recentData}) => (
                 </td>
                 <td className="px-6 py-4 text-right font-mono text-gray-900">{order.amount}</td>
               </tr>
-            ))}
+            )))}
           </tbody>
         </table>
       </div>
@@ -404,6 +426,38 @@ const OffersPage = () => (
 
 // --- Main Layout ---
 
+const StatCardShimmer = () => (
+  <div className="bg-white border border-gray-200 rounded-xl p-5 relative overflow-hidden">
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide" />
+    <div className="flex justify-between mb-4">
+      <div className="w-9 h-9 bg-gray-200 rounded-lg" />
+      <div className="w-16 h-5 bg-gray-200 rounded-full" />
+    </div>
+    <div className="h-3 w-28 bg-gray-200 rounded mb-2" />
+    <div className="h-7 w-24 bg-gray-300 rounded" />
+  </div>
+);
+
+const ChartShimmer = () => (
+  <div className="bg-white border border-gray-200 rounded-xl p-6 h-[320px] relative overflow-hidden">
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide" />
+    <div className="h-4 w-40 bg-gray-200 rounded mb-4" />
+    <div className="h-full bg-gray-100 rounded-lg" />
+  </div>
+);
+
+const TableRowShimmer = () => (
+  <tr className="animate-pulse">
+    <td className="px-6 py-4"><div className="h-3 w-24 bg-gray-200 rounded" /></td>
+    <td className="px-6 py-4"><div className="h-3 w-32 bg-gray-200 rounded" /></td>
+    <td className="px-6 py-4"><div className="h-3 w-28 bg-gray-200 rounded" /></td>
+    <td className="px-6 py-4"><div className="h-5 w-20 bg-gray-200 rounded-full" /></td>
+    <td className="px-6 py-4 text-right"><div className="h-3 w-20 bg-gray-200 rounded ml-auto" /></td>
+  </tr>
+);
+
+
+
 export default function AdminDashboard() {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState(
@@ -415,6 +469,8 @@ export default function AdminDashboard() {
   const [salesdata,setSalesData] = useState([])
   const [inventoryData,setInventoryData] = useState([])
   const [recentData,setRecentData] = useState([])
+  const [dashboardLoading, setDashboardLoading] = useState(true);
+
   const seller = useSelector((state) => state.auth.seller);
   // console.log("seller--->",seller)
 
@@ -458,12 +514,24 @@ export default function AdminDashboard() {
     }
 
 
-    useEffect(() => {
-      getAllStates()
-      getSalesData()
-      getInventroryData()
-      getRecentData()
-    },[])
+   useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        setDashboardLoading(true);
+        await Promise.all([
+          getAllStates(),
+          getSalesData(),
+          getInventroryData(),
+          getRecentData(),
+        ]);
+      } finally {
+        setDashboardLoading(false);
+      }
+    };
+
+    loadDashboardData();
+  }, []);
+
 
 
   const menuItems = [
@@ -621,7 +689,7 @@ export default function AdminDashboard() {
                 transition={{ duration: 0.2 }}
               >
                 {activeTab === "dashboard" ? (
-                  <DashboardHome states = {states} salesData = {salesdata} recentData = {recentData} inventoryData = {inventoryData}  />
+                  <DashboardHome states = {states} salesData = {salesdata} recentData = {recentData} inventoryData = {inventoryData} loading={dashboardLoading} />
                 ) :activeTab==="products"? <ProductPage/>
                 : activeTab === "orders" ? <AdminOrdersPage/>
                 : activeTab === 'customers'? <SellerList/>:

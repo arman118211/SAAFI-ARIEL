@@ -1,6 +1,7 @@
 import Product from "../models/Product.js";
 import Seller from "../models/Seller.js";
 import Order from "../models/Order.js";
+import { deleteFromStorage } from "../controllers/uploadController.js";
 
 // ADD PRODUCT
 export const addProduct = async (req, res) => {
@@ -64,18 +65,51 @@ export const updateProduct = async (req, res) => {
 };
 
 // DELETE PRODUCT
+// export const deleteProduct = async (req, res) => {
+//   try {
+//     const product = await Product.findByIdAndDelete(req.params.id);
+
+//     if (!product)
+//       return res.status(404).json({ success: false, message: "Product not found" });
+
+//     res.status(200).json({ success: true, message: "Deleted" });
+//   } catch (error) {
+//     res.status(500).json({ success: false, error: error.message });
+//   }
+// };
+
 export const deleteProduct = async (req, res) => {
-  try {
-    const product = await Product.findByIdAndDelete(req.params.id);
+    try {
+      // 1️⃣ Find product first
+      const product = await Product.findById(req.params.id);
 
-    if (!product)
-      return res.status(404).json({ success: false, message: "Product not found" });
+      if (!product) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Product not found" });
+      }
 
-    res.status(200).json({ success: true, message: "Deleted" });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-};
+      // 2️⃣ Delete image from Firebase Storage (if exists)
+      if (product.imageUrl) {
+        await deleteFromStorage(product.imageUrl);
+      }
+
+      // 3️⃣ Delete product from DB
+      await product.deleteOne();
+
+      res.status(200).json({
+        success: true,
+        message: "Product and image deleted successfully",
+      });
+    } catch (error) {
+      console.error("Delete product error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to delete product",
+      });
+    }
+  };
+
 
 // TOGGLE ACTIVE/INACTIVE
 export const toggleActive = async (req, res) => {

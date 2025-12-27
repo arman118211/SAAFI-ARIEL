@@ -131,6 +131,46 @@ const MOCK_ORDERS = [
   },
 ]
 
+const OrderStatShimmer = () => (
+  <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-gray-300 relative overflow-hidden">
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide" />
+    <div className="flex items-center justify-between">
+      <div>
+        <div className="h-4 w-24 bg-gray-200 rounded mb-2"></div>
+        <div className="h-8 w-20 bg-gray-300 rounded"></div>
+      </div>
+      <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
+    </div>
+  </div>
+);
+
+const OrderCardShimmer = () => (
+  <div className="bg-white rounded-xl shadow-lg overflow-hidden relative">
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide" />
+
+    <div className="p-6 border-b border-gray-200">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
+          <div className="space-y-2">
+            <div className="h-5 w-40 bg-gray-300 rounded"></div>
+            <div className="h-4 w-56 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="text-right space-y-2">
+            <div className="h-4 w-24 bg-gray-200 rounded ml-auto"></div>
+            <div className="h-6 w-32 bg-gray-300 rounded ml-auto"></div>
+          </div>
+          <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+
 function Order() {
   const { seller, token } = useSelector((state) => state.auth)
   const [orders, setOrders] = useState([])
@@ -180,94 +220,102 @@ function Order() {
     setExpandedOrder(expandedOrder === orderId ? null : orderId)
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-gray-600 font-medium">Loading orders...</p>
-        </div>
-      </div>
-    )
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+  //       <div className="flex flex-col items-center gap-4">
+  //         <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+  //         <p className="text-gray-600 font-medium">Loading orders...</p>
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className="min-h-screen p-4 md:p-8">
       <div className=" mx-auto">
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-600"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">Total Orders</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.totalOrders}</p>
+          {loading? (
+            Array.from({ length: 4 }).map((_, i) => <OrderStatShimmer key={i} />)
+          ) :(
+           <>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-600"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 mb-1">Total Orders</p>
+                  <p className="text-3xl font-bold text-gray-900">{stats.totalOrders}</p>
+                </div>
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <ShoppingCart className="w-6 h-6 text-blue-600" />
+                </div>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <ShoppingCart className="w-6 h-6 text-blue-600" />
+            </motion.div>
+        
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-600"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 mb-1">Total Revenue</p>
+                  <p className="text-3xl font-bold text-gray-900">₹{stats.totalRevenue.toLocaleString()}</p>
+                </div>
+                <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                  <DollarSign className="w-6 h-6 text-red-600" />
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-600"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">Total Revenue</p>
-                <p className="text-3xl font-bold text-gray-900">₹{stats.totalRevenue.toLocaleString()}</p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 mb-1">Pending</p>
+                  <p className="text-3xl font-bold text-gray-900">{stats.pendingOrders}</p>
+                </div>
+                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                  <Clock className="w-6 h-6 text-yellow-500" />
+                </div>
               </div>
-              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-red-600" />
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">Pending</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.pendingOrders}</p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-600"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 mb-1">Completed</p>
+                  <p className="text-3xl font-bold text-gray-900">{stats.completedOrders}</p>
+                </div>
+                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                  <CheckCircle2 className="w-6 h-6 text-green-600" />
+                </div>
               </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <Clock className="w-6 h-6 text-yellow-500" />
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-600"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">Completed</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.completedOrders}</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <CheckCircle2 className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </> 
+        )}
         </div>
 
         {/* Orders List */}
         <div className="space-y-6">
-          {orders.length === 0 ? (
+          {loading?(
+            Array.from({ length: 3 }).map((_, i) => <OrderCardShimmer key={i} />)
+          ):orders.length === 0 ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

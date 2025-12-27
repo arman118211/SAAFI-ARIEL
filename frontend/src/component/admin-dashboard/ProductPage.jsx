@@ -9,14 +9,24 @@ import toast from "react-hot-toast";
 
 import axios from "axios"
 
+// Shimmer Loading Component
+const ShimmerCard = () => (
+  <div className="animate-pulse">
+    <div className="h-6 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-lg mb-3 bg-[length:200%_100%] animate-shimmer"></div>
+    <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-lg w-3/4 bg-[length:200%_100%] animate-shimmer"></div>
+  </div>
+);
+
 const ProductManager = () => {
 
   const [products, setProducts] = useState([])
   const [deletingId, setDeletingId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
 
   const getProductData = async () => {
     try {
+      setIsLoading(true);
       const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/products`)
       console.log("response", res.data)
       setProducts(res.data.products)
@@ -24,6 +34,8 @@ const ProductManager = () => {
     } catch (err) {
       // console.log("something went wrong", err)
       toast.error("Failed to load products");
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -115,7 +127,7 @@ const ProductManager = () => {
           `${import.meta.env.VITE_BASE_URL}/products/${editingProduct._id}`,
           payload
         );
-         toast.success("Product added successfully");
+        toast.success("Product added successfully");
       } else {
         await axios.post(
           `${import.meta.env.VITE_BASE_URL}/products/add`,
@@ -159,58 +171,57 @@ const ProductManager = () => {
   //     }
   //   }
   // }
- 
+
   const handleDelete = (id) => {
-  toast.custom(
-    (t) => (
-      <div
-        className={`${
-          t.visible ? "animate-enter" : "animate-leave"
-        } bg-white shadow-xl rounded-xl border border-gray-200 p-4 w-[320px]`}
-      >
-        <h3 className="text-sm font-bold text-gray-900 mb-1">
-          Delete Product?
-        </h3>
-        <p className="text-xs text-gray-600 mb-4">
-          This action cannot be undone.
-        </p>
+    toast.custom(
+      (t) => (
+        <div
+          className={`${t.visible ? "animate-enter" : "animate-leave"
+            } bg-white shadow-xl rounded-xl border border-gray-200 p-4 w-[320px]`}
+        >
+          <h3 className="text-sm font-bold text-gray-900 mb-1">
+            Delete Product?
+          </h3>
+          <p className="text-xs text-gray-600 mb-4">
+            This action cannot be undone.
+          </p>
 
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={() => toast.dismiss(t.id)}
-            className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700"
-          >
-            Cancel
-          </button>
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700"
+            >
+              Cancel
+            </button>
 
-          <button
-            onClick={async () => {
-              try {
-                toast.dismiss(t.id);
-                setDeletingId(id);
+            <button
+              onClick={async () => {
+                try {
+                  toast.dismiss(t.id);
+                  setDeletingId(id);
 
-                await axios.delete(
-                  `${import.meta.env.VITE_BASE_URL}/products/${id}`
-                );
+                  await axios.delete(
+                    `${import.meta.env.VITE_BASE_URL}/products/${id}`
+                  );
 
-                toast.success("Product deleted successfully");
-                getProductData();
-              } catch (err) {
-                toast.error("Failed to delete product");
-              } finally {
-                setDeletingId(null);
-              }
-            }}
-            className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-red-600 hover:bg-red-700 text-white"
-          >
-            Delete
-          </button>
+                  toast.success("Product deleted successfully");
+                  getProductData();
+                } catch (err) {
+                  toast.error("Failed to delete product");
+                } finally {
+                  setDeletingId(null);
+                }
+              }}
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-red-600 hover:bg-red-700 text-white"
+            >
+              Delete
+            </button>
+          </div>
         </div>
-      </div>
-    ),
-    { duration: 5000 }
-  );
-};
+      ),
+      { duration: 5000 }
+    );
+  };
 
   const resetForm = () => {
     setFormData({
@@ -289,68 +300,92 @@ const ProductManager = () => {
           animate="visible"
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5 mb-6 md:mb-8 "
         >
-          {/* Blue Stats Card */}
-          <motion.div
-            variants={itemVariants}
-            whileHover={{ y: -4 }}
-            className="relative overflow-hidden bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg md:rounded-xl shadow-lg p-4 md:p-5 group cursor-pointer"
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-16 -mt-16 group-hover:scale-125 transition-transform duration-500"></div>
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-3">
-                <div className="bg-white/15 backdrop-blur-md p-2.5 md:p-3 rounded-lg md:rounded-xl border border-white/20">
-                  <Package className="text-white" size={18} />
+          {isLoading ? (
+            // Shimmer Loading Cards
+            <>
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg md:rounded-xl shadow-lg p-4 md:p-5"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer-slide"></div>
+                  <div className="relative z-10">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-300 rounded-lg md:rounded-xl animate-pulse"></div>
+                      <div className="w-16 h-6 bg-gray-300 rounded-full animate-pulse"></div>
+                    </div>
+                    <div className="h-3 bg-gray-300 rounded w-24 mb-2 animate-pulse"></div>
+                    <div className="h-8 md:h-10 bg-gray-300 rounded w-16 animate-pulse"></div>
+                  </div>
                 </div>
-                <span className="text-xs font-bold text-blue-100 bg-blue-500/30 px-2.5 py-1 rounded-full backdrop-blur text-opacity-90">
-                  TOTAL
-                </span>
-              </div>
-              <p className="text-blue-100 text-xs font-semibold mb-1 opacity-90">Total Products</p>
-              <p className="text-3xl md:text-4xl font-black text-white">{products.length}</p>
-            </div>
-          </motion.div>
+              ))}
+            </>
+          ) : (
+            <>
+              {/* Blue Stats Card */}
+              <motion.div
+                variants={itemVariants}
+                whileHover={{ y: -4 }}
+                className="relative overflow-hidden bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg md:rounded-xl shadow-lg p-4 md:p-5 group cursor-pointer"
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-16 -mt-16 group-hover:scale-125 transition-transform duration-500"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="bg-white/15 backdrop-blur-md p-2.5 md:p-3 rounded-lg md:rounded-xl border border-white/20">
+                      <Package className="text-white" size={18} />
+                    </div>
+                    <span className="text-xs font-bold text-blue-100 bg-blue-500/30 px-2.5 py-1 rounded-full backdrop-blur text-opacity-90">
+                      TOTAL
+                    </span>
+                  </div>
+                  <p className="text-blue-100 text-xs font-semibold mb-1 opacity-90">Total Products</p>
+                  <p className="text-3xl md:text-4xl font-black text-white">{products.length}</p>
+                </div>
+              </motion.div>
 
-          {/* Red Stats Card */}
-          <motion.div
-            variants={itemVariants}
-            whileHover={{ y: -4 }}
-            className="relative overflow-hidden bg-gradient-to-br from-red-600 to-red-700 rounded-lg md:rounded-xl shadow-lg p-4 md:p-5 group cursor-pointer"
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-16 -mt-16 group-hover:scale-125 transition-transform duration-500"></div>
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-3">
-                <div className="bg-white/15 backdrop-blur-md p-2.5 md:p-3 rounded-lg md:rounded-xl border border-white/20">
-                  <AlertCircle className="text-white" size={18} />
+              {/* Red Stats Card */}
+              <motion.div
+                variants={itemVariants}
+                whileHover={{ y: -4 }}
+                className="relative overflow-hidden bg-gradient-to-br from-red-600 to-red-700 rounded-lg md:rounded-xl shadow-lg p-4 md:p-5 group cursor-pointer"
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-16 -mt-16 group-hover:scale-125 transition-transform duration-500"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="bg-white/15 backdrop-blur-md p-2.5 md:p-3 rounded-lg md:rounded-xl border border-white/20">
+                      <AlertCircle className="text-white" size={18} />
+                    </div>
+                    <span className="text-xs font-bold text-red-100 bg-red-500/30 px-2.5 py-1 rounded-full backdrop-blur text-opacity-90">
+                      ALERT
+                    </span>
+                  </div>
+                  <p className="text-red-100 text-xs font-semibold mb-1 opacity-90">Low Stock Items</p>
+                  <p className="text-3xl md:text-4xl font-black text-white">{lowStockCount}</p>
                 </div>
-                <span className="text-xs font-bold text-red-100 bg-red-500/30 px-2.5 py-1 rounded-full backdrop-blur text-opacity-90">
-                  ALERT
-                </span>
-              </div>
-              <p className="text-red-100 text-xs font-semibold mb-1 opacity-90">Low Stock Items</p>
-              <p className="text-3xl md:text-4xl font-black text-white">{lowStockCount}</p>
-            </div>
-          </motion.div>
+              </motion.div>
 
-          {/* Green Stats Card */}
-          <motion.div
-            variants={itemVariants}
-            whileHover={{ y: -4 }}
-            className="relative overflow-hidden bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-lg md:rounded-xl shadow-lg p-4 md:p-5 group cursor-pointer sm:col-span-2 lg:col-span-1"
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-16 -mt-16 group-hover:scale-125 transition-transform duration-500"></div>
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-3">
-                <div className="bg-white/15 backdrop-blur-md p-2.5 md:p-3 rounded-lg md:rounded-xl border border-white/20">
-                  <TrendingUp className="text-white" size={18} />
+              {/* Green Stats Card */}
+              <motion.div
+                variants={itemVariants}
+                whileHover={{ y: -4 }}
+                className="relative overflow-hidden bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-lg md:rounded-xl shadow-lg p-4 md:p-5 group cursor-pointer sm:col-span-2 lg:col-span-1"
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-16 -mt-16 group-hover:scale-125 transition-transform duration-500"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="bg-white/15 backdrop-blur-md p-2.5 md:p-3 rounded-lg md:rounded-xl border border-white/20">
+                      <TrendingUp className="text-white" size={18} />
+                    </div>
+                    <span className="text-xs font-bold text-emerald-100 bg-emerald-500/30 px-2.5 py-1 rounded-full backdrop-blur text-opacity-90">
+                      REVENUE
+                    </span>
+                  </div>
+                  <p className="text-emerald-100 text-xs font-semibold mb-1 opacity-90">Inventory Value</p>
+                  <p className="text-3xl md:text-4xl font-black text-white">₹{(totalValue / 1000).toFixed(1)}K</p>
                 </div>
-                <span className="text-xs font-bold text-emerald-100 bg-emerald-500/30 px-2.5 py-1 rounded-full backdrop-blur text-opacity-90">
-                  REVENUE
-                </span>
-              </div>
-              <p className="text-emerald-100 text-xs font-semibold mb-1 opacity-90">Inventory Value</p>
-              <p className="text-3xl md:text-4xl font-black text-white">₹{(totalValue / 1000).toFixed(1)}K</p>
-            </div>
-          </motion.div>
+              </motion.div>
+            </>
+          )}
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -410,99 +445,156 @@ const ProductManager = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                <AnimatePresence>
-                  {filteredProducts.map((product, idx) => (
-                    <motion.tr
-                      key={product._id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 20 }}
-                      transition={{ delay: idx * 0.05 }}
-                      whileHover={{ backgroundColor: "rgba(59, 130, 246, 0.03)" }}
-                      className="hover:bg-blue-50/50 transition-all duration-300"
-                    >
-                      <td className="px-3 md:px-4 py-3 md:py-3.5">
-                        <div className="flex items-center gap-2 md:gap-3">
-                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0 border border-gray-200 shadow-sm">
-                            {product.imageUrl ? (
-                              <img
-                                src={product.imageUrl || "/placeholder.svg"}
-                                alt={product.name}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <ImageIcon className="text-gray-400" size={18} />
-                            )}
-                          </div>
-                          <div className="min-w-0">
-                            <div className="font-bold text-gray-900 text-xs md:text-sm truncate">{product.name}</div>
-                            <div className="text-xs text-gray-500 line-clamp-1 hidden sm:block max-w-xs">
-                              {product.description || "No description"}
+                {isLoading ? (
+                  // Shimmer Loading Rows
+                  <>
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <tr key={i} className="animate-pulse">
+                        <td className="px-3 md:px-4 py-3 md:py-3.5">
+                          <div className="flex items-center gap-2 md:gap-3">
+                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-gray-200 relative overflow-hidden">
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide"></div>
+                            </div>
+                            <div className="flex-1 space-y-2">
+                              <div className="h-4 bg-gray-200 rounded w-32 relative overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide"></div>
+                              </div>
+                              <div className="h-3 bg-gray-200 rounded w-48 hidden sm:block relative overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide"></div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="hidden md:table-cell px-3 md:px-4 py-3 md:py-3.5">
-                        <span className="inline-flex px-2.5 py-1 text-xs font-bold rounded-lg bg-blue-100 text-blue-700 border border-blue-300">
-                          {product.category || "Uncategorized"}
-                        </span>
-                      </td>
-                      <td className="px-3 md:px-4 py-3 md:py-3.5">
-                        <div className="text-xs md:text-sm font-bold text-gray-900">₹{product.price}</div>
-                        <div className="text-xs text-gray-500">{product.unit}</div>
-                      </td>
-                      <td className="px-3 md:px-4 py-3 md:py-3.5">
-                        <div
-                          className={`text-xs md:text-sm font-bold ${product.stock < 20 ? "text-red-600" : "text-emerald-600"}`}
-                        >
-                          {product.stock}
-                        </div>
-                        {product.stock < 20 && <div className="text-xs text-red-600 font-semibold">Low</div>}
-                      </td>
-                      <td className="hidden sm:table-cell px-3 md:px-4 py-3 md:py-3.5">
-                        <span
-                          className={`inline-flex px-2.5 py-1 text-xs font-bold rounded-lg ${product.isActive
+                        </td>
+                        <td className="hidden md:table-cell px-3 md:px-4 py-3 md:py-3.5">
+                          <div className="h-6 bg-gray-200 rounded-lg w-20 relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide"></div>
+                          </div>
+                        </td>
+                        <td className="px-3 md:px-4 py-3 md:py-3.5">
+                          <div className="h-4 bg-gray-200 rounded w-16 mb-1 relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide"></div>
+                          </div>
+                          <div className="h-3 bg-gray-200 rounded w-12 relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide"></div>
+                          </div>
+                        </td>
+                        <td className="px-3 md:px-4 py-3 md:py-3.5">
+                          <div className="h-4 bg-gray-200 rounded w-12 relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide"></div>
+                          </div>
+                        </td>
+                        <td className="hidden sm:table-cell px-3 md:px-4 py-3 md:py-3.5">
+                          <div className="h-6 bg-gray-200 rounded-lg w-16 relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide"></div>
+                          </div>
+                        </td>
+                        <td className="px-3 md:px-4 py-3 md:py-3.5 text-right">
+                          <div className="flex items-center justify-end gap-1.5 md:gap-2">
+                            <div className="w-8 h-8 bg-gray-200 rounded-lg relative overflow-hidden">
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide"></div>
+                            </div>
+                            <div className="w-8 h-8 bg-gray-200 rounded-lg relative overflow-hidden">
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide"></div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </>
+                ) : (
+                  <AnimatePresence>
+                    {filteredProducts.map((product, idx) => (
+                      <motion.tr
+                        key={product._id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ delay: idx * 0.05 }}
+                        whileHover={{ backgroundColor: "rgba(59, 130, 246, 0.03)" }}
+                        className="hover:bg-blue-50/50 transition-all duration-300"
+                      >
+                        <td className="px-3 md:px-4 py-3 md:py-3.5">
+                          <div className="flex items-center gap-2 md:gap-3">
+                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0 border border-gray-200 shadow-sm">
+                              {product.imageUrl ? (
+                                <img
+                                  src={product.imageUrl || "/placeholder.svg"}
+                                  alt={product.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <ImageIcon className="text-gray-400" size={18} />
+                              )}
+                            </div>
+                            <div className="min-w-0">
+                              <div className="font-bold text-gray-900 text-xs md:text-sm truncate">{product.name}</div>
+                              <div className="text-xs text-gray-500 line-clamp-1 hidden sm:block max-w-xs">
+                                {product.description || "No description"}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="hidden md:table-cell px-3 md:px-4 py-3 md:py-3.5">
+                          <span className="inline-flex px-2.5 py-1 text-xs font-bold rounded-lg bg-blue-100 text-blue-700 border border-blue-300">
+                            {product.category || "Uncategorized"}
+                          </span>
+                        </td>
+                        <td className="px-3 md:px-4 py-3 md:py-3.5">
+                          <div className="text-xs md:text-sm font-bold text-gray-900">₹{product.price}</div>
+                          <div className="text-xs text-gray-500">{product.unit}</div>
+                        </td>
+                        <td className="px-3 md:px-4 py-3 md:py-3.5">
+                          <div
+                            className={`text-xs md:text-sm font-bold ${product.stock < 20 ? "text-red-600" : "text-emerald-600"}`}
+                          >
+                            {product.stock}
+                          </div>
+                          {product.stock < 20 && <div className="text-xs text-red-600 font-semibold">Low</div>}
+                        </td>
+                        <td className="hidden sm:table-cell px-3 md:px-4 py-3 md:py-3.5">
+                          <span
+                            className={`inline-flex px-2.5 py-1 text-xs font-bold rounded-lg ${product.isActive
                               ? "bg-emerald-100 text-emerald-700 border border-emerald-300"
                               : "bg-gray-100 text-gray-600 border border-gray-300"
-                            }`}
-                        >
-                          {product.isActive ? "✓ Active" : "○ Inactive"}
-                        </span>
-                      </td>
-                      <td className="px-3 md:px-4 py-3 md:py-3.5 text-right">
-                        <div className="flex items-center justify-end gap-1.5 md:gap-2">
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            onClick={() => handleEdit(product)}
-                            className="p-1.5 md:p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all shadow-md"
+                              }`}
                           >
-                            <Edit2 size={14} />
-                          </motion.button>
-                          <motion.button
-                          whileHover={{ scale: deletingId === product._id ? 1 : 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          disabled={deletingId === product._id}
-                          onClick={() => handleDelete(product._id)}
-                          className={`p-1.5 md:p-2 rounded-lg transition-all shadow-md
-                            ${
-                              deletingId === product._id
-                                ? "bg-red-400 cursor-not-allowed"
-                                : "bg-red-600 hover:bg-red-700"
-                            } text-white`}
-                        >
-                          {deletingId === product._id ? (
-                            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin block"></span>
-                          ) : (
-                            <Trash2 size={14} />
-                          )}
-                        </motion.button>
+                            {product.isActive ? "✓ Active" : "○ Inactive"}
+                          </span>
+                        </td>
+                        <td className="px-3 md:px-4 py-3 md:py-3.5 text-right">
+                          <div className="flex items-center justify-end gap-1.5 md:gap-2">
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              onClick={() => handleEdit(product)}
+                              className="p-1.5 md:p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all shadow-md"
+                            >
+                              <Edit2 size={14} />
+                            </motion.button>
+                            <motion.button
+                              whileHover={{ scale: deletingId === product._id ? 1 : 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              disabled={deletingId === product._id}
+                              onClick={() => handleDelete(product._id)}
+                              className={`p-1.5 md:p-2 rounded-lg transition-all shadow-md
+                            ${deletingId === product._id
+                                  ? "bg-red-400 cursor-not-allowed"
+                                  : "bg-red-600 hover:bg-red-700"
+                                } text-white`}
+                            >
+                              {deletingId === product._id ? (
+                                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin block"></span>
+                              ) : (
+                                <Trash2 size={14} />
+                              )}
+                            </motion.button>
 
-                        </div>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </AnimatePresence>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </AnimatePresence>
+                )}
               </tbody>
             </table>
           </div>

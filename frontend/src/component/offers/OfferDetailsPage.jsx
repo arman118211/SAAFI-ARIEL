@@ -5,6 +5,30 @@ import axios from 'axios'
 import { useLocation } from "react-router-dom";
 import { Gift, Bell } from "lucide-react";
 
+const OfferCardShimmer = () => (
+  <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden relative">
+    {/* shimmer overlay */}
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide" />
+
+    {/* image */}
+    <div className="h-44 bg-gray-200" />
+
+    <div className="p-5 space-y-3">
+      <div className="h-5 bg-gray-200 rounded w-3/4" />
+      <div className="h-4 bg-gray-200 rounded w-full" />
+      <div className="h-4 bg-gray-200 rounded w-5/6" />
+
+      <div className="flex justify-between pt-4">
+        <div className="h-6 w-20 bg-gray-200 rounded" />
+        <div className="h-6 w-16 bg-gray-200 rounded" />
+      </div>
+
+      <div className="h-10 bg-gray-300 rounded-lg mt-3" />
+    </div>
+  </div>
+);
+
+
 
 export default function OfferDetailsPage() {
     const location = useLocation();
@@ -69,9 +93,15 @@ export default function OfferDetailsPage() {
       )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {offers.map((offer) => (
+          {loading?
+          (
+            Array.from({ length: 6 }).map((_, i) => (
+              <OfferCardShimmer key={i} />
+            ))
+          ):(
+          offers.map((offer) => (
             <OfferCard key={offer._id} offer={offer} />
-          ))}
+          )))}
         </div>
       </div>
     </div>

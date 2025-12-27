@@ -10,20 +10,61 @@ import { useDispatch } from "react-redux";
 import {setOffers as setOffer, addOffer } from "../../redux/slices/offersSlice";
 import toast from "react-hot-toast"
 
+const OfferStatsShimmer = () => (
+  <div className="bg-gradient-to-br from-gray-200 to-gray-300 rounded-xl p-4 md:p-6 relative overflow-hidden">
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide" />
+    <div className="h-3 w-24 bg-gray-300 rounded mb-2"></div>
+    <div className="h-8 w-20 bg-gray-400 rounded"></div>
+  </div>
+);
+
+const OfferCardShimmer = () => (
+  <div className="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden relative">
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide" />
+
+    {/* Image area */}
+    <div className="h-32 md:h-40 bg-gray-200"></div>
+
+    <div className="p-4 md:p-6 space-y-3">
+      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+      <div className="h-3 bg-gray-200 rounded w-full"></div>
+      <div className="h-3 bg-gray-200 rounded w-5/6"></div>
+
+      <div className="flex justify-between mt-4">
+        <div className="h-6 w-16 bg-gray-200 rounded"></div>
+        <div className="h-6 w-16 bg-gray-200 rounded"></div>
+      </div>
+
+      <div className="h-3 bg-gray-200 rounded w-32 mt-3"></div>
+
+      <div className="h-9 bg-gray-300 rounded-lg mt-4"></div>
+    </div>
+  </div>
+);
+
+
+
 const AdminOfferPage = () => {
   const dispatch = useDispatch();
   const [offers, setOffers] = useState([])
+  const [isLoading, setIsLoading] = useState(true);
 
-  const getAllOffer = async () =>{
-   try{const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/offers/getAllOffersForAmin`)
-    // console.log(res.data)
-    dispatch(setOffer(res.data.data))
-    setOffers(res.data.data)}
-    catch(err){
-      toast.error("Failed to fetch offers")
-      // console.log(err)
+
+  const getAllOffer = async () => {
+    try {
+      setIsLoading(true);
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/offers/getAllOffersForAmin`
+      );
+      dispatch(setOffer(res.data.data));
+      setOffers(res.data.data);
+    } catch (err) {
+      toast.error("Failed to fetch offers");
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
+
   useEffect(() => {
     getAllOffer()
   }, [])
@@ -104,6 +145,9 @@ const AdminOfferPage = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+          {isLoading?
+          Array.from({ length: 4 }).map((_, i) => <OfferStatsShimmer key={i} />):
+          <>
           {[
             { icon: Trophy, label: "Total Offers", value: offers.length, color: "from-blue-500 to-blue-600" },
             {
@@ -151,6 +195,8 @@ const AdminOfferPage = () => {
               </div>
             </motion.div>
           ))}
+          </>
+          }
         </div>
       </motion.div>
 
@@ -203,7 +249,10 @@ const AdminOfferPage = () => {
 
       {/* Offers Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-        {filteredOffers.length > 0 ? (
+        {isLoading ?(
+          Array.from({ length: 6 }).map((_, i) => <OfferCardShimmer key={i} />)
+        ):
+        filteredOffers.length > 0 ? (
           filteredOffers.map((offer, idx) => (
             <motion.div
               key={offer._id}
@@ -292,7 +341,8 @@ const AdminOfferPage = () => {
             <Trophy size={48} className="mx-auto text-slate-300 mb-4" />
             <p className="text-slate-500 text-lg">No offers found matching your criteria</p>
           </div>
-        )}
+        )
+        }
       </div>
 
       {/* Create Offer Modal */}

@@ -5,6 +5,37 @@ import axios from 'axios';
 import { useDispatch } from "react-redux";
 import { updateOrderStatus as updateStatus } from "../../redux/slices/orderSlice";
 
+const StatsShimmer = () => (
+  <div className="bg-white rounded-lg p-4 shadow-md animate-pulse relative overflow-hidden">
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide" />
+    <div className="h-3 w-16 bg-gray-200 rounded mb-2"></div>
+    <div className="h-7 w-20 bg-gray-300 rounded"></div>
+  </div>
+);
+
+const OrderCardShimmer = () => (
+  <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100 relative overflow-hidden">
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide" />
+
+    <div className="flex items-center gap-3 mb-4">
+      <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
+      <div className="flex-1 space-y-2">
+        <div className="h-4 bg-gray-200 rounded w-32"></div>
+        <div className="h-3 bg-gray-200 rounded w-48"></div>
+      </div>
+    </div>
+
+    <div className="grid grid-cols-3 gap-3 mb-3">
+      <div className="h-8 bg-gray-200 rounded"></div>
+      <div className="h-8 bg-gray-200 rounded"></div>
+      <div className="h-8 bg-gray-200 rounded"></div>
+    </div>
+
+    <div className="h-3 bg-gray-200 rounded w-40"></div>
+  </div>
+);
+
+
 const AdminOrdersPage = () => {
   const dispatch = useDispatch();
   const [orders, setOrders] = useState([]);
@@ -15,6 +46,8 @@ const AdminOrdersPage = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
   const [statusMenuOpen, setStatusMenuOpen] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
 
   const statusOptions = [
     { value: 'all', label: 'All Orders', color: 'gray' },
@@ -25,14 +58,17 @@ const AdminOrdersPage = () => {
   ];
 
   const getAllOrder = async () => {
-    try{
-      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/order/all`)
-      setOrders(res.data)
-
-    }catch(err){
-      console.log("something went wrong",err)
+    try {
+      setIsLoading(true);
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/order/all`);
+      setOrders(res.data);
+    } catch (err) {
+      console.log("something went wrong", err);
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
+
 
   useEffect(() => {
     getAllOrder()
@@ -41,14 +77,14 @@ const AdminOrdersPage = () => {
 
 
   const updateOrderStatus = async (orderId, newStatus) => {
-    console.log("orderId",orderId,"newStatus",newStatus)
-    try{
-      const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/order/status/${orderId}`,{
-        status:newStatus
+    console.log("orderId", orderId, "newStatus", newStatus)
+    try {
+      const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/order/status/${orderId}`, {
+        status: newStatus
       })
-      console.log("updated successfully",res)
-      setOrders(orders.map(order => 
-      order._id === orderId ? { ...order, status: newStatus } : order
+      console.log("updated successfully", res)
+      setOrders(orders.map(order =>
+        order._id === orderId ? { ...order, status: newStatus } : order
       ));
       // dispatch(updateStatus({
       // orderId: orderId,
@@ -57,21 +93,21 @@ const AdminOrdersPage = () => {
       setStatusMenuOpen(null);
 
 
-    }catch(err){
+    } catch (err) {
       console.log("something went wrong", err)
     }
-    
+
   };
 
   const filteredOrders = useMemo(() => {
     return orders.filter(order => {
-      const matchesSearch = 
+      const matchesSearch =
         order.sellerId.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.sellerId.email.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-      
+
       return matchesSearch && matchesStatus;
     });
   }, [orders, searchTerm, statusFilter]);
@@ -87,7 +123,7 @@ const AdminOrdersPage = () => {
   };
 
   const getStatusIcon = (status) => {
-    switch(status) {
+    switch (status) {
       case 'delivered': return <CheckCircle className="w-4 h-4" />;
       case 'cancelled': return <XCircle className="w-4 h-4" />;
       case 'confirmed': return <CheckCircle className="w-4 h-4" />;
@@ -117,7 +153,7 @@ const AdminOrdersPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 md:p-6 w-full">
       <div className="w-full mx-auto">
         {/* Header */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
@@ -137,94 +173,99 @@ const AdminOrdersPage = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1 }}
-            className="bg-white rounded-lg p-4 shadow-md border-l-4 border-blue-600 hover:shadow-lg transition-shadow"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-500 text-xs font-medium">Total</p>
-                <p className="text-2xl font-bold text-gray-800 mt-0.5">{stats.total}</p>
+          {isLoading?
+           Array.from({ length: 5 }).map((_, i) => <StatsShimmer key={i} />):(
+          <>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white rounded-lg p-4 shadow-md border-l-4 border-blue-600 hover:shadow-lg transition-shadow"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-500 text-xs font-medium">Total</p>
+                  <p className="text-2xl font-bold text-gray-800 mt-0.5">{stats.total}</p>
+                </div>
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <Package className="w-6 h-6 text-blue-600" />
+                </div>
               </div>
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Package className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
 
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="bg-white rounded-lg p-4 shadow-md border-l-4 border-amber-500 hover:shadow-lg transition-shadow"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-500 text-xs font-medium">Pending</p>
-                <p className="text-2xl font-bold text-gray-800 mt-0.5">{stats.pending}</p>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white rounded-lg p-4 shadow-md border-l-4 border-amber-500 hover:shadow-lg transition-shadow"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-500 text-xs font-medium">Pending</p>
+                  <p className="text-2xl font-bold text-gray-800 mt-0.5">{stats.pending}</p>
+                </div>
+                <div className="p-2 bg-amber-100 rounded-lg">
+                  <Clock className="w-6 h-6 text-amber-600" />
+                </div>
               </div>
-              <div className="p-2 bg-amber-100 rounded-lg">
-                <Clock className="w-6 h-6 text-amber-600" />
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
 
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 }}
-            className="bg-white rounded-lg p-4 shadow-md border-l-4 border-blue-600 hover:shadow-lg transition-shadow"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-500 text-xs font-medium">Confirmed</p>
-                <p className="text-2xl font-bold text-gray-800 mt-0.5">{stats.confirmed}</p>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 }}
+              className="bg-white rounded-lg p-4 shadow-md border-l-4 border-blue-600 hover:shadow-lg transition-shadow"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-500 text-xs font-medium">Confirmed</p>
+                  <p className="text-2xl font-bold text-gray-800 mt-0.5">{stats.confirmed}</p>
+                </div>
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <CheckCircle className="w-6 h-6 text-blue-600" />
+                </div>
               </div>
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <CheckCircle className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
 
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4 }}
-            className="bg-white rounded-lg p-4 shadow-md border-l-4 border-emerald-500 hover:shadow-lg transition-shadow"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-500 text-xs font-medium">Delivered</p>
-                <p className="text-2xl font-bold text-gray-800 mt-0.5">{stats.delivered}</p>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4 }}
+              className="bg-white rounded-lg p-4 shadow-md border-l-4 border-emerald-500 hover:shadow-lg transition-shadow"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-500 text-xs font-medium">Delivered</p>
+                  <p className="text-2xl font-bold text-gray-800 mt-0.5">{stats.delivered}</p>
+                </div>
+                <div className="p-2 bg-emerald-100 rounded-lg">
+                  <CheckCircle className="w-6 h-6 text-emerald-600" />
+                </div>
               </div>
-              <div className="p-2 bg-emerald-100 rounded-lg">
-                <CheckCircle className="w-6 h-6 text-emerald-600" />
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
 
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5 }}
-            className="col-span-2 md:col-span-1 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-4 shadow-md text-white hover:shadow-lg transition-shadow"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-white/90 text-xs font-medium">Revenue</p>
-                <p className="text-2xl font-bold mt-0.5">₹{(stats.totalRevenue / 1000).toFixed(1)}k</p>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5 }}
+              className="col-span-2 md:col-span-1 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-4 shadow-md text-white hover:shadow-lg transition-shadow"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-white/90 text-xs font-medium">Revenue</p>
+                  <p className="text-2xl font-bold mt-0.5">₹{(stats.totalRevenue / 1000).toFixed(1)}k</p>
+                </div>
+                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                  <DollarSign className="w-6 h-6 text-white" />
+                </div>
               </div>
-              <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-                <DollarSign className="w-6 h-6 text-white" />
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
+          )}
         </div>
 
         {/* Filters and Search */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
@@ -241,7 +282,7 @@ const AdminOrdersPage = () => {
                 className="w-full pl-10 pr-3 py-2.5 text-sm border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
               />
             </div>
-            
+
             <div className="flex gap-2">
               <button
                 onClick={() => setShowFilters(!showFilters)}
@@ -269,11 +310,10 @@ const AdminOrdersPage = () => {
                       <button
                         key={option.value}
                         onClick={() => setStatusFilter(option.value)}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                          statusFilter === option.value
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === option.value
                             ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md scale-105'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
+                          }`}
                       >
                         {option.label}
                       </button>
@@ -286,6 +326,15 @@ const AdminOrdersPage = () => {
         </motion.div>
 
         {/* Orders List */}
+        {isLoading?
+        (
+          <div className="space-y-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <OrderCardShimmer key={i} />
+            ))}
+          </div>
+        )
+        :
         <div className="space-y-3">
           <AnimatePresence>
             {filteredOrders.map((order, index) => (
@@ -298,7 +347,7 @@ const AdminOrdersPage = () => {
                 className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden border border-gray-100"
               >
                 <div className="p-4 "
-                 onClick={() => setSelectedOrder(selectedOrder === order._id ? null : order._id)}>
+                  onClick={() => setSelectedOrder(selectedOrder === order._id ? null : order._id)}>
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-3">
                     <div className="flex items-start gap-3">
                       <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg flex items-center justify-center text-white font-bold text-base shadow-md flex-shrink-0">
@@ -320,7 +369,7 @@ const AdminOrdersPage = () => {
                         {getStatusIcon(order.status)}
                         {order.status.toUpperCase()}
                       </span>
-                      
+
                       {/* Status Dropdown Menu */}
                       <div className="relative">
                         <button
@@ -329,7 +378,7 @@ const AdminOrdersPage = () => {
                         >
                           <MoreVertical className="w-4 h-4 text-gray-600" />
                         </button>
-                        
+
                         <AnimatePresence>
                           {statusMenuOpen === order._id && (
                             <motion.div
@@ -351,17 +400,16 @@ const AdminOrdersPage = () => {
                                   };
                                   const config = statusConfig[status];
                                   const Icon = config.icon;
-                                  
+
                                   return (
                                     <button
                                       key={status}
                                       onClick={() => updateOrderStatus(order._id, status)}
                                       disabled={order.status === status}
-                                      className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 transition-colors ${
-                                        order.status === status
+                                      className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 transition-colors ${order.status === status
                                           ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                           : `${config.bg} ${config.color} font-medium`
-                                      }`}
+                                        }`}
                                     >
                                       <Icon className="w-4 h-4" />
                                       {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -376,7 +424,7 @@ const AdminOrdersPage = () => {
                           )}
                         </AnimatePresence>
                       </div>
-                      
+
                       <button
                         onClick={() => setSelectedOrder(selectedOrder === order._id ? null : order._id)}
                         className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -426,7 +474,7 @@ const AdminOrdersPage = () => {
                             </div>
                           ))}
                         </div>
-                        
+
                         {order.offerId && (
                           <div className="p-2.5 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
                             <p className="text-xs font-bold text-blue-800">🎉 {order.offerId.title}</p>
@@ -455,7 +503,7 @@ const AdminOrdersPage = () => {
               </div>
             </motion.div>
           )}
-        </div>
+        </div>}
       </div>
     </div>
   );

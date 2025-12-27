@@ -6,23 +6,60 @@ import axios from "axios"
 import { useDispatch, useSelector } from "react-redux";
 import { setSellers, selectSellers } from "../../redux/slices/sellerSlice";
 
+const SellerStatsShimmer = () => (
+  <div className="bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg p-6 shadow-lg relative overflow-hidden">
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide" />
+    <div className="h-4 w-24 bg-gray-300 rounded mb-3"></div>
+    <div className="h-8 w-20 bg-gray-400 rounded"></div>
+  </div>
+);
+
+const SellerCardShimmer = () => (
+  <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-md relative overflow-hidden">
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide" />
+
+    <div className="flex justify-between mb-4">
+      <div className="space-y-2 w-full">
+        <div className="h-5 w-40 bg-gray-200 rounded"></div>
+        <div className="h-3 w-56 bg-gray-200 rounded"></div>
+      </div>
+    </div>
+
+    <div className="h-3 w-32 bg-gray-200 rounded mb-4"></div>
+
+    <div className="space-y-3 mb-6">
+      <div className="h-3 bg-gray-200 rounded"></div>
+      <div className="h-3 bg-gray-200 rounded"></div>
+      <div className="h-3 bg-gray-200 rounded"></div>
+    </div>
+
+    <div className="h-9 bg-gray-300 rounded-lg"></div>
+  </div>
+);
+
+
 export default function SellerList() {
   const [searchTerm, setSearchTerm] = useState("")
   const navigate = useNavigate()
    const dispatch = useDispatch();
   const [sellersData, setSellerData] = useState([])
+  const [isLoading, setIsLoading] = useState(true);
+
 
   const getSellerData = async () => {
-    try{
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/seller/auth/getAllSeller`)
-        console.log("response data ==<",res.data.data)
-        setSellerData(res.data.data)
-        dispatch(setSellers(res.data.data));
-
-    }catch(err){
-        console.log("something went wrong",err)
+    try {
+      setIsLoading(true);
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/seller/auth/getAllSeller`
+      );
+      setSellerData(res.data.data);
+      dispatch(setSellers(res.data.data));
+    } catch (err) {
+      console.log("something went wrong", err);
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     getSellerData()
@@ -106,7 +143,12 @@ export default function SellerList() {
         transition={{ duration: 0.5, delay: 0.2 }}
         className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10"
       >
-        <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg p-6 text-white shadow-lg">
+       { isLoading?
+        (
+        Array.from({ length: 3 }).map((_, i) => <SellerStatsShimmer key={i} />)
+      ):
+      <>
+      <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg p-6 text-white shadow-lg">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-blue-100 text-sm font-medium">Total Sellers</p>
@@ -142,6 +184,8 @@ export default function SellerList() {
             <DollarSign className="w-10 h-10 opacity-50" />
           </div>
         </div>
+      </>
+        }
       </motion.div>
 
       {/* Sellers Grid */}
@@ -150,8 +194,10 @@ export default function SellerList() {
         initial="hidden"
         animate="visible"
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-      >
-        {filteredSellers.map((seller) => {
+      >{isLoading?(
+          Array.from({ length: 6 }).map((_, i) => <SellerCardShimmer key={i} />)
+        ) :(
+        filteredSellers.map((seller) => {
           const stats = calculateStats(seller)
           return (
             <motion.div
@@ -203,7 +249,8 @@ export default function SellerList() {
               </div>
             </motion.div>
           )
-        })}
+        }))
+        }
       </motion.div>
 
       {/* No Results */}
