@@ -15,6 +15,9 @@ import {
   AlertCircle,
   CheckCircle,
   Shield,
+  Phone,
+  Mail,
+  Building2, MapPin,UserPlus
 } from "lucide-react"
 
 import { motion } from "framer-motion"
@@ -248,68 +251,157 @@ const Login = () => {
     [message, messageType, formData, showPassword, isLoading, handleInputChange, handleKeyPress],
   )
 
-  const SignupForm = (
-    <div className="space-y-3">
-      <input
-        type="text"
-        name="name"
-        placeholder="Full Name"
-        value={signupData.name}
-        onChange={handleSignupChange}
-        className="w-full px-4 py-2 border rounded-lg"
-      />
-
-      <input
-        type="email"
-        name="email"
-        placeholder="Email"
-        value={signupData.email}
-        onChange={handleSignupChange}
-        className="w-full px-4 py-2 border rounded-lg"
-      />
-
-      <input
-        type="text"
-        name="phone"
-        placeholder="Phone"
-        value={signupData.phone}
-        onChange={handleSignupChange}
-        className="w-full px-4 py-2 border rounded-lg"
-      />
-      <input
-        type="text"
-        name="companyName"
-        placeholder="Company Name"
-        value={signupData.companyName}
-        onChange={handleSignupChange}
-        className="w-full px-4 py-2 border rounded-lg"
-      />
-      <input
-        type="text"
-        name="address"
-        placeholder="Address"
-        value={signupData.address}
-        onChange={handleSignupChange}
-        className="w-full px-4 py-2 border rounded-lg"
-      />
-
-      <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        value={signupData.password}
-        onChange={handleSignupChange}
-        className="w-full px-4 py-2 border rounded-lg"
-      />
-
-      <button
-        onClick={handleSignupSubmit}
-        className="w-full bg-blue-600 text-white py-2 rounded-lg"
-      >
-        Create Account
-      </button>
+ const SignupForm = (
+  <motion.div
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.3 }}
+    className="space-y-4"
+  >
+    {/* Full Name */}
+    <div className="space-y-1">
+      <label className="text-xs font-semibold text-gray-700">Full Name</label>
+      <div className="relative">
+        <User className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
+        <input
+          type="text"
+          name="name"
+          value={signupData.name}
+          onChange={handleSignupChange}
+          placeholder="Enter full name"
+          className="w-full pl-10 pr-4 py-3 text-sm border-2 border-gray-200 rounded-lg bg-gray-50
+                     focus:bg-white focus:ring-2 focus:ring-[#2979FF] focus:border-transparent transition-all"
+          required
+        />
+      </div>
     </div>
-  )
+
+    {/* Email */}
+    <div className="space-y-1">
+      <label className="text-xs font-semibold text-gray-700">Email</label>
+      <div className="relative">
+        <Mail className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
+        <input
+          type="email"
+          name="email"
+          value={signupData.email}
+          onChange={handleSignupChange}
+          placeholder="Enter email address"
+          className="w-full pl-10 pr-4 py-3 text-sm border-2 border-gray-200 rounded-lg bg-gray-50
+                     focus:bg-white focus:ring-2 focus:ring-[#2979FF] focus:border-transparent transition-all"
+          required
+        />
+      </div>
+    </div>
+
+    {/* Phone */}
+    <div className="space-y-1">
+      <label className="text-xs font-semibold text-gray-700">Phone</label>
+      <div className="relative">
+        <Phone className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
+        <input
+          type="text"
+          name="phone"
+          value={signupData.phone}
+          onChange={handleSignupChange}
+          placeholder="Enter phone number"
+          className="w-full pl-10 pr-4 py-3 text-sm border-2 border-gray-200 rounded-lg bg-gray-50
+                     focus:bg-white focus:ring-2 focus:ring-[#2979FF] focus:border-transparent transition-all"
+          required
+        />
+      </div>
+    </div>
+
+    {/* Company Name */}
+    <div className="space-y-1">
+      <label className="text-xs font-semibold text-gray-700">Company Name</label>
+      <div className="relative">
+        <Building2 className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
+        <input
+          type="text"
+          name="companyName"
+          value={signupData.companyName}
+          onChange={handleSignupChange}
+          placeholder="Enter company name"
+          className="w-full pl-10 pr-4 py-3 text-sm border-2 border-gray-200 rounded-lg bg-gray-50
+                     focus:bg-white focus:ring-2 focus:ring-[#2979FF] focus:border-transparent transition-all"
+          required
+        />
+      </div>
+    </div>
+
+    {/* Address */}
+    <div className="space-y-1">
+      <label className="text-xs font-semibold text-gray-700">Address</label>
+      <div className="relative">
+        <MapPin className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
+        <input
+          type="text"
+          name="address"
+          value={signupData.address}
+          onChange={handleSignupChange}
+          placeholder="Enter business address"
+          className="w-full pl-10 pr-4 py-3 text-sm border-2 border-gray-200 rounded-lg bg-gray-50
+                     focus:bg-white focus:ring-2 focus:ring-[#2979FF] focus:border-transparent transition-all"
+          required
+        />
+      </div>
+    </div>
+
+    {/* Password */}
+    <div className="space-y-1">
+      <label className="text-xs font-semibold text-gray-700">Password</label>
+      <div className="relative">
+        <Lock className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
+        <input
+          type={showPassword ? "text" : "password"}
+          name="password"
+          value={signupData.password}
+          onChange={handleSignupChange}
+          placeholder="Create a password"
+          className="w-full pl-10 pr-12 py-3 text-sm border-2 border-gray-200 rounded-lg bg-gray-50
+                     focus:bg-white focus:ring-2 focus:ring-[#2979FF] focus:border-transparent transition-all"
+          required
+        />
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-[#2979FF]"
+        >
+          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+        </button>
+      </div>
+    </div>
+
+    {/* Submit Button */}
+    <button
+      onClick={handleSignupSubmit}
+      disabled={isLoading}
+      className={`w-full py-3 rounded-lg font-semibold text-white transition-all ${
+        isLoading
+          ? "bg-gray-400 cursor-not-allowed"
+          : "bg-gradient-to-r from-[#2979FF] to-[#1565C0] hover:from-[#1565C0] hover:to-[#0D47A1] shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95"
+      }`}
+    >
+      <div className="flex items-center justify-center gap-2">
+        <UserPlus className="w-4 h-4" />
+        <span>{isLoading ? "Creating Account..." : "Create Seller Account"}</span>
+      </div>
+    </button>
+
+    {/* Switch to Login */}
+    <p className="text-xs text-center text-gray-600">
+      Already have an account?{" "}
+      <button
+        type="button"
+        onClick={() => setIsSignup(false)}
+        className="text-[#2979FF] font-semibold hover:underline"
+      >
+        Sign In
+      </button>
+    </p>
+  </motion.div>
+)
 
 
   return (
@@ -375,8 +467,7 @@ const Login = () => {
                 </span>
               </h2>
               <p className="text-base sm:text-lg lg:text-xl text-white/90 leading-relaxed">
-                Streamline your hospital operations with our comprehensive management system. Secure, efficient, and
-                designed for modern healthcare professionals.
+                Simplify your detergent business operations with a secure and efficient management solution tailored for detergent manufacturers and distributors.
               </p>
             </div>
 
@@ -451,7 +542,7 @@ const Login = () => {
 
       {/* Footer */}
       <div className="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 text-center text-white/60 text-xs sm:text-sm px-4">
-        <p>© 2025 Saafi Ariel Hospital Management System. All rights reserved.</p>
+        <p>© 2025 Saafi Ariel. All rights reserved.</p>
       </div>
     </div>
   )

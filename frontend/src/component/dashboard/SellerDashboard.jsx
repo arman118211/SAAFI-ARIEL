@@ -23,6 +23,7 @@ import {
   Settings,
   Shield,
   Plus,
+  Trophy,
 } from "lucide-react"
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts"
 import OfferDetailsPage from "../offers/OfferDetailsPage"
@@ -37,6 +38,7 @@ import { useLocation } from "react-router-dom";
 import { useEffect } from "react"
 import axios from "axios"
 import OfferWinPopup from "../offer/OfferWinPopup"
+import WinnerOffers from "../seller-dasboared/WinnerOffers"
 
 
 // --- Components ---
@@ -78,9 +80,10 @@ const OffersPage = () => (
 
 export default function SellerDashboard() {
   const location = useLocation();
+  const getSellerCurrentPage = localStorage.getItem("sellerCurrentPage")
 
   const [activeTab, setActiveTab] = useState(
-    location.state?.activeTab || "dashboard"
+    getSellerCurrentPage || "dashboard"
   );
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -106,10 +109,13 @@ export default function SellerDashboard() {
 
   // console.log("seller-->",seller)
 
+
+
   const menuItems = [
     { id: "dashboard", label: "Overview", icon: LayoutDashboard },
     { id: "offers", label: "Offers", icon: Tag },
     { id: "orders", label: "Orders", icon: ShoppingBag },
+    { id: "winner", label: "Winner", icon: Trophy },
     { id: "profile", label: "Profile", icon: User },
 
   ]
@@ -159,7 +165,11 @@ export default function SellerDashboard() {
               {menuItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => setActiveTab(item.id)}
+                  onClick={() => {
+                    setActiveTab(item.id)
+                    localStorage.setItem("sellerCurrentPage", item.id)
+                    setIsMobileMenuOpen(false);
+                  }}
                   className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
                     ${
                       activeTab === item.id
@@ -253,7 +263,7 @@ export default function SellerDashboard() {
                   <SellerDashboardHome />
                 ) : activeTab === "offers" ? (
                   <OffersPage />
-                ) : activeTab === "orders" ? <Order/>:activeTab === "profile" ? <SellerProfile/> : (
+                ) : activeTab === "orders" ? <Order/>:activeTab === "profile" ? <SellerProfile/> :activeTab === "winner" ? <WinnerOffers/> : (
                   <div className="h-96 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
                     <Activity className="w-12 h-12 text-gray-300 mb-4" />
                     <h3 className="text-gray-900 font-medium">Module Under Development</h3>

@@ -13,7 +13,8 @@ import {
   getActiveOffers,
   getWinnerNotification,
   markWinSeen,
-  getWinningOffersForSeller
+  getWinningOffersForSeller,
+  getAllOfferWinners
 } from "../controllers/offerController.js";
 
 const router = express.Router();
@@ -37,6 +38,10 @@ router.patch("/winner/:id", declareWinner);
 router.get(
   "/seller/winner/:id",
   getWinningOffersForSeller
+);
+router.get(
+  "/admin/offers/winners",
+  getAllOfferWinners
 );
 
 

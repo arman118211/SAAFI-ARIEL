@@ -338,6 +338,39 @@ export const getWinningOffersForSeller = async (req, res) => {
   }
 };
 
+// winner for admin
+export const getAllOfferWinners = async (req, res) => {
+  try {
+    const offersWithWinners = await Offer.find({
+      winner: { $ne: null },
+    })
+      .select(
+        "title description startDate endDate status winner products createdAt"
+      )
+      .populate({
+        path: "winner",
+        select: "name email phone companyName",
+      })
+      .populate({
+        path: "products.productId",
+        select: "name price imageUrl",
+      })
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: offersWithWinners.length,
+      offers: offersWithWinners,
+    });
+  } catch (error) {
+    console.error("Error fetching offer winners:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch offer winners",
+    });
+  }
+};
+
 
 
 

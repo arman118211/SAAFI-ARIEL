@@ -70,6 +70,12 @@ export default function OfferDetails({ offer, onAddToCart }) {
     }
   }
 
+  useEffect(()=>{
+    if(seller && token){
+      localStorage.removeItem("current")
+    }
+  },[])
+
   const decreaseQuantity = (productId) => {
     const product = offer.products.find(item => item.productId._id === productId)
     const currentQty = quantities[productId]
@@ -100,7 +106,9 @@ export default function OfferDetails({ offer, onAddToCart }) {
       localStorage.setItem("current",location.pathname)
       navigate("/login");
     return;
-  }
+   }else{
+      localStorage.removeItem("current")
+    }
     try {
       // Prepare order data according to your controller
       const orderData = {

@@ -24,6 +24,7 @@ import {
   BarChart3,
   Settings,
   Shield,
+  Trophy,
 } from "lucide-react"
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Line } from "recharts"
 import ProductPage from "../admin-dashboard/ProductPage"
@@ -37,6 +38,7 @@ import { logout } from "../../redux/slices/authSlice";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
+import WinnerOffers from "../seller-dasboared/WinnerOffers"
 
 
 
@@ -460,8 +462,9 @@ const TableRowShimmer = () => (
 
 export default function AdminDashboard() {
   const location = useLocation();
+  const adminCurrentPage = localStorage.getItem("adminCurrentPage")
   const [activeTab, setActiveTab] = useState(
-    location.state?.activeTab || "dashboard"
+    adminCurrentPage || "dashboard"
   );
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -540,6 +543,7 @@ export default function AdminDashboard() {
     { id: "products", label: "All Products", icon: Package },
     { id: "offers", label: "Offers", icon: Tag },
     { id: "orders", label: "Orders", icon: ShoppingBag },
+    { id: "winner", label: "Winner", icon: Trophy },
     { id: "customers", label: "Customers", icon: User },
   ]
   const dispatch = useDispatch();
@@ -593,7 +597,11 @@ export default function AdminDashboard() {
               {menuItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => setActiveTab(item.id)}
+                  onClick={() => {
+                    setActiveTab(item.id)
+                    localStorage.setItem("adminCurrentPage",item.id)
+                    setIsMobileMenuOpen(false);
+                  }}
                   className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
                     ${
                       activeTab === item.id
@@ -614,7 +622,11 @@ export default function AdminDashboard() {
               {bottomMenuItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => setActiveTab(item.id)}
+                  onClick={() => {
+                    setActiveTab(item.id)
+                    localStorage.setItem("adminCurrentPage",item.id)
+                    setIsMobileMenuOpen(false);
+                  }}
                   className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
                 >
                   <item.icon className="w-4 h-4 text-gray-400" />
@@ -695,7 +707,15 @@ export default function AdminDashboard() {
                 : activeTab === 'customers'? <SellerList/>:
                  activeTab === "offers" ? (
                   <AdminOffersPage />
-                ) :activeTab === "profile"?<SellerProfile/> : (
+                ) :activeTab === "profile"?<SellerProfile/> :activeTab === "winner" ? (
+                  <div className="p-5">
+                    <div className=" mb-8">
+                      <h1 className="text-3xl font-bold text-gray-800 mb-2">Winner Dashboard</h1>
+                      <p className="text-gray-600">Manage all your winner</p>
+                    </div>
+                    <WinnerOffers/>
+                    </div>
+                ) : (
                   <div className="h-96 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
                     <Activity className="w-12 h-12 text-gray-300 mb-4" />
                     <h3 className="text-gray-900 font-medium">Module Under Development</h3>
