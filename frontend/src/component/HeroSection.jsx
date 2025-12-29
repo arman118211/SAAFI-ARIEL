@@ -1,85 +1,71 @@
 import { useState, useEffect } from "react"
-import { ShoppingBag } from "lucide-react"
-import {Link} from 'react-router-dom'
-
-const heroBackgrounds = [
-  "/banner/cow11.webp",
-  "/banner/i2.webp",
-  "/banner/cow12.webp",
-]
+import PosterCarousel from "./PosterCarousel"
 
 const HeroSection = () => {
-  const [currentBg, setCurrentBg] = useState(0)
+  const text =
+    "TRUST SAAFI ARIEL RANGE OF DETERGENT TO TAKE CARE OF ALL YOUR LAUNDRY NEED!"
+
+  const [displayText, setDisplayText] = useState("")
+  const [index, setIndex] = useState(0)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentBg((prev) => (prev + 1) % heroBackgrounds.length)
-    }, 5000)
+    const speed = isDeleting ? 25 : 55
 
-    return () => clearInterval(interval)
-  }, [])
+    const timeout = setTimeout(() => {
+      if (!isDeleting && index < text.length) {
+        setDisplayText(text.slice(0, index + 1))
+        setIndex(index + 1)
+      } else if (isDeleting && index > 0) {
+        setDisplayText(text.slice(0, index - 1))
+        setIndex(index - 1)
+      } else if (index === text.length) {
+        setTimeout(() => setIsDeleting(true), 1500)
+      } else if (index === 0) {
+        setIsDeleting(false)
+      }
+    }, speed)
+
+    return () => clearTimeout(timeout)
+  }, [index, isDeleting, text])
 
   return (
-    <section className="relative w-full h-screen overflow-hidden">
-      {/* Hero Message */}
-      <div className="absolute top-0 left-0 w-full bg-white py-4 z-10">
-        <p className="text-center text-lg md:text-3xl px-4">
-          <span className="font-bold bg-gradient-to-r from-red-500 to-purple-500 bg-clip-text text-transparent">
-            TRUST SAAFI ARIEL
-          </span>{" "}
-          RANGE OF DETERGENT{" "}
-          <span className="font-bold bg-gradient-to-r from-red-500 to-purple-500 bg-clip-text text-transparent">
-            TO TAKE CARE OF ALL YOUR LAUNDRY NEED!
+    <section className="relative w-full overflow-hidden">
+      {/* Animated Hero Text */}
+      <div className="absolute top-0 left-0 w-full py-4 z-10 bg-white">
+        <p className="text-center text-md md:text-3xl px-4 font-extrabold tracking-wide">
+          <span className="relative inline-block bg-gradient-to-r from-red-600 via-purple-500 to-blue-600 bg-[length:200%_200%] bg-clip-text text-transparent animate-gradient">
+            {displayText}
           </span>
+          <span className="ml-1 text-purple-600 animate-blink">|</span>
         </p>
       </div>
 
-      {/* Background Image Carousel */}
-      <div className="absolute inset-0 w-full h-full">
-        {heroBackgrounds.map((bg, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
-              currentBg === index ? "opacity-100" : "opacity-0"
-            }`}
-            style={{
-              backgroundImage: `url(${bg})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center center",
-              backgroundRepeat: "no-repeat",
-              width: "100%",
-              height: "100%"
-            }}
-          />
-        ))}
-      </div>
+      <PosterCarousel />
 
-      {/* Overlay for better text readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/50 z-5"></div>
+      {/* Custom Animations */}
+      <style>
+        {`
+          @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+          }
 
-      {/* Hero Content - Now Left Aligned */}
-      <div className="absolute inset-0 flex items-center z-10">
-        <div className="text-left text-white px-8 md:px-16 lg:px-24 max-w-3xl">
-          <h1 className="text-4xl md:text-4xl font-bold mb-6 leading-tight drop-shadow-lg">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-              Unleash the Power of Clean
-              <br />
-              Where Stains Surrender and
-              <br />
-              Freshness Prevails.
-            </span>
-          </h1>
-          <p className="text-xl md:text-2xl mb-10 text-gray-200">Our Detergent, Your Clean Slate</p>
-          <Link to='/shop'>
-            <button
-              className="bg-gradient-to-r from-red-500 to-purple-500 px-8 py-4 rounded-full text-lg font-bold flex items-center text-white shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              <ShoppingBag className="mr-2" size={20} />
-              Buy Now
-            </button>
-          </Link>
-        </div>
-      </div>
+          .animate-gradient {
+            animation: gradient 4s ease infinite;
+          }
+
+          @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0; }
+          }
+
+          .animate-blink {
+            animation: blink 1s infinite;
+          }
+        `}
+      </style>
     </section>
   )
 }
