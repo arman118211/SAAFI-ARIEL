@@ -10,7 +10,12 @@ const offerSchema = new mongoose.Schema(
     description: {
       type: String,
     },
-
+    offerFor: {
+      type: String,
+      enum: ["common", "retailer", "dealer"],
+      default: "common",
+      required: true,
+    },
     products: [
       {
         productId: {

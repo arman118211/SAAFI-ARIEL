@@ -38,6 +38,7 @@ import ProductPage from './component/admin-dashboard/ProductPage'
 import SellerDetail from './component/admin-dashboard/SellerDetails'
 import OfferDetailPage from './component/admin-dashboard/OfferDetailPage'
 import ImageUpload from './component/ImageUpload'
+import DealerDetails from './component/admin-dashboard/DealerDetails'
 
 
 function App() {
@@ -67,6 +68,7 @@ function App() {
         <Route path="/seller/:id" element={<SellerDetail />} />
         <Route path="/offer/:id" element={<OfferDetailPage />} />
         <Route path="/upload" element={<ImageUpload />} />
+        <Route path="/dealers/:dealerId" element={<DealerDetails />} />
 
 
 

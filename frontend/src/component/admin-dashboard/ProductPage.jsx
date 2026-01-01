@@ -1,4 +1,3 @@
-"use client"
 
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -49,16 +48,42 @@ const ProductManager = () => {
   const [showForm, setShowForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
   const [searchTerm, setSearchTerm] = useState("")
+  // const [formData, setFormData] = useState({
+  //   name: "",
+  //   description: "",
+  //   price: "",
+  //   unit: "",
+  //   stock: "",
+  //   category: "",
+  //   imageUrl: "",
+  //   isActive: true,
+  // })
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    price: "",
-    unit: "",
-    stock: "",
     category: "",
     imageUrl: "",
+
+    // 🔹 New fields
+    keyFeatures: [""],
+    usageInstruction: "",
+    quantity: "",       // e.g. 1kg, 500gm, 1L
+    packSize: "",       // e.g. 10, 12, 25
+
+    marketPrice: "",
+    marketDiscount: 0,
+
+    retailerPrice: "",
+    retailerDiscount: 0,
+
+    dealerPrice: "",
+    dealerDiscount: 0,
+
+    stock: "",
     isActive: true,
   })
+
+
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageUploading, setImageUploading] = useState(false);
@@ -71,38 +96,6 @@ const ProductManager = () => {
       [name]: type === "checkbox" ? checked : value,
     })
   }
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault()
-  //   console.log("calling handleSubmit")
-  //   if (editingProduct) {
-  //     console.log("editing form==>", editingProduct)
-  //     try {
-  //       const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/products/${editingProduct._id}`,
-  //         formData
-  //       )
-  //       console.log("sucessfully upadted", res)
-  //       setProducts(products.map((p) => (p._id === editingProduct._id ? { ...formData, _id: editingProduct._id } : p)))
-
-  //     } catch (err) {
-  //       console.log("failed to update the product", err)
-  //     }
-  //   } else {
-  //     console.log("creating new product")
-  //     try {
-  //       const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/products/add`,
-  //         formData
-  //       )
-  //       console.log("added data successfully", res)
-  //       getProductData()
-
-  //     } catch (err) {
-
-  //     }
-  //     setProducts([...products, { ...formData, _id: Date.now().toString() }])
-  //   }
-  //   resetForm()
-  // }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -227,16 +220,25 @@ const ProductManager = () => {
     setFormData({
       name: "",
       description: "",
-      price: "",
-      unit: "",
-      stock: "",
       category: "",
       imageUrl: "",
+      keyFeatures: [""],
+      usageInstruction: "",
+      quantity: "",
+      packSize: "",
+      marketPrice: "",
+      marketDiscount: 0,
+      retailerPrice: "",
+      retailerDiscount: 0,
+      dealerPrice: "",
+      dealerDiscount: 0,
+      stock: "",
       isActive: true,
-    })
-    setEditingProduct(null)
-    setShowForm(false)
-  }
+    });
+    setEditingProduct(null);
+    setShowForm(false);
+  };
+
 
   const filteredProducts = products.filter(
     (p) =>
@@ -629,7 +631,7 @@ const ProductManager = () => {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-lg md:rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col border border-gray-200"
+              className="bg-white rounded-lg md:rounded-xl shadow-xl w-full max-w-7xl max-h-[90vh] overflow-hidden flex flex-col border border-gray-200"
             >
               {/* Modal Header */}
               <div className="px-4 md:px-6 py-4 md:py-5 border-b border-gray-200 flex justify-between items-center bg-gradient-to-r from-blue-50 to-red-50">
@@ -675,33 +677,138 @@ const ProductManager = () => {
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-2">
+                      Key Features
+                    </label>
+
+                    {formData.keyFeatures.map((feature, index) => (
+                      <div key={index} className="flex gap-2 mb-2">
+                        <input
+                          type="text"
+                          value={feature}
+                          onChange={(e) => {
+                            const updated = [...formData.keyFeatures];
+                            updated[index] = e.target.value;
+                            setFormData({ ...formData, keyFeatures: updated });
+                          }}
+                          className="flex-1 px-3 py-2 border-2 rounded-lg bg-gray-50 text-sm"
+                          placeholder={`Feature ${index + 1}`}
+                        />
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormData({
+                              ...formData,
+                              keyFeatures: formData.keyFeatures.filter((_, i) => i !== index),
+                            })
+                          }
+                          className="px-3 bg-red-100 text-red-600 rounded-lg"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormData({
+                          ...formData,
+                          keyFeatures: [...formData.keyFeatures, ""],
+                        })
+                      }
+                      className="text-xs font-semibold text-blue-600 hover:underline"
+                    >
+                      + Add Feature
+                    </button>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-2">
+                      Usage Instructions
+                    </label>
+                    <textarea
+                      name="usageInstruction"
+                      value={formData.usageInstruction}
+                      onChange={handleInputChange}
+                      rows="3"
+                      className="w-full px-3 py-2 border-2 rounded-lg bg-gray-50 text-sm"
+                      placeholder="Explain how to use the product"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs md:text-sm font-bold text-gray-700 mb-2">
-                        Price <span className="text-red-600">*</span>
+                      <label className="block text-xs font-bold text-gray-700 mb-2">
+                        Quantity
+                      </label>
+                      <input
+                        type="text"
+                        name="quantity"
+                        value={formData.quantity}
+                        onChange={handleInputChange}
+                        placeholder="1kg / 500gm / 1L"
+                        className="w-full px-3 py-2 border-2 rounded-lg bg-gray-50 text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-gray-700 mb-2">
+                        Pack Size
                       </label>
                       <input
                         type="number"
-                        name="price"
-                        value={formData.price}
+                        name="packSize"
+                        value={formData.packSize}
                         onChange={handleInputChange}
-                        required
-                        min="0"
-                        step="0.01"
-                        className="w-full px-3 md:px-4 py-2 md:py-2.5 bg-gray-50 border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 placeholder-gray-500 text-sm"
-                        placeholder="0.00"
+                        placeholder="10 / 12 / 25"
+                        className="w-full px-3 py-2 border-2 rounded-lg bg-gray-50 text-sm"
                       />
                     </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs md:text-sm font-bold text-gray-700 mb-2">Unit</label>
-                      <input
-                        type="text"
-                        name="unit"
-                        value={formData.unit}
+                      <label className="text-xs font-bold text-gray-700 mb-1">Market Price</label>
+                      <input type="number" name="marketPrice" value={formData.marketPrice}
                         onChange={handleInputChange}
-                        className="w-full px-3 md:px-4 py-2 md:py-2.5 bg-gray-50 border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 placeholder-gray-500 text-sm"
-                        placeholder="kg, L, pcs"
-                      />
+                        className="w-full px-3 py-2 border-2 rounded-lg bg-gray-50 text-sm" />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-gray-700 mb-1">Market Discount (%)</label>
+                      <input type="number" name="marketDiscount" value={formData.marketDiscount}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border-2 rounded-lg bg-gray-50 text-sm" />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-gray-700 mb-1">Retailer Price</label>
+                      <input type="number" name="retailerPrice" value={formData.retailerPrice}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border-2 rounded-lg bg-gray-50 text-sm" />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-gray-700 mb-1">Retailer Discount (%)</label>
+                      <input type="number" name="retailerDiscount" value={formData.retailerDiscount}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border-2 rounded-lg bg-gray-50 text-sm" />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-gray-700 mb-1">Dealer Price</label>
+                      <input type="number" name="dealerPrice" value={formData.dealerPrice}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border-2 rounded-lg bg-gray-50 text-sm" />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-gray-700 mb-1">Dealer Discount (%)</label>
+                      <input type="number" name="dealerDiscount" value={formData.dealerDiscount}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border-2 rounded-lg bg-gray-50 text-sm" />
                     </div>
                   </div>
 
@@ -733,42 +840,6 @@ const ProductManager = () => {
                       />
                     </div>
                   </div>
-
-                  {/* <div>
-                    <label className="block text-xs md:text-sm font-bold text-gray-700 mb-2">Image URL</label>
-                    <input
-                      type="url"
-                      name="imageUrl"
-                      value={formData.imageUrl}
-                      onChange={handleInputChange}
-                      className="w-full px-3 md:px-4 py-2 md:py-2.5 bg-gray-50 border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 placeholder-gray-500 text-sm"
-                      placeholder="https://..."
-                    />
-                  </div> */}
-                  {/* <div>
-                    <label className="block text-xs md:text-sm font-bold text-gray-700 mb-2">
-                      Product Image
-                    </label>
-
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => setSelectedImage(e.target.files[0])}
-                      className="w-full px-3 md:px-4 py-2 md:py-2.5 bg-gray-50 border-2 border-gray-300 rounded-lg"
-                    />
-
-                    {imageUploading && (
-                      <p className="text-xs text-blue-600 mt-1">Uploading image...</p>
-                    )}
-
-                    {formData.imageUrl && (
-                      <img
-                        src={formData.imageUrl}
-                        alt="Preview"
-                        className="mt-2 w-20 h-20 object-cover rounded-lg border"
-                      />
-                    )}
-                  </div> */}
                   <div>
                     <label className="block text-xs md:text-sm font-bold text-gray-700 mb-2">
                       Product Image

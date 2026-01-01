@@ -9,7 +9,7 @@ function MainDashboard() {
   return (
     <div>
         {
-            seller.role === "seller" && <SellerDashboard/>
+            (seller.role === "seller" ||seller.role === "retailer"||seller.role === "dealer") && <SellerDashboard/>
         }
         {
             seller.role === "admin" && <AdminDashboard/>

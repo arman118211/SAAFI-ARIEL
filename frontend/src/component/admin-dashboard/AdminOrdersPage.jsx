@@ -440,12 +440,21 @@ const AdminOrdersPage = () => {
                       <p className="font-mono text-xs text-gray-800 font-semibold">{order._id.slice(-8)}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 mb-0.5 font-medium">Items</p>
-                      <p className="font-bold text-sm text-gray-800">{order.totalQty}</p>
+                      <p className="text-xs text-gray-500 mb-0.5 font-medium ">Items</p>
+                      <p className="font-bold text-sm text-gray-800">
+                        {order.totalQty} bag(s)
+                      </p>
+
                     </div>
                     <div>
                       <p className="text-xs text-gray-500 mb-0.5 font-medium">Amount</p>
-                      <p className="font-bold text-sm bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">₹{order.totalAmount.toLocaleString()}</p>
+                      <p className="font-bold text-sm bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">₹{order.items
+                        .reduce(
+                          (sum, i) => sum + i.qty * i.productId.packSize * i.price,
+                          0
+                        )
+                        .toLocaleString()}
+                      </p>
                     </div>
                   </div>
 
@@ -468,9 +477,12 @@ const AdminOrdersPage = () => {
                             <div key={idx} className="flex justify-between items-center p-2.5 bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg border border-gray-100">
                               <div>
                                 <p className="font-semibold text-gray-800 text-xs">{item.productId.name}</p>
-                                <p className="text-xs text-gray-600 mt-0.5">{item.qty} {item.productId.unit} × ₹{item.price}</p>
+                                <p className="text-xs text-gray-600 mt-0.5">
+                                  {item.qty} bag(s) × {item.productId.packSize} pcs × ₹{item.price}
+                                </p>
+
                               </div>
-                              <p className="font-bold text-sm text-gray-800">₹{(item.qty * item.price).toLocaleString()}</p>
+                              <p className="font-bold text-sm text-gray-800">₹{(item.qty * item.productId.packSize * item.price).toLocaleString()}</p>
                             </div>
                           ))}
                         </div>

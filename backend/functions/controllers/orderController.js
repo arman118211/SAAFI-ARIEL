@@ -12,9 +12,15 @@ export const createOrder = async (req, res) => {
     let totalQty = 0;
     let totalAmount = 0;
 
+
     items.forEach((item) => {
-      totalQty += item.qty;
-      totalAmount += item.qty * item.price;
+      const qty = item.qty || 0;                  // bags
+      const pricePerPiece = item.price || 0;
+      const packSize = item.packSize || 1;
+
+      totalQty += qty;
+      totalAmount += qty * packSize * pricePerPiece;
+      console.log("totalAmount===>",totalAmount)
     });
 
     const order = await Order.create({

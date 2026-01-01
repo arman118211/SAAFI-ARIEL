@@ -23,6 +23,7 @@ export default function SellerDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const sellersData = useSelector(selectSellers);
+  console.log("seller data==>",sellersData)
   const seller = sellersData.find((s) => s._id === id)
   const [selectedStatus, setSelectedStatus] = useState("all")
   const [expandedOrder, setExpandedOrder] = useState(null)
@@ -235,7 +236,7 @@ export default function SellerDetail() {
             >
               <div
                 onClick={() => setExpandedOrder(expandedOrder === order._id ? null : order._id)}
-                className="bg-white border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-red-600 hover:shadow-lg transition-all shadow-sm"
+                className="bg-white border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-red-600 hover:shadow-lg transition-all shadow-sm "
               >
                 {/* Order Header */}
                 <div className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors">
@@ -260,7 +261,7 @@ export default function SellerDetail() {
                   </div>
 
                   <div className="text-right mr-4">
-                    <p className="text-2xl font-bold text-emerald-600">₹{order.totalAmount.toLocaleString()}</p>
+                    <p className="text-2xl font-bold text-emerald-600 ">₹{order.totalAmount.toLocaleString()}</p>
                     <p className="text-gray-600 text-sm">{order.totalQty} items</p>
                   </div>
 
@@ -307,20 +308,30 @@ export default function SellerDetail() {
                             <p className="text-gray-900 font-semibold">
                               {item.product?.name || `Product ID: ${item.productId}`}
                             </p>
-                            <p className="text-gray-600 text-sm mt-1">
-                              Quantity: <span className="text-blue-600 font-semibold">{item.qty}</span>
+                           <p className="text-gray-600 text-sm mt-1">
+                              Quantity:{" "}
+                              <span className="text-blue-600 font-semibold">
+                                {item.qty} bag{item.qty > 1 ? "s" : ""} × {item.product?.packSize} pcs
+                              </span>
                             </p>
-                            <p className="text-gray-600 text-sm mt-1">
-                              Price per unit:{" "}
-                              <span className="text-red-600 font-semibold">₹{item.price.toLocaleString()}</span>
+                            <p className="text-gray-500 text-xs">
+                              Each packet: {item.product?.quantity}
                             </p>
+
+                            <p className="text-gray-600 text-sm mt-1">
+                              Price per packet:{" "}
+                              <span className="text-red-600 font-semibold">
+                                ₹{item.price.toLocaleString()}
+                              </span>
+                            </p>
+
                           </div>
 
-                          <div className="text-right flex-shrink-0">
+                          <div className="text-right flex-shrink-0 ">
                             <p className="text-lg font-bold text-emerald-600">
-                              ₹{(item.price * item.qty).toLocaleString()}
+                              ₹{(item.qty * item.product?.packSize * item.price).toLocaleString()}
                             </p>
-                            <p className="text-gray-600 text-xs mt-1">Subtotal</p>
+                            <p className="text-gray-600 text-xs mt-1">Subtotal ({item.qty} × {item.product?.packSize} × ₹{item.price})</p>
                           </div>
                         </div>
                       ))}

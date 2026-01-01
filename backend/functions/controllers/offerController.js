@@ -25,20 +25,87 @@ export const getAllOffers = async (req, res) => {
 };
 
 // GET SINGLE OFFER
+// export const getOfferById = async (req, res) => {
+//   try {
+//     const offer = await Offer.findById(req.params.id)
+//       .populate("products.productId")
+//       .populate("sellerPurchases.sellerId")
+//       .populate("winner");
+
+//     if (!offer) return res.status(404).json({ message: "Offer not found" });
+
+//     res.json({ success: true, offer });
+//   } catch (error) {
+//     res.status(500).json({ success: false, error: error.message });
+//   }
+// };
+
+
 export const getOfferById = async (req, res) => {
   try {
     const offer = await Offer.findById(req.params.id)
       .populate("products.productId")
       .populate("sellerPurchases.sellerId")
-      .populate("winner");
+      .populate("winner")
+      .lean(); // 🔥 VERY IMPORTANT
 
-    if (!offer) return res.status(404).json({ message: "Offer not found" });
+    if (!offer) {
+      return res.status(404).json({ message: "Offer not found" });
+    }
 
-    res.json({ success: true, offer });
+    offer.products = offer.products.map((item) => {
+      const product = item.productId;
+
+      let price = 0;
+      let discount = 0;
+
+      if (offer.offerFor === "common") {
+        price = product.marketPrice;
+        discount = product.marketDiscount;
+      } else if (offer.offerFor === "retailer") {
+        price = product.retailerPrice;
+        discount = product.retailerDiscount;
+      } else if (offer.offerFor === "dealer") {
+        price = product.dealerPrice;
+        discount = product.dealerDiscount;
+      }
+
+      // ✅ add visible fields
+      product.price = price;
+      product.discount = discount;
+
+      // ❌ remove internal pricing
+      delete product.marketPrice;
+      delete product.marketDiscount;
+      delete product.retailerPrice;
+      delete product.retailerDiscount;
+      delete product.dealerPrice;
+      delete product.dealerDiscount;
+
+      return item;
+    });
+
+    // 🔒 Hide sensitive data for retailer & dealer
+    if (offer.offerFor !== "common") {
+      delete offer.sellerPurchases;
+      delete offer.winner;
+    }
+
+    res.json({
+      success: true,
+      offer,
+    });
+
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
+
+
+
 
 // UPDATE OFFER
 export const updateOffer = async (req, res) => {
@@ -179,17 +246,56 @@ export const getAllOfferForAdmin = async (req, res) => {
 };
 
 // get all active offer
+// export const getActiveOffers = async (req, res) => {
+//   try {
+//     const now = new Date();
+
+//     const offers = await Offer.find({
+//       endDate: { $gte: now },          // not crossed deadline
+//       status: { $ne: "closed" },       // not closed
+//     })
+//       .select("-winner")               // exclude winner field
+//       .populate("products.productId") // optional
+//       .populate("sellerPurchases.sellerId");        // optional
+
+//     res.status(200).json({
+//       success: true,
+//       count: offers.length,
+//       offers,
+//     });
+
+//   } catch (error) {
+//     console.error("Error fetching active offers:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Failed to fetch active offers",
+//     });
+//   }
+// };
 export const getActiveOffers = async (req, res) => {
   try {
+    
     const now = new Date();
+    const { role } = req.body; // role: "common" | "retailer" | "dealer"
+
+    // default: common user
+    let offerForFilter = ["common"];
+
+    if (role === "retailer") {
+      offerForFilter = ["common", "retailer"];
+    } 
+    else if (role === "dealer") {
+      offerForFilter = ["common", "dealer"];
+    }
 
     const offers = await Offer.find({
-      endDate: { $gte: now },          // not crossed deadline
-      status: { $ne: "closed" },       // not closed
+      endDate: { $gte: now },            // not expired
+      status: { $ne: "closed" },         // not closed
+      offerFor: { $in: offerForFilter }  // role-based filter
     })
-      .select("-winner")               // exclude winner field
-      .populate("products.productId") // optional
-      .populate("sellerPurchases.sellerId");        // optional
+      .select("-winner")
+      .populate("products.productId")
+      .populate("sellerPurchases.sellerId");
 
     res.status(200).json({
       success: true,

@@ -73,19 +73,47 @@ const AdminOfferPage = () => {
   const [selectedStatus, setSelectedStatus] = useState("all")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [showCreateForm, setShowCreateForm] = useState(false)
+  const [selectedOfferFor, setSelectedOfferFor] = useState("all");
 
   // Filter and search logic
+  // const filteredOffers = useMemo(() => {
+  //   return offers.filter((offer) => {
+  //     const matchesSearch =
+  //       offer.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //       offer.description.toLowerCase().includes(searchTerm.toLowerCase())
+  //     const matchesStatus = selectedStatus === "all" || offer.status === selectedStatus
+  //     const matchesCategory =
+  //       selectedCategory === "all" || offer.products.some((p) => p.productId.category === selectedCategory)
+  //     return matchesSearch && matchesStatus && matchesCategory
+  //   })
+  // }, [searchTerm, selectedStatus, selectedCategory, offers])
   const filteredOffers = useMemo(() => {
-    return offers.filter((offer) => {
-      const matchesSearch =
-        offer.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        offer.description.toLowerCase().includes(searchTerm.toLowerCase())
-      const matchesStatus = selectedStatus === "all" || offer.status === selectedStatus
-      const matchesCategory =
-        selectedCategory === "all" || offer.products.some((p) => p.productId.category === selectedCategory)
-      return matchesSearch && matchesStatus && matchesCategory
-    })
-  }, [searchTerm, selectedStatus, selectedCategory, offers])
+  return offers.filter((offer) => {
+    const matchesSearch =
+      offer.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      offer.description.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus =
+      selectedStatus === "all" || offer.status === selectedStatus;
+
+    const matchesCategory =
+      selectedCategory === "all" ||
+      offer.products.some(
+        (p) => p.productId.category === selectedCategory
+      );
+
+    const matchesOfferFor =
+      selectedOfferFor === "all" || offer.offerFor === selectedOfferFor;
+
+    return (
+      matchesSearch &&
+      matchesStatus &&
+      matchesCategory &&
+      matchesOfferFor
+    );
+  });
+}, [searchTerm, selectedStatus, selectedCategory, selectedOfferFor, offers]);
+
 
   // Extract unique categories
   const categories = useMemo(() => {
@@ -123,7 +151,7 @@ const AdminOfferPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-indigo-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-indigo-50 p-4 md:p-6 ">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
         <div className="flex justify-between items-start md:items-center mb-8 flex-col md:flex-row gap-4">
@@ -244,6 +272,23 @@ const AdminOfferPage = () => {
               ))}
             </select>
           </div>
+
+          <div className="relative">
+            <Filter className="absolute left-3 top-3 text-slate-400" size={18} />
+            <select
+              value={selectedOfferFor}
+              onChange={(e) => setSelectedOfferFor(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-lg
+                        text-slate-900 focus:border-blue-500 focus:outline-none appearance-none
+                        transition-all text-sm md:text-base"
+            >
+              <option value="all">All Offer Types</option>
+              <option value="common">Common</option>
+              <option value="retailer">Retailer</option>
+              <option value="dealer">Dealer</option>
+            </select>
+          </div>
+
         </div>
       </motion.div>
 
@@ -272,6 +317,20 @@ const AdminOfferPage = () => {
                     >
                       {offer.status.charAt(0).toUpperCase() + offer.status.slice(1)}
                     </span>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-bold capitalize
+                        ${
+                          offer.offerFor === "common"
+                            ? "bg-slate-200 text-slate-700"
+                            : offer.offerFor === "retailer"
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-purple-100 text-purple-700"
+                        }
+                      `}
+                    >
+                      {offer.offerFor}
+                    </span>
+
                     {offer.winner && (
                       <span className="bg-gradient-to-r from-amber-400 to-amber-500 text-white px-2 md:px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 w-max">
                         <Award size={12} />

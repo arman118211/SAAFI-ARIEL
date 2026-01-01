@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import toast from "react-hot-toast";
 // -----------------------------------
 // LOAD SAVED AUTH DATA (Fix Refresh)
 // -----------------------------------
@@ -14,12 +15,14 @@ export const loginSeller = createAsyncThunk(
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/seller/auth/login`, {
-        email,
+        identifier:email,
         password,
       });
 
       return res.data; // contains { message, seller, token }
     } catch (error) {
+      console.log("failed from the server",error)
+      toast.error(error.response.data.message || "Something went Worng . Try after some time")
 
       return rejectWithValue(error.response?.data || "Login Failed");
     }

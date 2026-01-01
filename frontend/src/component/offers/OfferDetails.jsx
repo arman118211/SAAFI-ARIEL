@@ -47,16 +47,34 @@ export default function OfferDetails({ offer, onAddToCart }) {
   }, [offer.endDate])
 
   // Update cart items when quantities change
+  // useEffect(() => {
+  //   const items = offer.products.map(item => ({
+  //     productId: item.productId._id,
+  //     product: item.productId,
+  //     quantity: quantities[item.productId._id] || item.minQty,
+  //     minQty: item.minQty,
+  //     price: item.productId.price // current price for snapshot
+  //   }))
+  //   setCartItems(items)
+  // }, [quantities, offer.products])
   useEffect(() => {
-    const items = offer.products.map(item => ({
+  const items = offer.products.map(item => {
+    const quantity = quantities[item.productId._id] || item.minQty
+
+    return {
       productId: item.productId._id,
       product: item.productId,
-      quantity: quantities[item.productId._id] || item.minQty,
+      quantity,                 // number of BAGS
       minQty: item.minQty,
-      price: item.productId.price // current price for snapshot
-    }))
-    setCartItems(items)
-  }, [quantities, offer.products])
+      packSize: item.productId.packSize,
+      pricePerPiece: item.productId.price,
+      totalPrice: getItemTotalPrice(item, quantity),
+    }
+  })
+
+  setCartItems(items)
+}, [quantities, offer.products])
+
 
   const increaseQuantity = (productId) => {
     const product = offer.products.find(item => item.productId._id === productId)
@@ -75,6 +93,17 @@ export default function OfferDetails({ offer, onAddToCart }) {
       localStorage.removeItem("current")
     }
   },[])
+
+  const getItemTotalPrice = (item, quantity) => {
+  const pricePerPiece = item.productId.price || 0
+  const packSize = item.productId.packSize || 1
+  return pricePerPiece * packSize * quantity
+}
+
+const getMinOrderPrice = (item) => {
+  return getItemTotalPrice(item, item.minQty)
+}
+
 
   const decreaseQuantity = (productId) => {
     const product = offer.products.find(item => item.productId._id === productId)
@@ -116,7 +145,8 @@ export default function OfferDetails({ offer, onAddToCart }) {
         items: cartItems.map(item => ({
           productId: item.productId,
           qty: item.quantity,
-          price: item.price // current price as snapshot
+          price: item.pricePerPiece, // current price as snapshot
+          packSize: item.packSize
         })),
         offerId: offer._id,
         // totalQty and totalAmount will be calculated in backend
@@ -160,14 +190,21 @@ export default function OfferDetails({ offer, onAddToCart }) {
   }
 
   // Calculate total price based on current quantities
-  const totalPrice = cartItems.reduce((sum, item) => {
-    return sum + (item.product.price * item.quantity)
-  }, 0)
+  // const totalPrice = cartItems.reduce((sum, item) => {
+  //   return sum + (item.product.price * item.quantity)
+  // }, 0)/
+  const totalPrice = cartItems.reduce(
+    (sum, item) => sum + item.totalPrice,
+    0
+  )
+
+
 
   // Calculate savings compared to individual purchase
-  const originalTotalPrice = cartItems.reduce((sum, item) => {
-    return sum + (item.product.price * item.minQty)
-  }, 0)
+  const originalTotalPrice = offer.products.reduce(
+    (sum, item) => sum + getMinOrderPrice(item),
+    0
+  )
 
   const savings = originalTotalPrice - totalPrice
 
@@ -261,7 +298,14 @@ export default function OfferDetails({ offer, onAddToCart }) {
                           <h3 className="text-xl font-bold text-gray-900 mt-2">{item.productId.name}</h3>
                         </div>
                         <div className="text-right">
-                          <div className="text-lg font-bold text-gray-900">${item.productId.price.toFixed(2)}</div>
+                          <div className="text-right">
+                            <div className="text-lg font-bold text-gray-900">
+                              ₹{getItemTotalPrice(item, quantities[item.productId._id] || item.minQty).toFixed(2)}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              ₹{item.productId.price} × {item.productId.packSize} pcs × {quantities[item.productId._id] || item.minQty} bag(s)
+                            </div>
+                          </div>
                           <div className="text-sm text-gray-500">per {item.productId.unit}</div>
                         </div>
                       </div>
@@ -308,7 +352,8 @@ export default function OfferDetails({ offer, onAddToCart }) {
                           </button>
                         </div>
                         <div className="text-sm text-gray-500">
-                          ${((item.productId.price * (quantities[item.productId._id] || item.minQty)).toFixed(2))}
+                          {/* ${((item.productId.price * (quantities[item.productId._id] || item.minQty)).toFixed(2))} */}
+                          ₹{getItemTotalPrice(item, quantities[item.productId._id] || item.minQty).toFixed(2)}
                         </div>
                       </div>
                     </div>

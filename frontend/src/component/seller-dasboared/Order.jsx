@@ -177,6 +177,26 @@ function Order() {
   const [loading, setLoading] = useState(true)
   const [expandedOrder, setExpandedOrder] = useState(null)
 
+  const getItemTotal = (item) => {
+  const packSize = item.productId?.packSize || 1
+  return item.qty * packSize * item.price
+}
+
+  const getOrderTotal = (order) => {
+    return order.items.reduce(
+      (sum, item) => sum + getItemTotal(item),
+      0
+    )
+  }
+
+  const getTotalPieces = (order) => {
+    return order.items.reduce(
+      (sum, item) => sum + item.qty * (item.productId?.packSize || 1),
+      0
+    )
+  }
+
+
   const getorder = async () => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/order/seller/${seller._id}`)
@@ -385,7 +405,7 @@ function Order() {
                           </div>
                           <div className="flex items-center gap-1">
                             <Package className="w-4 h-4" />
-                            <span>{order.totalQty} items</span>
+                            <span>{order.totalQty} bag(s)</span>
                           </div>
                         </div>
                       </div>
@@ -393,7 +413,7 @@ function Order() {
                     <div className="flex items-center gap-4">
                       <div className="text-right">
                         <p className="text-sm text-gray-600 mb-1">Total Amount</p>
-                        <p className="text-2xl font-bold text-red-600">₹{order.totalAmount.toLocaleString()}</p>
+                        <p className="text-2xl font-bold text-red-600">₹{getOrderTotal(order).toLocaleString()}</p>
                       </div>
                       <button
                         onClick={() => toggleOrderExpansion(order._id)}
@@ -457,20 +477,26 @@ function Order() {
                                   </p>
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3 text-sm">
-                                      <span className="font-medium text-blue-600">
-                                        Qty: {item.qty} {item.productId?.unit}
-                                      </span>
-                                      <span className="text-gray-400">|</span>
-                                      <span className="text-gray-600">
-                                        ₹{item.price}/{item.productId?.unit}
-                                      </span>
-                                    </div>
+                                        <span className="font-medium text-blue-600">
+                                          {item.qty} bag(s)
+                                        </span>
+                                        <span className="text-gray-400">×</span>
+                                        <span className="text-gray-600">
+                                          {item.productId.packSize} pcs
+                                        </span>
+                                        <span className="text-gray-400">×</span>
+                                        <span className="text-gray-600">
+                                          ₹{item.price}/pc
+                                        </span>
+                                      </div>
                                   </div>
+
                                   <div className="mt-2 pt-2 border-t border-gray-100">
                                     <p className="text-sm font-semibold text-red-600">
-                                      Subtotal: ₹{(item.qty * item.price).toLocaleString()}
+                                      Subtotal: ₹{getItemTotal(item).toLocaleString()}
                                     </p>
                                   </div>
+
                                 </div>
                               </div>
                             </motion.div>
@@ -481,12 +507,12 @@ function Order() {
                         <div className="mt-6 p-4 bg-white rounded-lg border border-gray-200">
                           <div className="flex items-center justify-between mb-3">
                             <span className="text-gray-600">Total Quantity</span>
-                            <span className="font-semibold text-gray-900">{order.totalQty} items</span>
+                            <span className="font-semibold text-gray-900"><span>{getTotalPieces(order)} pcs</span></span>
                           </div>
                           <div className="flex items-center justify-between pt-3 border-t border-gray-200">
                             <span className="text-lg font-semibold text-gray-900">Total Amount</span>
                             <span className="text-2xl font-bold text-red-600">
-                              ₹{order.totalAmount.toLocaleString()}
+                              ₹{getOrderTotal(order).toLocaleString()}
                             </span>
                           </div>
                         </div>

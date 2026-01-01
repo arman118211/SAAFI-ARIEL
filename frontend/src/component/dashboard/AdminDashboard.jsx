@@ -39,6 +39,7 @@ import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import WinnerOffers from "../seller-dasboared/WinnerOffers"
+import DealerManagement from "../admin-dashboard/DealerManagement"
 
 
 
@@ -544,7 +545,8 @@ export default function AdminDashboard() {
     { id: "offers", label: "Offers", icon: Tag },
     { id: "orders", label: "Orders", icon: ShoppingBag },
     { id: "winner", label: "Winner", icon: Trophy },
-    { id: "customers", label: "Customers", icon: User },
+    { id: "retailer", label: "Retailer", icon: User },
+    { id: "dealer", label: "Dealer", icon: User },
   ]
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -704,7 +706,7 @@ export default function AdminDashboard() {
                   <DashboardHome states = {states} salesData = {salesdata} recentData = {recentData} inventoryData = {inventoryData} loading={dashboardLoading} />
                 ) :activeTab==="products"? <ProductPage/>
                 : activeTab === "orders" ? <AdminOrdersPage/>
-                : activeTab === 'customers'? <SellerList/>:
+                : activeTab === 'retailer'? <SellerList/>:
                  activeTab === "offers" ? (
                   <AdminOffersPage />
                 ) :activeTab === "profile"?<SellerProfile/> :activeTab === "winner" ? (
@@ -715,7 +717,7 @@ export default function AdminDashboard() {
                     </div>
                     <WinnerOffers/>
                     </div>
-                ) : (
+                ) : activeTab === "dealer" ? <DealerManagement/> : (
                   <div className="h-96 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
                     <Activity className="w-12 h-12 text-gray-300 mb-4" />
                     <h3 className="text-gray-900 font-medium">Module Under Development</h3>

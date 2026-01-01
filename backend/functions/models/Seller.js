@@ -4,14 +4,28 @@ import bcrypt from "bcrypt";
 const SellerSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    phone: { type: String, required: true },
+    email: { type: String, trim: true, lowercase: true },
+    phone: { type: String, required: true, unique: true},
     password: { type: String, required: true },
     companyName: { type: String },
     address: { type: String },
-    role: { type: String, enum: ["seller", "admin"], default: "seller" },
+    role: { type: String, enum: ["seller", "retailer", "dealer", "admin"], default: "seller" },
+    isApproved: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
+);
+
+SellerSchema.index(
+  { email: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      email: { $exists: true, $ne: null }
+    }
+  }
 );
 
 // PASSWORD HASH

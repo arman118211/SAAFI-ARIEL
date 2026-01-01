@@ -4,6 +4,7 @@ import OfferCard from './OfferCard'
 import axios from 'axios'
 import { useLocation } from "react-router-dom";
 import { Gift, Bell } from "lucide-react";
+import { useSelector } from "react-redux";
 
 const OfferCardShimmer = () => (
   <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden relative">
@@ -34,11 +35,13 @@ export default function OfferDetailsPage() {
     const location = useLocation();
     const [offers, setOffers] = useState([])
     const [loading, setLoading] = useState(true);
-    console.log("BASE URL:", import.meta.env.VITE_BASE_URL);
+    const { seller, token} = useSelector((state) => state.auth);
     const getData = async () => {
     try {
-      const res = await axios.get(
-            `${import.meta.env.VITE_BASE_URL}/offers/activeOffer`
+      const res = await axios.post(
+            `${import.meta.env.VITE_BASE_URL}/offers/activeOffer`,{
+              role:seller.role || "common"
+            }
           );
           setOffers(res.data.offers || []);
         } catch (error) {
@@ -53,7 +56,7 @@ export default function OfferDetailsPage() {
 
     },[])
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 ">
       {!loading && offers.length === 0 && (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           

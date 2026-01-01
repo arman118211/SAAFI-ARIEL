@@ -21,7 +21,7 @@ const router = express.Router();
 
 // ADMIN ROUTES
 router.post("/", createOffer);
-router.get("/activeOffer", getActiveOffers);
+router.post("/activeOffer", getActiveOffers);
 
 router.get("/offer", getAllOffers);
 router.get("/getAllOffersForAmin", getAllOfferForAdmin);

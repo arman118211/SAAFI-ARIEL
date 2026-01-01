@@ -9,6 +9,7 @@ const CreateOfferForm = ({ onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+     offerFor: "common",
     startDate: "",
     endDate: "",
     status: "inactive",
@@ -140,6 +141,7 @@ const CreateOfferForm = ({ onClose, onSubmit }) => {
     setFormData({
       title: "",
       description: "",
+      offerFor: "common",
       startDate: "",
       endDate: "",
       status: "inactive",
@@ -209,6 +211,33 @@ const CreateOfferForm = ({ onClose, onSubmit }) => {
               className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none transition-all resize-none text-sm md:text-base"
             />
           </div>
+          {/* Offer For */}
+          <div>
+            <label className="block text-sm font-semibold text-slate-900 mb-2">
+              Offer For <span className="text-red-600">*</span>
+            </label>
+
+            <select
+              name="offerFor"
+              value={formData.offerFor}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg
+                        text-slate-900 focus:border-blue-500 focus:outline-none
+                        transition-all appearance-none text-sm md:text-base"
+              required
+            >
+              <option value="common">Common (All)</option>
+              <option value="retailer">Retailer Only</option>
+              <option value="dealer">Dealer Only</option>
+            </select>
+
+            {formData.offerFor === "dealer" && (
+              <p className="text-xs text-amber-600 mt-1 font-semibold">
+                ⚠ Dealer-only offers are visible only to approved dealers
+              </p>
+            )}
+          </div>
+
 
           {/* Date Range */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">

@@ -49,8 +49,10 @@ export default function SellerList() {
   const getSellerData = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/seller/auth/getAllSeller`
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/seller/auth/getAllSeller`,{
+          role:"retailer"
+        }
       );
       setSellerData(res.data.data);
       dispatch(setSellers(res.data.data));
@@ -71,7 +73,7 @@ export default function SellerList() {
   const filteredSellers = sellersData.filter(
     (seller) =>
       seller.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      seller.email.toLowerCase().includes(searchTerm.toLowerCase()),
+      seller.email?.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
   const containerVariants = {
@@ -112,9 +114,9 @@ export default function SellerList() {
       >
         <div className="flex items-center gap-3 mb-4">
           <Users className="w-8 h-8 text-blue-700" />
-          <h1 className="text-3xl font-bold text-gray-900">Seller Management</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Retailer Management</h1>
         </div>
-        <p className="text-blue-700 text-md">Manage and track all your sellers and their orders</p>
+        <p className="text-blue-700 text-md">Manage and track all your retailer and their orders</p>
       </motion.div>
 
       {/* Search Bar */}
