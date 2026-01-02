@@ -368,18 +368,27 @@ if (!offer) {
                     />
                     <div className="flex-1">
                       <h3 className="text-base md:text-xl font-bold text-slate-900 mb-3 md:mb-2">
-                        {product.productId.name}
+                        {product.productId.name} {product.productId.quantity} 
                       </h3>
                       <div className="grid grid-cols-3 gap-2 md:gap-4">
                         <div>
                           <p className="text-xs md:text-sm text-slate-600 font-semibold">Price</p>
-                          <p className="text-lg md:text-2xl font-bold text-blue-600">₹{product.productId.price}</p>
-                          <p className="text-xs text-slate-500">per {product.productId.unit}</p>
+                          <p className="text-lg md:text-2xl font-bold text-blue-600">
+                            {
+                              offer.offerFor === "common"? 
+                              `₹${product.productId.marketPrice}`: 
+                              offer.offerFor === "retailer" ? 
+                              `₹${product.productId.retailerPrice}` : offer.offerFor === "dealer" ?
+                              `₹${product.productId.dealerPrice}`:
+                              "Undefined"
+                            }
+                          </p>
+                          <p className="text-xs text-slate-500">per packet</p>
                         </div>
                         <div>
-                          <p className="text-xs md:text-sm text-slate-600 font-semibold">Min Qty</p>
+                          <p className="text-xs md:text-sm text-slate-600 font-semibold">Min bag</p>
                           <p className="text-lg md:text-2xl font-bold text-indigo-600">{product.minQty}</p>
-                          <p className="text-xs text-slate-500">{product.productId.unit}</p>
+                          <p className="text-xs text-slate-500">{product.productId.packSize} pcs in one bag</p>
                         </div>
                         <div>
                           <p className="text-xs md:text-sm text-slate-600 font-semibold">Stock</p>

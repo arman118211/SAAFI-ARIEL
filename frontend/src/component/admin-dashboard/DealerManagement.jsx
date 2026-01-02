@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import { CheckCircle, Clock, MapPin, Phone, Mail, Building2, Users, TrendingUp, Search } from "lucide-react"
 import axios from "axios"
 import toast from "react-hot-toast"
+import { useDispatch, useSelector } from "react-redux"
+import { fetchDealers, approveDealer } from "../../redux/slices/dealerSlice"
 
 const mockDealers = [
   {
@@ -84,32 +86,82 @@ const mockDealers = [
   },
 ]
 
+const DealerCardShimmer = () => {
+  return (
+    <div className="relative overflow-hidden rounded-xl p-6 border-2 border-gray-200 bg-gray-100">
+      {/* shimmer overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer-slide" />
+
+      {/* Header */}
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-center gap-4 flex-1">
+          <div className="w-12 h-12 rounded-lg bg-gray-300" />
+          <div className="flex-1 space-y-2">
+            <div className="h-4 w-32 bg-gray-300 rounded" />
+            <div className="h-3 w-40 bg-gray-200 rounded" />
+          </div>
+        </div>
+        <div className="h-6 w-20 bg-gray-300 rounded-full" />
+      </div>
+
+      {/* Details */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="space-y-2">
+            <div className="h-3 w-20 bg-gray-200 rounded" />
+            <div className="h-4 w-32 bg-gray-300 rounded" />
+          </div>
+        ))}
+      </div>
+
+      {/* Footer */}
+      <div className="flex justify-between items-center border-t pt-4">
+        <div className="h-3 w-32 bg-gray-200 rounded" />
+        <div className="h-3 w-20 bg-gray-200 rounded" />
+      </div>
+
+      {/* Button */}
+      <div className="mt-4 h-10 w-full bg-gray-300 rounded-lg" />
+    </div>
+  )
+}
+
+
 export default function DealerManagement() {
   const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState("")
   const [filterStatus, setFilterStatus] = useState("all")
   const [approvingId, setApprovingId] = useState(null)
-  const [dealers , setDealers] = useState([])
+  // const [dealers , setDealers] = useState([])
+  const dispatch = useDispatch()
 
-   const getDealerData = async () => {
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/seller/auth/getAllSeller`,{
-          role:"dealer"
-        }
-      );
-      setDealers(res.data.data);
-    } catch (err) {
-      console.log("something went wrong", err);
-    } finally {
-      console.log("loading false")
-    }
-  };
+  const { list: dealers, loading } = useSelector(
+    (state) => state.dealers
+  )
 
-   useEffect(() => {
-      getDealerData()
+
+  //  const getDealerData = async () => {
+  //   try {
+  //     const res = await axios.post(
+  //       `${import.meta.env.VITE_BASE_URL}/seller/auth/getAllSeller`,{
+  //         role:"dealer"
+  //       }
+  //     );
+  //     setDealers(res.data.data);
+  //   } catch (err) {
+  //     console.log("something went wrong", err);
+  //   } finally {
+  //     console.log("loading false")
+  //   }
+  // };
+
+  //  useEffect(() => {
+  //     getDealerData()
   
-    }, [])
+  //   }, [])
+  useEffect(() => {
+    dispatch(fetchDealers())
+  }, [dispatch])
 
   const pendingDealers = dealers.filter((d) => !d.isApproved)
   const approvedDealers = dealers.filter((d) => d.isApproved)
@@ -127,22 +179,17 @@ export default function DealerManagement() {
   )
 
   const handleApprove = async (dealerId) => {
-    try{
-      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/seller/auth/approveDealer`,{
-        sellerId :dealerId, 
-        isApproved: true
-      })
-      toast.success("Dealer Approved successfully.")
-
-      console.log("api response ==>",res)
+    try {
       setApprovingId(dealerId)
-      setTimeout(() => {
-        setApprovingId(null)
-      }, 1500)
-  }catch(err){
-    toast.err("Failed to approve")
+      await dispatch(approveDealer(dealerId)).unwrap()
+      toast.success("Dealer approved successfully")
+    } catch {
+      toast.error("Failed to approve dealer")
+    } finally {
+      setApprovingId(null)
+    }
   }
-  }
+
 
   const handleViewDetails = (dealerId) => {
     navigate(`/dealers/${dealerId}`)
@@ -294,16 +341,19 @@ export default function DealerManagement() {
   return (
     <div className="min-h-screen bg-white p-6 md:p-10">
       <div className=" mx-auto">
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-10 ">
           <div className="flex items-center gap-3 mb-3">
-            <div className="flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-full">
+            {/* <div className="flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-full">
               <Users size={20} />
               <span className="font-bold">Dealer Management</span>
-            </div>
+            </div> */}
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-red-600 via-orange-600 to-red-700 bg-clip-text text-transparent mb-2">
-            Dealer Approval System
-          </h1>
+          <div className="flex items-center gap-3">
+            <Users size={35} />
+            <h1 className="text-4xl md:text-4xl font-bold bg-gradient-to-r from-red-600 via-orange-600 to-red-700 bg-clip-text text-transparent mb-2">
+              Dealer Management
+            </h1>
+          </div>
           <p className="text-gray-600 text-lg">Manage and approve new dealer registrations with ease</p>
         </motion.div>
 
@@ -375,7 +425,15 @@ export default function DealerManagement() {
               </h2>
             </div>
 
-            {filteredPending.length > 0 ? (
+            {loading? 
+             (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {[...Array(4)].map((_, i) => (
+                  <DealerCardShimmer key={i} />
+                ))}
+              </div>
+            ) :
+            filteredPending.length > 0 ? (
               <motion.div className="grid grid-cols-1 lg:grid-cols-2 gap-6" variants={containerVariants}>
                 <AnimatePresence>
                   {filteredPending.map((dealer) => (
@@ -405,7 +463,14 @@ export default function DealerManagement() {
               </h2>
             </div>
 
-            {filteredApproved.length > 0 ? (
+            {loading? (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {[...Array(4)].map((_, i) => (
+                  <DealerCardShimmer key={i} />
+                ))}
+              </div>
+            ) :
+            filteredApproved.length > 0 ? (
               <motion.div className="grid grid-cols-1 lg:grid-cols-2 gap-6" variants={containerVariants}>
                 <AnimatePresence>
                   {filteredApproved.map((dealer) => (

@@ -14,6 +14,8 @@ export default function OfferDetails({ offer, onAddToCart }) {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
+  console.log("offer deatils -->",offer)
+
   // Initialize quantities with minimum quantities
   useEffect(() => {
     const initialQuantities = {}
@@ -295,7 +297,7 @@ const getMinOrderPrice = (item) => {
                           <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
                             {item.productId.category}
                           </span>
-                          <h3 className="text-xl font-bold text-gray-900 mt-2">{item.productId.name}</h3>
+                          <h3 className="text-xl font-bold text-gray-900 mt-2 ">{item.productId.name} {item.productId.quantity}</h3>
                         </div>
                         <div className="text-right">
                           <div className="text-right">

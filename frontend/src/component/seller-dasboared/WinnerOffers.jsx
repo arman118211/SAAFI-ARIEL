@@ -242,7 +242,6 @@ export default function WinnerOffers() {
   const [loading, setLoading] = useState(true)
 
   const [offers, setOffers] = useState([])
-  console.log("seller-->mm", seller)
 
     const winnerOffers = async () => {
       try {
@@ -265,12 +264,19 @@ export default function WinnerOffers() {
       }
     }
 
+    console.log("offer for winner-->",offers)
+
 
     useEffect(() => {
       winnerOffers()
     }, [])
 
   const [expandedId, setExpandedId] = useState(null)
+
+  const calaulateTotalPrice = (offerFor, product) => {
+    console.log(offerFor, product)
+
+  }
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -465,7 +471,7 @@ export default function WinnerOffers() {
 
                     <div className="hidden md:col-span-2 md:block">
                       <p className="font-medium text-slate-900 text-sm">{offer.winner?.name || "Unknown"}</p>
-                      <p className="text-xs text-slate-500 truncate">{offer.winner?.email || "N/A"}</p>
+                      <p className="text-xs text-slate-500 truncate">{offer.winner?.phone || "N/A"}</p>
                     </div>
 
                     <div className="hidden md:col-span-2 md:block text-sm">
@@ -546,7 +552,7 @@ export default function WinnerOffers() {
                                     </p>
                                     <div className="flex items-center gap-2 mt-2 flex-wrap">
                                       <span className="px-2 py-1 bg-red-50 text-red-600 text-xs font-semibold rounded border border-red-200">
-                                        ${product.price.toFixed(2)}
+                                        $ {calaulateTotalPrice(offer.offerFor,offer.products)}
                                       </span>
                                       <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs font-semibold rounded border border-blue-200">
                                         Qty: {product.minQty}

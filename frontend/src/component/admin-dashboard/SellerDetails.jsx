@@ -17,6 +17,8 @@ import {
   Filter,
   ChevronDown,
   ImageIcon,
+  MapPinHouse,
+  Building2,
 } from "lucide-react"
 
 export default function SellerDetail() {
@@ -108,27 +110,50 @@ export default function SellerDetail() {
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-8 text-white shadow-lg">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             {/* Left Side */}
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center">
-                  <User className="w-6 h-6" />
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center">
+                <User className="w-6 h-6 text-white" />
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex items-center gap-3">
+                {/* Seller Name */}
+                <h1 className="text-3xl font-bold leading-tight">
+                  {seller.name}
+                </h1>
+
+                {/* Role Badge */}
+                <span className="inline-block bg-white/20 backdrop-blur-md px-3 py-1 rounded-md text-xs font-semibold capitalize text-white">
+                  {seller.role}
+                </span>
                 </div>
-                <div>
-                  <h1 className="text-3xl font-bold">{seller.name}</h1>
-                  <p className="text-blue-100 capitalize">{seller.role}</p>
+
+                {/* Company Name */}
+                <div className="flex items-center gap-2">
+                  <Building2 className="w-4 h-4 text-red-300" />
+                  <span className="text-sm font-semibold text-red-100 tracking-wide">
+                    {seller.companyName || "Company Not Provided"}
+                  </span>
                 </div>
+
+                
               </div>
             </div>
+
 
             {/* Right Side - Contact Info */}
             <div className="space-y-2">
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-red-300" />
-                <span>{seller.email}</span>
+                <span>{seller.email || "NOT PROVIDED"}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-red-300" />
                 <span>{seller.phone}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <MapPinHouse className="w-5 h-5 text-red-300" />
+                <span>{seller.address}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Clock className="w-5 h-5 text-red-300" />

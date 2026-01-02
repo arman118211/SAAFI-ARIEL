@@ -40,7 +40,7 @@ export default function OfferDetailsPage() {
     try {
       const res = await axios.post(
             `${import.meta.env.VITE_BASE_URL}/offers/activeOffer`,{
-              role:seller.role || "common"
+              role:seller?.role || "common"
             }
           );
           setOffers(res.data.offers || []);

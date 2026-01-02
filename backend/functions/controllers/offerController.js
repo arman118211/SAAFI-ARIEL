@@ -1,5 +1,6 @@
 import Offer from "../models/Offer.js";
 import mongoose from "mongoose";
+import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import Seller from "../models/Seller.js";
 
@@ -220,7 +221,7 @@ export const getAllOfferForAdmin = async (req, res) => {
       .populate({
         path: "products.productId",
         model: "Product",
-        select: "name price unit imageUrl category stock",
+        select: "name imageUrl category stock packSize quantity retailerPrice marketPrice dealerPrice",
       })
       // Populate seller details inside sellerPurchases
       .populate({
@@ -445,13 +446,46 @@ export const getWinningOffersForSeller = async (req, res) => {
 };
 
 // winner for admin
+// export const getAllOfferWinners = async (req, res) => {
+//   try {
+//     const offersWithWinners = await Offer.find({
+//       winner: { $ne: null },
+//     })
+//       .select(
+//         "title description startDate endDate status winner products createdAt offerFor"
+//       )
+//       .populate({
+//         path: "winner",
+//         select: "name email phone companyName",
+//       })
+//       .populate({
+//         path: "products.productId",
+//         select: "name imageUrl marketPrice dealerPrice retailerPrice packSize ",
+//       })
+//       .sort({ createdAt: -1 });
+
+//     return res.status(200).json({
+//       success: true,
+//       count: offersWithWinners.length,
+//       offers: offersWithWinners,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching offer winners:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Failed to fetch offer winners",
+//     });
+//   }
+// };
+
 export const getAllOfferWinners = async (req, res) => {
   try {
+    // 1️⃣ Fetch offers with winners
     const offersWithWinners = await Offer.find({
       winner: { $ne: null },
     })
       .select(
-        "title description startDate endDate status winner products createdAt"
+        "title description startDate endDate status winner products createdAt offerFor"
       )
       .populate({
         path: "winner",
@@ -459,14 +493,35 @@ export const getAllOfferWinners = async (req, res) => {
       })
       .populate({
         path: "products.productId",
-        select: "name price imageUrl",
+        select: "name imageUrl marketPrice dealerPrice retailerPrice packSize",
       })
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean(); // 👈 important for modification
+
+    // 2️⃣ Attach orders (totalAmount + items) for each offer winner
+    const offersWithOrders = await Promise.all(
+      offersWithWinners.map(async (offer) => {
+        const orders = await Order.find({
+          offerId: offer._id,
+          sellerId: offer.winner?._id,
+        })
+          .select("items totalAmount totalQty status createdAt")
+          .populate({
+            path: "items.productId",
+            select: "name imageUrl packSize",
+          });
+
+        return {
+          ...offer,
+          orders, // 👈 attached here
+        };
+      })
+    );
 
     return res.status(200).json({
       success: true,
-      count: offersWithWinners.length,
-      offers: offersWithWinners,
+      count: offersWithOrders.length,
+      offers: offersWithOrders,
     });
   } catch (error) {
     console.error("Error fetching offer winners:", error);

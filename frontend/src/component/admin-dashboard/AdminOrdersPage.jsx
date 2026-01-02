@@ -1,9 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Package, User, Calendar, DollarSign, Filter, Search, ChevronDown, CheckCircle, Clock, XCircle, Eye, MoreVertical } from 'lucide-react';
+import { Package, User, Calendar, DollarSign, Filter, Search, ChevronDown, CheckCircle, Clock, XCircle, Eye, MoreVertical, MapPinned, MapPinHouse } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { useDispatch } from "react-redux";
 import { updateOrderStatus as updateStatus } from "../../redux/slices/orderSlice";
+import toast from 'react-hot-toast';
 
 const StatsShimmer = () => (
   <div className="bg-white rounded-lg p-4 shadow-md animate-pulse relative overflow-hidden">
@@ -62,6 +63,7 @@ const AdminOrdersPage = () => {
       setIsLoading(true);
       const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/order/all`);
       setOrders(res.data);
+      console.log("All order -->",res.data)
     } catch (err) {
       console.log("something went wrong", err);
     } finally {
@@ -86,6 +88,7 @@ const AdminOrdersPage = () => {
       setOrders(orders.map(order =>
         order._id === orderId ? { ...order, status: newStatus } : order
       ));
+      toast.success("Status updated succesfully")
       // dispatch(updateStatus({
       // orderId: orderId,
       // status: newStatus
@@ -95,6 +98,7 @@ const AdminOrdersPage = () => {
 
     } catch (err) {
       console.log("something went wrong", err)
+      toast.error("Status updated failed,Please try again.")
     }
 
   };
@@ -104,7 +108,7 @@ const AdminOrdersPage = () => {
       const matchesSearch =
         order.sellerId.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.sellerId.email.toLowerCase().includes(searchTerm.toLowerCase());
+        order.sellerId.email?.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
 
@@ -350,22 +354,38 @@ const AdminOrdersPage = () => {
                   onClick={() => setSelectedOrder(selectedOrder === order._id ? null : order._id)}>
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-3">
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg flex items-center justify-center text-white font-bold text-base shadow-md flex-shrink-0">
+                      <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg flex items-center justify-center text-white font-bold text-base shadow-md flex-shrink-0 ">
                         {order.sellerId.name.charAt(0)}
                       </div>
                       <div className="min-w-0">
-                        <h3 className="text-base font-bold text-gray-800 truncate">{order.sellerId.name}</h3>
-                        <div className="flex flex-wrap gap-2 text-xs text-gray-600 mt-0.5">
-                          <span className="flex items-center gap-1">
-                            <User className="w-3 h-3" />
-                            <span className="truncate">{order.sellerId.email}</span>
-                          </span>
-                        </div>
+                      <h3 className="flex items-center gap-2 text-base font-bold text-gray-800 truncate">
+                        {order.sellerId.name}
+
+                        <span className="px-2 py-0.5 text-[10px] font-semibold rounded-sm 
+                          bg-gradient-to-r from-indigo-500 to-purple-500 
+                          text-white uppercase tracking-wide shadow-sm">
+                          {order.sellerId.role}
+                        </span>
+                      </h3>
+
+                      <div className="flex flex-wrap gap-2 text-xs text-gray-600 mt-0.5">
+                        <span className="flex items-center gap-1">
+                          <User className="w-3 h-3" />
+                          <span className="truncate">{order.sellerId.phone}</span>
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MapPinHouse className="w-3 h-3" />
+                          <span className="truncate">{order.sellerId.address}</span>
+                        </span>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <span className={`px-3 py-1.5 rounded-lg text-xs font-bold border-2 flex items-center gap-1.5 shadow-sm ${getStatusColor(order.status)}`}>
+                    </div>
+
+                    <div className="flex items-center gap-2 ">
+                      <span className={`px-3 py-1.5 rounded-lg text-xs font-bold border-2 flex items-center gap-1.5 shadow-sm ${getStatusColor(order.status)}`}
+                      onClick={() => setStatusMenuOpen(statusMenuOpen === order._id ? null : order._id)}
+                      >
                         {getStatusIcon(order.status)}
                         {order.status.toUpperCase()}
                       </span>
@@ -437,7 +457,7 @@ const AdminOrdersPage = () => {
                   <div className="grid grid-cols-3 gap-3 p-3 bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg mb-3 border border-gray-100">
                     <div>
                       <p className="text-xs text-gray-500 mb-0.5 font-medium">Order ID</p>
-                      <p className="font-mono text-xs text-gray-800 font-semibold">{order._id.slice(-8)}</p>
+                      <p className="font-mono text-xs text-gray-800 font-semibold">{order._id}</p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-500 mb-0.5 font-medium ">Items</p>
@@ -476,7 +496,7 @@ const AdminOrdersPage = () => {
                           {order.items.map((item, idx) => (
                             <div key={idx} className="flex justify-between items-center p-2.5 bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg border border-gray-100">
                               <div>
-                                <p className="font-semibold text-gray-800 text-xs">{item.productId.name}</p>
+                                <p className="font-semibold text-gray-800 text-xs">{item.productId.name} {item.productId.quantity}</p>
                                 <p className="text-xs text-gray-600 mt-0.5">
                                   {item.qty} bag(s) × {item.productId.packSize} pcs × ₹{item.price}
                                 </p>
