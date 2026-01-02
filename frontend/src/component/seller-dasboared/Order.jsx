@@ -14,122 +14,8 @@ import {
   Award,
   Truck,
 } from "lucide-react"
+import toast from "react-hot-toast"
 
-const MOCK_ORDERS = [
-  {
-    _id: "6921fc4febe1d1f217384409",
-    sellerId: "691b6cdb54bbb4dcecdb01e3",
-    items: [
-      {
-        productId: {
-          _id: "691cadaf1d00cc1b51a5a881",
-          name: "Detergent Powder",
-          description: "High quality washing powder",
-          price: 450,
-          unit: "kg",
-          stock: 100,
-          category: "Detergent",
-          imageUrl: "https://example.com/detergent.jpg",
-          isActive: true,
-          createdAt: "2025-11-18T17:32:31.614Z",
-          updatedAt: "2025-11-18T17:32:31.614Z",
-          __v: 0,
-        },
-        qty: 10,
-        price: 450,
-        _id: "6921fc4febe1d1f21738440a",
-      },
-      {
-        productId: {
-          _id: "691cc937414db57fb18eb0c4",
-          name: "Organic Basmati Rice",
-          description: "Premium long-grain organic basmati rice.",
-          price: 120,
-          unit: "kg",
-          stock: 200,
-          category: "Groceries",
-          imageUrl: "https://example.com/images/rice.jpg",
-          isActive: true,
-          createdAt: "2025-11-18T19:29:59.235Z",
-          updatedAt: "2025-11-18T19:29:59.235Z",
-          __v: 0,
-        },
-        qty: 50,
-        price: 120,
-        _id: "6921fc4febe1d1f21738440b",
-      },
-      {
-        productId: {
-          _id: "691cc95e414db57fb18eb0c6",
-          name: "Fresh Cow Milk",
-          description: "Farm-fresh full-cream milk.",
-          price: 60,
-          unit: "liter",
-          stock: 150,
-          category: "Dairy",
-          imageUrl: "https://example.com/images/milk.jpg",
-          isActive: true,
-          createdAt: "2025-11-18T19:30:38.784Z",
-          updatedAt: "2025-11-18T19:30:38.784Z",
-          __v: 0,
-        },
-        qty: 30,
-        price: 60,
-        _id: "6921fc4febe1d1f21738440c",
-      },
-    ],
-    totalQty: 90,
-    totalAmount: 12300,
-    status: "pending",
-    offerId: {
-      _id: "691ccba7414db57fb18eb0d1",
-      title: "Festival Bulk Purchase Offer",
-      description: "Buy in bulk and get special festive discounts!",
-      products: [
-        {
-          productId: "691cadaf1d00cc1b51a5a881",
-          minQty: 10,
-          _id: "691ccba7414db57fb18eb0d2",
-        },
-        {
-          productId: "691cc937414db57fb18eb0c4",
-          minQty: 50,
-          _id: "691ccba7414db57fb18eb0d3",
-        },
-        {
-          productId: "691cc95e414db57fb18eb0c6",
-          minQty: 30,
-          _id: "691ccba7414db57fb18eb0d4",
-        },
-      ],
-      startDate: "2025-11-20T00:00:00.000Z",
-      endDate: "2025-12-05T23:59:59.999Z",
-      status: "active",
-      sellerPurchases: [
-        {
-          sellerId: "691b6cdb54bbb4dcecdb01e3",
-          totalQty: 90,
-          orders: [
-            {
-              orderId: "6921fc4febe1d1f217384409",
-              qty: 90,
-              _id: "6921fc4febe1d1f217384413",
-              date: "2025-11-22T18:09:19.822Z",
-            },
-          ],
-          _id: "6921fc4febe1d1f217384412",
-        },
-      ],
-      winner: null,
-      createdAt: "2025-11-18T19:40:23.511Z",
-      updatedAt: "2025-11-22T18:09:19.824Z",
-      __v: 1,
-    },
-    createdAt: "2025-11-22T18:09:19.792Z",
-    updatedAt: "2025-11-22T18:09:19.792Z",
-    __v: 0,
-  },
-]
 
 const OrderStatShimmer = () => (
   <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-gray-300 relative overflow-hidden">
@@ -204,12 +90,13 @@ function Order() {
       setOrders(response.data)
       setLoading(false)
     } catch (err) {
-      console.log("something went wrong", err)
-      console.log("Using mock data for demo purposes")
-      setOrders(MOCK_ORDERS)
+      // console.log("something went wrong", err)
+      toast.error("server error please try after some time.")
       setLoading(false)
     }
   }
+
+  console.log("order is ---->",orders)
 
   useEffect(() => {
     getorder()
@@ -239,17 +126,6 @@ function Order() {
   const toggleOrderExpansion = (orderId) => {
     setExpandedOrder(expandedOrder === orderId ? null : orderId)
   }
-
-  // if (loading) {
-  //   return (
-  //     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-  //       <div className="flex flex-col items-center gap-4">
-  //         <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-  //         <p className="text-gray-600 font-medium">Loading orders...</p>
-  //       </div>
-  //     </div>
-  //   )
-  // }
 
   return (
     <div className="min-h-screen ">
@@ -468,11 +344,11 @@ function Order() {
                             >
                               <div className="flex gap-4">
                                 <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                                  <Package className="w-8 h-8 text-gray-400" />
+                                  <img src={item.productId.imageUrl}/>
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <h5 className="font-semibold text-gray-900 mb-1 truncate">{item.productId?.name}</h5>
-                                  <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                                  <h5 className="font-semibold text-gray-900 mb-1 truncate">{item.productId?.name} {item.productId?.quantity}</h5>
+                                  <p className="text-sm text-gray-600 mb-2 line-clamp-2 ">
                                     {item.productId?.description}
                                   </p>
                                   <div className="flex items-center justify-between">

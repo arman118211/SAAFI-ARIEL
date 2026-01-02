@@ -101,9 +101,17 @@ export const getSingleOrder = async (req, res) => {
 // GET ORDERS BY SELLER
 export const getSellerOrders = async (req, res) => {
   try {
+    console.log("get seller is called")
     const orders = await Order.find({ sellerId: req.params.sellerId })
       .sort({ createdAt: -1 }) // latest order first
-      .populate("items.productId")
+      .populate({
+        path: "items.productId",
+        select: `
+          -marketPrice -marketDiscount
+          -dealerPrice -dealerDiscount
+          -retailerPrice -retailerDiscount
+        `
+      })
       .populate("offerId");
 
     res.status(200).json(orders);

@@ -110,8 +110,13 @@ const Login = () => {
     setIsLoading(false)
 
   } catch (err) {
-    console.error(err);
-    toast.error(err.message || "Failed to send OTP");
+    if (err.code === "auth/too-many-requests") {
+      toast.error("Too many attempts. Please try later.")
+    } else if (err.code === "auth/invalid-phone-number") {
+      toast.error("Invalid phone number.")
+    } else {
+      toast.error(err.message || "Failed to send OTP")
+    }
     setIsLoading(false);
   }
 }
@@ -119,7 +124,18 @@ const Login = () => {
 
   const verifyOtpAndRegister = async () => {
     try {
+      if (otp.join("").length !== 6) {
+        toast.error("Please enter the 6-digit OTP")
+        return
+      }
+
       setIsLoading(true)
+      
+      if (!confirmationResult) {
+        toast.error("OTP session expired. Please resend OTP.")
+        setIsLoading(false)
+        return
+      }
 
       const result = await confirmationResult.confirm(otp.join(""))
       const idToken = await result.user.getIdToken()
@@ -139,9 +155,20 @@ const Login = () => {
       setOtpSent(false)
       setIsLoading(false)
       setSelectedRole(null)
+      setOtp(["", "", "", "", "", ""])
 
     } catch (err) {
-      toast.error("Invalid OTP")
+      // toast.error(err.data.response.message)
+      console.log("err",err)
+      // setIsLoading(false)
+      if (err.code === "auth/invalid-verification-code") {
+        toast.error("Invalid OTP. Please try again.")
+      } else if (err.code === "auth/code-expired") {
+        toast.error("OTP expired. Please resend OTP.")
+      } else {
+        toast.error(err.response.data.message)
+      }
+    }finally {
       setIsLoading(false)
     }
   }

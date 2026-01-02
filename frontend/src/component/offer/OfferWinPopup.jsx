@@ -13,7 +13,6 @@ const OfferWinPopup = () => {
   const getWinnerNotification = async () => {
     try{
       const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/offers/winner-notification/${seller._id}`)
-      console.log("notification response -->", res.data)
       setApiResponse(res.data)
     }catch(err){
       console.log("something went wrong could not found notification")
@@ -32,7 +31,6 @@ const OfferWinPopup = () => {
 //     }
 //   };
   
-console.log("api response-->",apiResponse)
 
 useEffect(() => {
   if (seller?._id) {

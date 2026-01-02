@@ -14,7 +14,7 @@ export default function OfferDetails({ offer, onAddToCart }) {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  console.log("offer deatils -->",offer)
+ 
 
   // Initialize quantities with minimum quantities
   useEffect(() => {

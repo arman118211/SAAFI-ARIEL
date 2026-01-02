@@ -8,182 +8,6 @@ import { useSelector } from "react-redux"
 import axios from "axios"
 import { useEffect } from "react"
 
-const DEMO_OFFERS = [
-  {
-    _id: "694ec5f216954eec878562e5",
-    title: "Premium Detergent & Cleaning Bundle",
-    description: "Exclusive offer on quality detergent products with amazing discounts",
-    products: [
-      {
-        productId: {
-          _id: "6946c44e83a2e97d4c5cbbd2",
-          name: "Saafi Arial Detergent",
-          price: 100,
-          imageUrl: "https://images.unsplash.com/photo-1584622181563-430f63602d4b?w=500&h=500&fit=crop",
-        },
-        minQty: 1,
-        _id: "694ec5f216954eec878562e6",
-      },
-      {
-        productId: {
-          _id: "6946c44e83a2e97d4c5cbbd3",
-          name: "Ultra Clean Floor Cleaner",
-          price: 45,
-          imageUrl: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=500&h=500&fit=crop",
-        },
-        minQty: 2,
-        _id: "694ec5f216954eec878562e7",
-      },
-      {
-        productId: {
-          _id: "6946c44e83a2e97d4c5cbbd4",
-          name: "Dishwashing Liquid Premium",
-          price: 35,
-          imageUrl: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=500&h=500&fit=crop",
-        },
-        minQty: 3,
-        _id: "694ec5f216954eec878562e8",
-      },
-    ],
-    startDate: "2025-12-26T00:00:00.000Z",
-    endDate: "2025-12-31T00:00:00.000Z",
-    status: "closed",
-    winner: {
-      _id: "6946bebebe27fd37794893e4",
-      name: "Manjeet",
-      email: "manjeet@gmail.com",
-    },
-    createdAt: "2025-12-26T17:29:22.717Z",
-  },
-  {
-    _id: "694ec5f216954eec878562e9",
-    title: "Winter Fashion Collection",
-    description: "Limited time offer on trendy winter clothing and accessories",
-    products: [
-      {
-        productId: {
-          _id: "6946c44e83a2e97d4c5cbbd5",
-          name: "Premium Winter Jacket",
-          price: 250,
-          imageUrl: "https://images.unsplash.com/photo-1539533057440-7814a3d12e6e?w=500&h=500&fit=crop",
-        },
-        minQty: 1,
-        _id: "694ec5f216954eec878562ea",
-      },
-    ],
-    startDate: "2025-12-20T00:00:00.000Z",
-    endDate: "2026-01-15T00:00:00.000Z",
-    status: "active",
-    winner: {
-      _id: "6946bebebe27fd37794893e5",
-      name: "Sarah Johnson",
-      email: "sarah.j@gmail.com",
-    },
-    createdAt: "2025-12-20T10:15:22.717Z",
-  },
-  {
-    _id: "694ec5f216954eec878562ec",
-    title: "Electronics Megasale",
-    description: "Huge discounts on all electronic gadgets and devices",
-    products: [
-      {
-        productId: {
-          _id: "6946c44e83a2e97d4c5cbbd7",
-          name: "Smart Home Speaker",
-          price: 149,
-          imageUrl: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500&h=500&fit=crop",
-        },
-        minQty: 1,
-        _id: "694ec5f216954eec878562ed",
-      },
-      {
-        productId: {
-          _id: "6946c44e83a2e97d4c5cbbd8",
-          name: "Wireless Noise-Canceling Headphones",
-          price: 299,
-          imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop",
-        },
-        minQty: 1,
-        _id: "694ec5f216954eec878562ee",
-      },
-      {
-        productId: {
-          _id: "6946c44e83a2e97d4c5cbbd9",
-          name: "Portable Phone Charger 50000mAh",
-          price: 65,
-          imageUrl: "https://images.unsplash.com/photo-1590370392971-d31f0c1af151?w=500&h=500&fit=crop",
-        },
-        minQty: 2,
-        _id: "694ec5f216954eec878562ef",
-      },
-      {
-        productId: {
-          _id: "6946c44e83a2e97d4c5cbba",
-          name: "4K Webcam with Auto Focus",
-          price: 199,
-          imageUrl: "https://images.unsplash.com/photo-1598986646514-ff37d632daf1?w=500&h=500&fit=crop",
-        },
-        minQty: 1,
-        _id: "694ec5f216954eec878562f0",
-      },
-    ],
-    startDate: "2026-01-05T00:00:00.000Z",
-    endDate: "2026-02-05T00:00:00.000Z",
-    status: "upcoming",
-    winner: {
-      _id: "6946bebebe27fd37794893e6",
-      name: "Alex Chen",
-      email: "alex.chen@email.com",
-    },
-    createdAt: "2025-12-15T08:30:22.717Z",
-  },
-  {
-    _id: "694ec5f216954eec878562f1",
-    title: "Beauty & Care Products",
-    description: "Premium beauty and personal care items at unbeatable prices",
-    products: [
-      {
-        productId: {
-          _id: "6946c44e83a2e97d4c5cbbb",
-          name: "Organic Skincare Kit",
-          price: 89,
-          imageUrl: "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=500&h=500&fit=crop",
-        },
-        minQty: 1,
-        _id: "694ec5f216954eec878562f2",
-      },
-      {
-        productId: {
-          _id: "6946c44e83a2e97d4c5cbbc",
-          name: "Anti-Aging Serum Deluxe",
-          price: 125,
-          imageUrl: "https://images.unsplash.com/photo-1596462502278-bc66169e3610?w=500&h=500&fit=crop",
-        },
-        minQty: 1,
-        _id: "694ec5f216954eec878562f3",
-      },
-      {
-        productId: {
-          _id: "6946c44e83a2e97d4c5cbbd",
-          name: "Hair Growth Shampoo & Conditioner Set",
-          price: 75,
-          imageUrl: "https://images.unsplash.com/photo-1596462502278-bc66169e3610?w=500&h=500&fit=crop",
-        },
-        minQty: 1,
-        _id: "694ec5f216954eec878562f4",
-      },
-    ],
-    startDate: "2025-12-10T00:00:00.000Z",
-    endDate: "2025-12-25T00:00:00.000Z",
-    status: "closed",
-    winner: {
-      _id: "6946bebebe27fd37794893e7",
-      name: "Emma Wilson",
-      email: "emma.w@gmail.com",
-    },
-    createdAt: "2025-12-10T14:45:22.717Z",
-  },
-]
 
 const WinnerStatShimmer = () => (
   <div className="bg-white rounded-lg border border-slate-200 p-4 sm:p-6 shadow-sm relative overflow-hidden">
@@ -263,9 +87,6 @@ export default function WinnerOffers() {
         setLoading(false)
       }
     }
-
-    console.log("offer for winner-->",offers)
-
 
     useEffect(() => {
       winnerOffers()
@@ -503,7 +324,7 @@ export default function WinnerOffers() {
                       >
                         <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
                           {/* Offer Title & Description */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                             <div>
                               <label className="text-xs uppercase tracking-wide font-semibold text-slate-600 mb-2 block">
                                 Offer Title
@@ -517,6 +338,14 @@ export default function WinnerOffers() {
                               </label>
                               <p className="text-slate-700 text-xs sm:text-sm">{formatDate(offer.createdAt)}</p>
                             </div>
+
+                            <div>
+                              <label className="text-xs uppercase tracking-wide font-semibold text-slate-600 mb-2 block">
+                                Total Billing
+                              </label>
+                              <p className="text-slate-700 text-xs sm:text-sm">₹ {offer.orders[0].totalAmount}</p>
+                            </div>
+                            
                           </div>
 
                           <div>
@@ -525,21 +354,24 @@ export default function WinnerOffers() {
                             </label>
                             <p className="text-slate-700 text-xs sm:text-sm">{offer.description}</p>
                           </div>
+                          
 
                           <div>
                             <label className="text-xs uppercase tracking-wide font-semibold text-slate-600 mb-3 block">
                               Winning Products ({products.length})
                             </label>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                              {products.map((product, idx) => (
+                              {offer.orders?.map((product, idx) => (
                                 <div
                                   key={idx}
                                   className="bg-white border border-slate-200 rounded-lg p-3 sm:p-4 flex gap-3"
                                 >
-                                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                                  {product.items.map((item) => (
+                                    <>
+                                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
                                     <img
-                                      src={product.image || "/placeholder.svg"}
-                                      alt={product.name}
+                                      src={item.productId.imageUrl || "/placeholder.svg"}
+                                      alt={item.productId.name}
                                       className="w-full h-full object-cover"
                                       onError={(e) => {
                                         e.target.src = `https://via.placeholder.com/80x80?text=${encodeURIComponent(product.name.substring(0, 2))}`
@@ -547,18 +379,24 @@ export default function WinnerOffers() {
                                     />
                                   </div>
                                   <div className="flex-1 min-w-0">
-                                    <p className="font-medium text-slate-900 line-clamp-1 text-xs sm:text-sm">
-                                      {product.name}
+                                    <p className="font-medium text-slate-900 line-clamp-1 text-xs sm:text-sm ">
+                                      {item.productId.name} {item.productId.quantity}
                                     </p>
-                                    <div className="flex items-center gap-2 mt-2 flex-wrap">
+                                    <div className="flex flex-col  gap-2 mt-2 flex-wrap">
                                       <span className="px-2 py-1 bg-red-50 text-red-600 text-xs font-semibold rounded border border-red-200">
-                                        $ {calaulateTotalPrice(offer.offerFor,offer.products)}
+                                        {item.qty} (bags) x {item.productId.packSize} (pics in one bag) x {item.price} (price of one pcs) = ₹ {item.qty * item.productId.packSize * item.price}
                                       </span>
+                                      
                                       <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs font-semibold rounded border border-blue-200">
-                                        Qty: {product.minQty}
+                                        Bag: {item.qty}
                                       </span>
                                     </div>
                                   </div>
+
+                                    </>
+                                  ))
+                                  }
+
                                 </div>
                               ))}
                             </div>
@@ -574,7 +412,7 @@ export default function WinnerOffers() {
                                 <p className="text-slate-900 font-semibold text-sm sm:text-base">
                                   {offer.winner?.name}
                                 </p>
-                                <p className="text-xs sm:text-sm text-slate-600 break-all">{offer.winner?.email}</p>
+                                <p className="text-xs sm:text-sm text-slate-600 break-all">{offer.winner?.phone}</p>
                               </div>
                             </div>
 

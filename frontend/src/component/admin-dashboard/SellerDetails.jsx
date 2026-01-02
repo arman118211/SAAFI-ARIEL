@@ -25,7 +25,6 @@ export default function SellerDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const sellersData = useSelector(selectSellers);
-  console.log("seller data==>",sellersData)
   const seller = sellersData.find((s) => s._id === id)
   const [selectedStatus, setSelectedStatus] = useState("all")
   const [expandedOrder, setExpandedOrder] = useState(null)

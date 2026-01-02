@@ -3,6 +3,7 @@ import axios from "axios"
 import { useSelector } from "react-redux"
 import { DollarSign, Droplets, Package, AlertCircle, Filter, Download } from "lucide-react"
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip } from "recharts"
+import toast from "react-hot-toast"
 
 const SellerStatShimmer = () => (
   <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm relative overflow-hidden">
@@ -50,122 +51,7 @@ const SellerDashboardHome = () => {
       setOrders(response.data)
     } catch (err) {
       console.log("Error fetching orders, using mock data", err)
-      // Use mock data as fallback
-      setOrders([
-        {
-          _id: "6921fc4febe1d1f217384409",
-          sellerId: "691b6cdb54bbb4dcecdb01e3",
-          items: [
-            {
-              productId: {
-                _id: "691cadaf1d00cc1b51a5a881",
-                name: "Detergent Powder",
-                description: "High quality washing powder",
-                price: 450,
-                unit: "kg",
-                stock: 100,
-                category: "Detergent",
-                imageUrl: "https://example.com/detergent.jpg",
-                isActive: true,
-                createdAt: "2025-11-18T17:32:31.614Z",
-                updatedAt: "2025-11-18T17:32:31.614Z",
-                __v: 0,
-              },
-              qty: 10,
-              price: 450,
-              _id: "6921fc4febe1d1f21738440a",
-            },
-            {
-              productId: {
-                _id: "691cc937414db57fb18eb0c4",
-                name: "Organic Basmati Rice",
-                description: "Premium long-grain organic basmati rice.",
-                price: 120,
-                unit: "kg",
-                stock: 200,
-                category: "Groceries",
-                imageUrl: "https://example.com/images/rice.jpg",
-                isActive: true,
-                createdAt: "2025-11-18T19:29:59.235Z",
-                updatedAt: "2025-11-18T19:29:59.235Z",
-                __v: 0,
-              },
-              qty: 50,
-              price: 120,
-              _id: "6921fc4febe1d1f21738440b",
-            },
-            {
-              productId: {
-                _id: "691cc95e414db57fb18eb0c6",
-                name: "Fresh Cow Milk",
-                description: "Farm-fresh full-cream milk.",
-                price: 60,
-                unit: "liter",
-                stock: 150,
-                category: "Dairy",
-                imageUrl: "https://example.com/images/milk.jpg",
-                isActive: true,
-                createdAt: "2025-11-18T19:30:38.784Z",
-                updatedAt: "2025-11-18T19:30:38.784Z",
-                __v: 0,
-              },
-              qty: 30,
-              price: 60,
-              _id: "6921fc4febe1d1f21738440c",
-            },
-          ],
-          totalQty: 90,
-          totalAmount: 12300,
-          status: "pending",
-          offerId: {
-            _id: "691ccba7414db57fb18eb0d1",
-            title: "Festival Bulk Purchase Offer",
-            description: "Buy in bulk and get special festive discounts!",
-            products: [
-              {
-                productId: "691cadaf1d00cc1b51a5a881",
-                minQty: 10,
-                _id: "691ccba7414db57fb18eb0d2",
-              },
-              {
-                productId: "691cc937414db57fb18eb0c4",
-                minQty: 50,
-                _id: "691ccba7414db57fb18eb0d3",
-              },
-              {
-                productId: "691cc95e414db57fb18eb0c6",
-                minQty: 30,
-                _id: "691ccba7414db57fb18eb0d4",
-              },
-            ],
-            startDate: "2025-11-20T00:00:00.000Z",
-            endDate: "2025-12-05T23:59:59.999Z",
-            status: "active",
-            sellerPurchases: [
-              {
-                sellerId: "691b6cdb54bbb4dcecdb01e3",
-                totalQty: 90,
-                orders: [
-                  {
-                    orderId: "6921fc4febe1d1f217384409",
-                    qty: 90,
-                    _id: "6921fc4febe1d1f217384413",
-                    date: "2025-11-22T18:09:19.822Z",
-                  },
-                ],
-                _id: "6921fc4febe1d1f217384412",
-              },
-            ],
-            winner: null,
-            createdAt: "2025-11-18T19:40:23.511Z",
-            updatedAt: "2025-11-22T18:09:19.824Z",
-            __v: 1,
-          },
-          createdAt: "2025-11-22T18:09:19.792Z",
-          updatedAt: "2025-11-22T18:09:19.792Z",
-          __v: 0,
-        },
-      ])
+      toast.err("Server error.Please try after sometime.")
     } finally {
       setLoading(false)
     }

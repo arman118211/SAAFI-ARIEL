@@ -409,41 +409,102 @@ export const markWinSeen = async (req, res) => {
 };
 
 //winner details of the user 
+// export const getWinningOffersForSeller = async (req, res) => {
+//   try {
+//     const sellerId = req.params.id;
+
+//     if (!mongoose.Types.ObjectId.isValid(sellerId)) {
+//       return res.status(400).json({ message: "Invalid seller ID" });
+//     }
+
+//     const winningOffers = await Offer.find({ winner: sellerId })
+//       .select(
+//         "title description startDate endDate status products createdAt"
+//       )
+//       .populate({
+//         path: "products.productId",
+//         select: "name price imageUrl",
+//       })
+//       .populate({
+//         path: "winner",
+//         select: "name email",
+//       })
+//       .sort({ createdAt: -1 });
+
+//     return res.status(200).json({
+//       success: true,
+//       count: winningOffers.length,
+//       offers: winningOffers,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching winning offers:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Failed to fetch winning offers",
+//     });
+//   }
+// };
+
 export const getWinningOffersForSeller = async (req, res) => {
   try {
     const sellerId = req.params.id;
 
     if (!mongoose.Types.ObjectId.isValid(sellerId)) {
-      return res.status(400).json({ message: "Invalid seller ID" });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid seller ID",
+      });
     }
 
     const winningOffers = await Offer.find({ winner: sellerId })
       .select(
-        "title description startDate endDate status products createdAt"
+        "title description startDate endDate status  products createdAt "
       )
       .populate({
-        path: "products.productId",
-        select: "name price imageUrl",
+        path: "winner",
+        select: "name email phone companyName",
       })
       .populate({
-        path: "winner",
-        select: "name email",
+        path: "products.productId",
+        select: "name imageUrl marketPrice ",
       })
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean(); 
+
+    // 2️⃣ Attach orders for each offer
+    const offersWithOrders = await Promise.all(
+      winningOffers.map(async (offer) => {
+        const orders = await Order.find({
+          offerId: offer._id,
+          sellerId: sellerId,
+        })
+          .select("items totalAmount totalQty status createdAt")
+          .populate({
+            path: "items.productId",
+            select: "name imageUrl packSize quantity",
+          });
+
+        return {
+          ...offer,
+          orders, // 👈 SAME STRUCTURE as admin API
+        };
+      })
+    );
 
     return res.status(200).json({
       success: true,
-      count: winningOffers.length,
-      offers: winningOffers,
+      count: offersWithOrders.length,
+      offers: offersWithOrders,
     });
   } catch (error) {
-    console.error("Error fetching winning offers:", error);
+    console.error("Error fetching winning offers for seller:", error);
     return res.status(500).json({
       success: false,
       message: "Failed to fetch winning offers",
     });
   }
 };
+
 
 // winner for admin
 // export const getAllOfferWinners = async (req, res) => {
@@ -493,7 +554,7 @@ export const getAllOfferWinners = async (req, res) => {
       })
       .populate({
         path: "products.productId",
-        select: "name imageUrl marketPrice dealerPrice retailerPrice packSize",
+        select: "name imageUrl marketPrice dealerPrice retailerPrice packSize quantity",
       })
       .sort({ createdAt: -1 })
       .lean(); // 👈 important for modification
@@ -508,7 +569,7 @@ export const getAllOfferWinners = async (req, res) => {
           .select("items totalAmount totalQty status createdAt")
           .populate({
             path: "items.productId",
-            select: "name imageUrl packSize",
+            select: "name imageUrl packSize quantity",
           });
 
         return {
