@@ -26,7 +26,7 @@ const PRODUCTS = [
     name: "ULTRA FRESH LAUNDRY DETERGENT",
     description: "Advanced formula with premium cleaning agents for spotless whites and vibrant colors.",
     category: "Powder",
-    imageUrl: "/laundry-detergent-bottle.jpg",
+    imageUrl: "https://storage.googleapis.com/saafi-ariel-aeb41.firebasestorage.app/uploads/7d357b9f-6c10-4e93-b899-80f16c0389b6-a1.jpg",
     keyFeatures: ["Deep Clean", "Stain Removal", "Fresh Scent", "Color Protection"],
     quantity: "200g",
     packSize: 10,
@@ -39,7 +39,7 @@ const PRODUCTS = [
     name: "ECO SOFT DISHWASHING LIQUID",
     description: "Gentle on hands but tough on grease and food residue.",
     category: "Dishwashing",
-    imageUrl: "/dishwashing-liquid-bottle.jpg",
+    imageUrl: "https://storage.googleapis.com/saafi-ariel-aeb41.firebasestorage.app/uploads/7d357b9f-6c10-4e93-b899-80f16c0389b6-a1.jpg",
     keyFeatures: ["Grease Cut", "Hand Care", "Biodegradable", "No Harsh Chemicals"],
     quantity: "500ml",
     packSize: 8,
@@ -52,7 +52,7 @@ const PRODUCTS = [
     name: "CRYSTAL SHINE SURFACE CLEANER",
     description: "Leaves surfaces sparkling and sanitized with a pleasant aroma.",
     category: "Surface Cleaner",
-    imageUrl: "/surface-cleaner-spray.jpg",
+    imageUrl: "https://storage.googleapis.com/saafi-ariel-aeb41.firebasestorage.app/uploads/7d357b9f-6c10-4e93-b899-80f16c0389b6-a1.jpg",
     keyFeatures: ["Sanitized", "Shiny Finish", "Antibacterial", "Fast Acting"],
     quantity: "400ml",
     packSize: 6,
@@ -65,7 +65,7 @@ const PRODUCTS = [
     name: "DELICATE TOUCH WASH",
     description: "Perfect for silks, wools, and delicate fabrics with extra care formula.",
     category: "Powder",
-    imageUrl: "/delicate-detergent.jpg",
+    imageUrl: "https://storage.googleapis.com/saafi-ariel-aeb41.firebasestorage.app/uploads/7d357b9f-6c10-4e93-b899-80f16c0389b6-a1.jpg",
     keyFeatures: ["Gentle", "Fabric Care", "Color Safe", "Luxurious Care"],
     quantity: "100g",
     packSize: 15,
@@ -78,7 +78,7 @@ const PRODUCTS = [
     name: "POWER STAIN REMOVER",
     description: "Professional-grade stain removal solution for tough marks and oil stains.",
     category: "Powder",
-    imageUrl: "/stain-remover.jpg",
+    imageUrl: "https://storage.googleapis.com/saafi-ariel-aeb41.firebasestorage.app/uploads/7d357b9f-6c10-4e93-b899-80f16c0389b6-a1.jpg",
     keyFeatures: ["Powerful", "Oil Stains", "Tough Marks", "Pre-treat Ready"],
     quantity: "250g",
     packSize: 5,
@@ -91,7 +91,7 @@ const PRODUCTS = [
     name: "GLASS CRYSTAL CLEANER",
     description: "Streak-free cleaning for windows, mirrors, and glass surfaces.",
     category: "Surface Cleaner",
-    imageUrl: "/glass-cleaner-spray.jpg",
+    imageUrl: "https://storage.googleapis.com/saafi-ariel-aeb41.firebasestorage.app/uploads/7d357b9f-6c10-4e93-b899-80f16c0389b6-a1.jpg",
     keyFeatures: ["Streak Free", "Crystal Clear", "Quick Dry", "Ammonia Free"],
     quantity: "300ml",
     packSize: 9,
@@ -104,7 +104,7 @@ const PRODUCTS = [
     name: "ANTIBACTERIAL DISH SOAP",
     description: "Kills 99.9% of bacteria while cleaning dishes effectively.",
     category: "Dishwashing",
-    imageUrl: "/antibacterial-dish-soap.jpg",
+    imageUrl: "https://storage.googleapis.com/saafi-ariel-aeb41.firebasestorage.app/uploads/7d357b9f-6c10-4e93-b899-80f16c0389b6-a1.jpg",
     keyFeatures: ["Antibacterial", "Effective", "Pleasant Scent", "Skin Friendly"],
     quantity: "600ml",
     packSize: 7,
@@ -162,7 +162,7 @@ export default function ShopPage() {
       <ShopHeader />
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+      <div className="mx-auto px-6 lg:px-50">
         {/* Filter Section */}
         <ProductFilter onFilterChange={setActiveFilter} onSortChange={setSortBy} />
 

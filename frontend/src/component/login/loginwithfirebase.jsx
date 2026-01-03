@@ -25,7 +25,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginSeller } from "../../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast"
-
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth"
+import { auth } from "../../../firebase"
+import { OTPVerificationCard } from "./OTPVerificationCard"
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
@@ -42,10 +44,10 @@ const Login = () => {
   const [messageType, setMessageType] = useState("")
   const [isSignup, setIsSignup] = useState(false)
 
-  // const [otpSent, setOtpSent] = useState(false)
-  // const [otp, setOtp] = useState(["", "", "", "", "", ""])
-  // const [confirmationResult, setConfirmationResult] = useState(null)
-  const [country, setCountry] = useState("NP")
+  const [otpSent, setOtpSent] = useState(false)
+  const [otp, setOtp] = useState(["", "", "", "", "", ""])
+  const [confirmationResult, setConfirmationResult] = useState(null)
+  const [country, setCountry] = useState("IN")
   const countryCodes = {
     IN: "+91",
     NP: "+977",
@@ -70,141 +72,106 @@ const Login = () => {
       }))
   }
 
-//  const handleSignupSubmit = async (e) => {
-//   e.preventDefault()
-
-//   try {
-//     setIsLoading(true)
-
-    
-//     if (!window.recaptchaVerifier) {
-//       window.recaptchaVerifier = new RecaptchaVerifier(
-//         auth,                       
-//         "recaptcha-container",      
-//         {
-//           size: "invisible",
-//         }
-//       )
-//     }
-
-//     // const confirmation = await signInWithPhoneNumber(
-//     //   auth,
-//     //   `+91${signupData.phone}`,
-//     //   window.recaptchaVerifier
-//     // )
-
-//     const phoneNumber = `${countryCodes[country]}${signupData.phone}`
-
-//     const confirmation = await signInWithPhoneNumber(
-//       auth,
-//       phoneNumber,
-//       window.recaptchaVerifier
-//     )
-
-
-//     setConfirmationResult(confirmation)
-//     setOtpSent(true)
-//     toast.success("OTP sent successfully")
-//     setIsLoading(false)
-
-//   } catch (err) {
-//     if (err.code === "auth/too-many-requests") {
-//       toast.error("Too many attempts. Please try later.")
-//     } else if (err.code === "auth/invalid-phone-number") {
-//       toast.error("Invalid phone number.")
-//     } else {
-//       toast.error(err.message || "Failed to send OTP")
-//     }
-//     setIsLoading(false);
-//   }
-// }
-
-const handleSignupSubmit = async (e) => {
+ const handleSignupSubmit = async (e) => {
   e.preventDefault()
 
   try {
     setIsLoading(true)
 
-    await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/seller/auth/register`,
-      signupData
+    
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,                       
+        "recaptcha-container",      
+        {
+          size: "invisible",
+        }
+      )
+    }
+
+    // const confirmation = await signInWithPhoneNumber(
+    //   auth,
+    //   `+91${signupData.phone}`,
+    //   window.recaptchaVerifier
+    // )
+
+    const phoneNumber = `${countryCodes[country]}${signupData.phone}`
+
+    const confirmation = await signInWithPhoneNumber(
+      auth,
+      phoneNumber,
+      window.recaptchaVerifier
     )
 
-    toast.success("Account created successfully")
-    setIsSignup(false)
-    setSelectedRole(null)
 
-    setSignupData({
-      name: "",
-      email: "",
-      phone: "",
-      companyName: "",
-      address: "",
-      password: "",
-      role: "",
-    })
+    setConfirmationResult(confirmation)
+    setOtpSent(true)
+    toast.success("OTP sent successfully")
+    setIsLoading(false)
 
   } catch (err) {
-    toast.error(
-      err.response?.data?.message || "Failed to create account"
-    )
-  } finally {
-    setIsLoading(false)
+    if (err.code === "auth/too-many-requests") {
+      toast.error("Too many attempts. Please try later.")
+    } else if (err.code === "auth/invalid-phone-number") {
+      toast.error("Invalid phone number.")
+    } else {
+      toast.error(err.message || "Failed to send OTP")
+    }
+    setIsLoading(false);
   }
 }
 
 
+  const verifyOtpAndRegister = async () => {
+    try {
+      if (otp.join("").length !== 6) {
+        toast.error("Please enter the 6-digit OTP")
+        return
+      }
 
-  // const verifyOtpAndRegister = async () => {
-  //   try {
-  //     if (otp.join("").length !== 6) {
-  //       toast.error("Please enter the 6-digit OTP")
-  //       return
-  //     }
-
-  //     setIsLoading(true)
+      setIsLoading(true)
       
-  //     if (!confirmationResult) {
-  //       toast.error("OTP session expired. Please resend OTP.")
-  //       setIsLoading(false)
-  //       return
-  //     }
+      if (!confirmationResult) {
+        toast.error("OTP session expired. Please resend OTP.")
+        setIsLoading(false)
+        return
+      }
 
-  //     const result = await confirmationResult.confirm(otp.join(""))
-  //     const idToken = await result.user.getIdToken()
+      const result = await confirmationResult.confirm(otp.join(""))
+      const idToken = await result.user.getIdToken()
 
-  //     await axios.post(
-  //       `${import.meta.env.VITE_BASE_URL}/seller/auth/register`,
-  //       signupData,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${idToken}`,
-  //         },
-  //       }
-  //     )
+      await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/seller/auth/register`,
+        signupData,
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        }
+      )
 
-  //     toast.success("Account created successfully")
-  //     setIsSignup(false)
-  //     setOtpSent(false)
-  //     setIsLoading(false)
-  //     setSelectedRole(null)
-  //     setOtp(["", "", "", "", "", ""])
+      toast.success("Account created successfully")
+      setIsSignup(false)
+      setOtpSent(false)
+      setIsLoading(false)
+      setSelectedRole(null)
+      setOtp(["", "", "", "", "", ""])
 
-  //   } catch (err) {
-  //     // toast.error(err.data.response.message)
-  //     console.log("err",err)
-  //     // setIsLoading(false)
-  //     if (err.code === "auth/invalid-verification-code") {
-  //       toast.error("Invalid OTP. Please try again.")
-  //     } else if (err.code === "auth/code-expired") {
-  //       toast.error("OTP expired. Please resend OTP.")
-  //     } else {
-  //       toast.error(err.response.data.message)
-  //     }
-  //   }finally {
-  //     setIsLoading(false)
-  //   }
-  // }
+    } catch (err) {
+      // toast.error(err.data.response.message)
+      console.log("err",err)
+      // setIsLoading(false)
+      if (err.code === "auth/invalid-verification-code") {
+        toast.error("Invalid OTP. Please try again.")
+      } else if (err.code === "auth/code-expired") {
+        toast.error("OTP expired. Please resend OTP.")
+      } else {
+        toast.error(err.response.data.message)
+      }
+    }finally {
+      setIsLoading(false)
+    }
+  }
 
 
 
@@ -428,6 +395,23 @@ const handleSignupSubmit = async (e) => {
     transition={{ duration: 0.3 }}
     className="space-y-4"
   >
+    {otpSent ? 
+    (
+    <OTPVerificationCard
+      phoneNumber={`${countryCodes[country]} ${signupData.phone}`}
+      onVerify={verifyOtpAndRegister}
+      onResend={handleSignupSubmit}
+      otp = {otp}
+      setOtp = {setOtp}
+      onBack={() => {
+        setOtpSent(false)
+        setOtp("")
+      }}
+      isLoading={isLoading}
+    />
+  )
+    :
+    <>
     {/* Full Name */}
     <div className="space-y-1">
       <label className="text-xs font-semibold text-gray-700">Full Name</label>
@@ -588,7 +572,8 @@ const handleSignupSubmit = async (e) => {
         Sign In
       </button>
     </p>
-
+    </>
+    }
 
     {/* {otpSent && (
       <div className="space-y-3">

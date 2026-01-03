@@ -70,15 +70,72 @@ const generateToken = (id) => {
 //     res.status(500).json({ message: error.message })
 //   }
 // }
+// export const registerSeller = async (req, res) => {
+//   try {
+//     const token = req.headers.authorization?.split("Bearer ")[1];
+//     if (!token) {
+//       return res.status(401).json({ message: "Unauthorized" });
+//     }
+
+//     const decoded = await admin.auth().verifyIdToken(token);
+
+//     const {
+//       name,
+//       email,
+//       phone,
+//       password,
+//       companyName,
+//       address,
+//       role = "seller",
+//     } = req.body;
+
+//     // ✅ Phone verification check
+//     if (decoded.phone_number !== `+91${phone}`) {
+//       return res.status(400).json({ message: "Phone mismatch" });
+//     }
+
+//     // ✅ Check phone uniqueness (mandatory)
+//     const phoneExists = await Seller.findOne({ phone });
+//     if (phoneExists) {
+//       return res.status(400).json({ message: "Phone number already registered" });
+//     }
+
+//     // ✅ Check email uniqueness ONLY if email is provided
+//     if (email) {
+//       const emailExists = await Seller.findOne({ email });
+//       if (emailExists) {
+//         return res.status(400).json({ message: "Email already registered" });
+//       }
+//     }
+
+//     // ✅ Role-based approval logic
+//     const isApproved = role === "dealer" ? false : true;
+
+//     const seller = await Seller.create({
+//       name,
+//       email: email || null,
+//       phone,
+//       password,
+//       companyName,
+//       address,
+//       role,
+//       isApproved,
+//     });
+
+//     res.status(201).json({
+//       message: "Seller registered successfully",
+//       seller,
+//       token: generateToken(seller._id),
+//     });
+
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 export const registerSeller = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split("Bearer ")[1];
-    if (!token) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    const decoded = await admin.auth().verifyIdToken(token);
-
     const {
       name,
       email,
@@ -89,39 +146,47 @@ export const registerSeller = async (req, res) => {
       role = "seller",
     } = req.body;
 
-    // ✅ Phone verification check
-    if (decoded.phone_number !== `+91${phone}`) {
-      return res.status(400).json({ message: "Phone mismatch" });
+    // 🔒 Basic validation
+    if (!name || !phone || !password || !companyName || !address) {
+      return res.status(400).json({
+        message: "All required fields must be provided",
+      });
     }
 
-    // ✅ Check phone uniqueness (mandatory)
+    // ✅ Check phone uniqueness (MANDATORY)
     const phoneExists = await Seller.findOne({ phone });
     if (phoneExists) {
-      return res.status(400).json({ message: "Phone number already registered" });
+      return res.status(400).json({
+        message: "Phone number already registered",
+      });
     }
 
-    // ✅ Check email uniqueness ONLY if email is provided
+    // ✅ Check email uniqueness (ONLY if provided)
     if (email) {
       const emailExists = await Seller.findOne({ email });
       if (emailExists) {
-        return res.status(400).json({ message: "Email already registered" });
+        return res.status(400).json({
+          message: "Email already registered",
+        });
       }
     }
 
-    // ✅ Role-based approval logic
+    // ✅ Dealer approval logic
     const isApproved = role === "dealer" ? false : true;
 
+    // ✅ Create seller
     const seller = await Seller.create({
       name,
       email: email || null,
       phone,
-      password,
+      password, // ⚠️ make sure password hashing middleware exists
       companyName,
       address,
       role,
       isApproved,
     });
 
+    // ✅ Send response
     res.status(201).json({
       message: "Seller registered successfully",
       seller,
@@ -129,8 +194,10 @@ export const registerSeller = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: error.message });
+    console.error("Register Seller Error:", error);
+    res.status(500).json({
+      message: "Internal server error",
+    });
   }
 };
 

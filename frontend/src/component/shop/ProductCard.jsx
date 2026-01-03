@@ -43,11 +43,11 @@ export default function ProductCard({ product, onAddToCart }) {
     >
       <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col group border border-gray-100">
         {/* Product Image Container */}
-        <div className="relative h-72 bg-gradient-to-br from-blue-50 to-cyan-50 overflow-hidden">
+        <div className="relative h-72 bg-gradient-to-br from-blue-50 to-cyan-50 overflow-hidden ">
           <motion.img
             src={product.imageUrl}
             alt={product.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
             animate={{ scale: isHovered ? 1.08 : 1 }}
             transition={{ duration: 0.4 }}
           />
