@@ -44,43 +44,47 @@ const ProductInfo = ({ product, showFullDescription, onToggleDescription }) => {
 
       {/* Key Attributes */}
       <div className="border-t border-gray-200 pt-6">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900">Key Attributes</h2>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div>
-            <p className="text-sm text-gray-600 mb-1">Country Of Origin</p>
-            <p className="text-base font-medium text-gray-900">{product.attributes.countryOfOrigin}</p>
+        <h2 className="text-lg font-semibold mb-4 text-gray-900">
+          Key Attributes
+        </h2>
+
+        <div className="space-y-3">
+          {/* Country of Origin */}
+          <div className="flex items-center">
+            <p className="w-40 text-sm text-gray-600">
+              Country of Origin
+            </p>
+            <p className="text-base font-medium text-gray-900">
+              {product.attributes.countryOfOrigin}
+            </p>
           </div>
-          <div>
-            <p className="text-sm text-gray-600 mb-1">Brand</p>
-            <p className="text-base font-medium text-gray-900">{product.attributes.brand}</p>
+
+          {/* Brand */}
+          <div className="flex items-center">
+            <p className="w-40 text-sm text-gray-600">
+              Brand
+            </p>
+            <p className="text-base font-medium text-gray-900">
+              {product.attributes.brand}
+            </p>
           </div>
-          <div>
-            <p className="text-sm text-gray-600 mb-1">Availability</p>
-            <span className="inline-block bg-blue-600 text-white text-xs px-3 py-1.5 rounded font-medium">
+
+          {/* Availability */}
+          <div className="flex items-center">
+            <p className="w-40 text-sm text-gray-600">
+              Availability
+            </p>
+            <span className="inline-block bg-blue-600 text-white text-xs px-3 py-1 rounded font-medium">
               {product.attributes.availability}
             </span>
           </div>
         </div>
 
-        <button className="text-blue-600 text-sm hover:underline mt-6 transition-colors">
+        <button className="text-blue-600 text-sm hover:underline mt-5 transition-colors">
           View full attributes
         </button>
       </div>
 
-      {/* Additional Product Details */}
-      <div className="border-t border-gray-200 pt-6 space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900">Product Details</h2>
-        <p className="text-gray-700 text-sm md:text-base">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor 
-          incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis 
-          nostrud exercitation ullamco laboris.
-        </p>
-        <p className="text-gray-700 text-sm md:text-base">
-          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore 
-          eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.
-        </p>
-      </div>
     </div>
   );
 };

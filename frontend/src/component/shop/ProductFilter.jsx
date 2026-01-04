@@ -8,7 +8,7 @@ export default function ProductFilter({ onFilterChange, onSortChange }) {
 
   const filters = [
     { label: "All", value: "all" },
-    { label: "Laundry", value: "laundry" },
+    { label: "Detergent", value: "Detergent" },
     { label: "Dishwashing", value: "dishwashing" },
     { label: "Surface Cleaner", value: "surface" },
     { label: "On Sale", value: "sale" },

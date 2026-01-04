@@ -238,3 +238,57 @@ export const getInventoryGraphData = async (req, res) => {
     });
   }
 };
+
+export const getProductsByRole = async (req, res) => {
+  try {
+    const { role = "common" } = req.body;
+
+    // Fetch only active products
+    const products = await Product.find({ isActive: true }).lean();
+
+    const formattedProducts = products.map((product) => {
+      let price, discount;
+
+      if (role === "retailer") {
+        price = product.retailerPrice;
+        discount = product.retailerDiscount;
+      } else if (role === "dealer") {
+        price = product.dealerPrice;
+        discount = product.dealerDiscount;
+      } else {
+        // common
+        price = product.marketPrice;
+        discount = product.marketDiscount;
+      }
+
+      // ❌ remove unwanted fields
+      const {
+        marketPrice,
+        marketDiscount,
+        retailerPrice,
+        retailerDiscount,
+        dealerPrice,
+        dealerDiscount,
+        ...cleanProduct
+      } = product;
+
+      return {
+        ...cleanProduct,
+        price,      // ✅ only price
+        discount,   // ✅ only discount
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      count: formattedProducts.length,
+      products: formattedProducts,
+    });
+  } catch (error) {
+    console.error("Get products error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch products",
+    });
+  }
+};

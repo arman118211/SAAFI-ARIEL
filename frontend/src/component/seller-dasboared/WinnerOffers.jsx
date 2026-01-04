@@ -94,11 +94,6 @@ export default function WinnerOffers() {
 
   const [expandedId, setExpandedId] = useState(null)
 
-  const calaulateTotalPrice = (offerFor, product) => {
-    console.log(offerFor, product)
-
-  }
-
   const getStatusColor = (status) => {
     switch (status) {
       case "active":

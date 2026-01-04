@@ -2,6 +2,8 @@
 import { motion } from "framer-motion"
 import { ShoppingCart, Heart, Truck, Package, Plus, Minus, Trash2 } from "lucide-react"
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+
 
 export default function ProductCard({ product, onAddToCart }) {
   const [isHovered, setIsHovered] = useState(false)
@@ -9,11 +11,19 @@ export default function ProductCard({ product, onAddToCart }) {
   const [quantity, setQuantity] = useState(1)
   const [isFavorite, setIsFavorite] = useState(false)
 
+  const navigate = useNavigate()
+
+
   const pricePerPacket = product.price
   const totalPackets = product.packSize
   const originalTotalPrice = pricePerPacket * totalPackets
   const discountAmount = (originalTotalPrice * product.discount) / 100
   const finalPrice = originalTotalPrice - discountAmount
+
+  const handleCardClick = () => {
+    navigate(`/productDetails/${product._id}`)
+  }
+
 
   const handleAddToCart = () => {
     onAddToCart({ ...product, quantity })
@@ -39,7 +49,8 @@ export default function ProductCard({ product, onAddToCart }) {
       transition={{ duration: 0.6 }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="h-full"
+       onClick={handleCardClick}
+      className="h-full cursor-pointer"
     >
       <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col group border border-gray-100">
         {/* Product Image Container */}
@@ -59,13 +70,15 @@ export default function ProductCard({ product, onAddToCart }) {
               whileInView={{ opacity: 1, x: 0 }}
               className="absolute top-3 left-3 bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide"
             >
-              -{product.discount}% OFF
+              {product.discount}% OFF
             </motion.div>
           )}
 
           {/* Favorite Button */}
           <motion.button
-            onClick={() => setIsFavorite(!isFavorite)}
+            onClick={(e) =>{ 
+              e.stopPropagation()
+              setIsFavorite(!isFavorite)}}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-lg hover:bg-white transition-all duration-200"
@@ -95,7 +108,9 @@ export default function ProductCard({ product, onAddToCart }) {
             <Package size={12} className="text-blue-600 flex-shrink-0" />
             <span className="font-semibold">{product.quantity}</span>
             <span className="text-gray-600">×</span>
-            <span className="font-semibold">{product.packSize}</span>
+            <span className="font-semibold">{product.packSize} Pics</span>
+            <span className="text-gray-600">×</span>
+            <span className="font-semibold">1 Bag</span>
           </div>
 
           {/* Key Features - Compact */}
@@ -116,9 +131,9 @@ export default function ProductCard({ product, onAddToCart }) {
           <div className="mb-3 pb-3 border-b border-gray-200">
             <div className="flex items-baseline gap-2 flex-wrap">
               <span className="text-xl font-bold text-gray-900">₹{finalPrice.toFixed(2)}</span>
-              <span className="text-xs text-gray-500 line-through">₹{originalTotalPrice.toFixed(2)}</span>
+              <span className="text-sm text-gray-700 line-through font-semibold">₹{originalTotalPrice.toFixed(2)}</span>
             </div>
-            <p className="text-gray-500 text-xs mt-1">₹{pricePerPacket.toFixed(2)}/packet</p>
+            <p className="text-gray-500 text-xs mt-1 font-semibold">₹{pricePerPacket.toFixed(2)}/packet</p>
           </div>
 
           {/* Stock Status - Simple */}
@@ -130,7 +145,10 @@ export default function ProductCard({ product, onAddToCart }) {
 
           {!addedToCart ? (
             <motion.button
-              onClick={handleAddToCart}
+              onClick={(e) => {
+                e.stopPropagation()
+                handleAddToCart()
+              }}
               disabled={product.stock === 0}
               whileHover={product.stock > 0 ? { scale: 1.03, y: -2 } : {}}
               whileTap={product.stock > 0 ? { scale: 0.97 } : {}}
@@ -146,7 +164,10 @@ export default function ProductCard({ product, onAddToCart }) {
           ) : (
             <div className="flex items-center gap-2 bg-gradient-to-r from-blue-50 to-cyan-50 p-2 rounded-lg border-2 border-blue-200">
               <motion.button
-                onClick={() => handleQuantityChange(quantity - 1)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleQuantityChange(quantity - 1)
+                }}
                 whileTap={{ scale: 0.95 }}
                 className="p-1.5 hover:bg-white rounded-md transition-colors"
               >
@@ -154,7 +175,10 @@ export default function ProductCard({ product, onAddToCart }) {
               </motion.button>
               <span className="flex-1 text-center font-bold text-gray-900 text-sm">{quantity}</span>
               <motion.button
-                onClick={() => handleQuantityChange(quantity + 1)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleQuantityChange(quantity + 1)
+                }}
                 whileTap={{ scale: 0.95 }}
                 className="p-1.5 hover:bg-white rounded-md transition-colors"
               >
@@ -162,7 +186,11 @@ export default function ProductCard({ product, onAddToCart }) {
               </motion.button>
               <div className="w-px h-6 bg-blue-200 mx-1"></div>
               <motion.button
-                onClick={handleRemove}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleRemove()
+                  }}
+
                 whileTap={{ scale: 0.95 }}
                 className="flex-1 py-1.5 px-2 bg-red-50 hover:bg-red-100 text-red-600 font-semibold rounded-md flex items-center justify-center gap-1 transition-all duration-300 text-xs border border-red-200"
               >

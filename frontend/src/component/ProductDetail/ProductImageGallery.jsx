@@ -9,7 +9,7 @@ const ProductImageGallery = ({ images, selectedImage, onImageSelect }) => {
         <img 
           src={images[selectedImage]} 
           alt="Product" 
-          className="w-full h-48 sm:h-64 md:h-80 object-cover"
+          className="w-full h-80 sm:h-64 md:h-100 object-cover"
         />
         <div className="absolute top-4 right-4 flex flex-col space-y-2">
           <button className="bg-white rounded-full p-2 shadow-md hover:bg-gray-50 transition-colors">
@@ -22,7 +22,7 @@ const ProductImageGallery = ({ images, selectedImage, onImageSelect }) => {
       </div>
 
       {/* Thumbnail Images */}
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-2 ">
         {images.map((img, idx) => (
           <button
             key={idx}
@@ -36,7 +36,7 @@ const ProductImageGallery = ({ images, selectedImage, onImageSelect }) => {
             <img 
               src={img} 
               alt={`Thumbnail ${idx + 1}`} 
-              className="w-full h-20 md:h-24 object-cover" 
+              className="w-full h-15 md:h-18 object-cover" 
             />
           </button>
         ))}

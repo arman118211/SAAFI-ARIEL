@@ -41,6 +41,7 @@ import ImageUpload from './component/ImageUpload'
 import DealerDetails from './component/admin-dashboard/DealerDetails'
 import ShopPage from './component/shop/Shop'
 import ProductDetailPage from './component/ProductDetail/ProductDetailPage'
+import CheckoutPage from './component/checkout/CheckoutPage'
 
 
 function App() {
@@ -72,7 +73,9 @@ function App() {
         <Route path="/upload" element={<ImageUpload />} />
         <Route path="/dealers/:dealerId" element={<DealerDetails />} />
         <Route path="/shopProduct" element={<ShopPage />} />
-        <Route path="/productDetail" element={<ProductDetailPage />} />
+        <Route path="/productDetails/:id" element={<ProductDetailPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+
 
 
 

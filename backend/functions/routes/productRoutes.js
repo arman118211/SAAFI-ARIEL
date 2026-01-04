@@ -7,16 +7,20 @@ import {
   deleteProduct,
   toggleActive,
   allStats,
-  getInventoryGraphData
+  getInventoryGraphData,
+  getProductsByRole
 } from "../controllers/productController.js";
 
 const router = express.Router();
 
 // PRODUCT CRUD ROUTES
 router.post("/add", addProduct);
+
 router.get("/", getProducts);
+
 router.get("/allStates",allStats)
 router.get("/getInventoryGraphData",getInventoryGraphData)
+router.post("/getProductss",getProductsByRole)
 
 
 router.get("/:id", getProduct);

@@ -1,125 +1,71 @@
 "use client"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import ProductCard from "./ProductCard"
 import ProductFilter from "./ProductFilter"
 import ShopHeader from "./ShopHeader"
+import toast from "react-hot-toast"
+import axios from "axios"
+import {useDispatch, useSelector } from "react-redux"
+import { fetchProducts } from "../../redux/slices/productSlice"
+import ProductGridShimmer from "./ProductGridShimmer"
+import { AnimatePresence, motion } from "framer-motion"
 
-// Sample Product Data
-const PRODUCTS = [
-  {
-    _id: "6956668d1365970ef1e68c10",
-    name: "GAAY CHAAP DETERGENT",
-    description:
-      "Introducing our advanced Gaay Chaap Ultra-Clean Laundry Detergent, a powerhouse solution designed to revolutionize your laundry routine.",
-    category: "Powder",
-    imageUrl:
-      "https://storage.googleapis.com/saafi-ariel-aeb41.firebasestorage.app/uploads/7d357b9f-6c10-4e93-b899-80f16c0389b6-a1.jpg",
-    keyFeatures: ["Removes tough stains", "Gentle on fabrics", "Pleasant fragrance", "Eco-friendly formula"],
-    quantity: "150g",
-    packSize: 12,
-    price: 20,
-    discount: 15,
-    stock: 119,
-  },
-  {
-    _id: "6956668d1365970ef1e68c11",
-    name: "ULTRA FRESH LAUNDRY DETERGENT",
-    description: "Advanced formula with premium cleaning agents for spotless whites and vibrant colors.",
-    category: "Powder",
-    imageUrl: "https://storage.googleapis.com/saafi-ariel-aeb41.firebasestorage.app/uploads/7d357b9f-6c10-4e93-b899-80f16c0389b6-a1.jpg",
-    keyFeatures: ["Deep Clean", "Stain Removal", "Fresh Scent", "Color Protection"],
-    quantity: "200g",
-    packSize: 10,
-    price: 25,
-    discount: 10,
-    stock: 85,
-  },
-  {
-    _id: "6956668d1365970ef1e68c12",
-    name: "ECO SOFT DISHWASHING LIQUID",
-    description: "Gentle on hands but tough on grease and food residue.",
-    category: "Dishwashing",
-    imageUrl: "https://storage.googleapis.com/saafi-ariel-aeb41.firebasestorage.app/uploads/7d357b9f-6c10-4e93-b899-80f16c0389b6-a1.jpg",
-    keyFeatures: ["Grease Cut", "Hand Care", "Biodegradable", "No Harsh Chemicals"],
-    quantity: "500ml",
-    packSize: 8,
-    price: 35,
-    discount: 5,
-    stock: 156,
-  },
-  {
-    _id: "6956668d1365970ef1e68c13",
-    name: "CRYSTAL SHINE SURFACE CLEANER",
-    description: "Leaves surfaces sparkling and sanitized with a pleasant aroma.",
-    category: "Surface Cleaner",
-    imageUrl: "https://storage.googleapis.com/saafi-ariel-aeb41.firebasestorage.app/uploads/7d357b9f-6c10-4e93-b899-80f16c0389b6-a1.jpg",
-    keyFeatures: ["Sanitized", "Shiny Finish", "Antibacterial", "Fast Acting"],
-    quantity: "400ml",
-    packSize: 6,
-    price: 18,
-    discount: 20,
-    stock: 203,
-  },
-  {
-    _id: "6956668d1365970ef1e68c14",
-    name: "DELICATE TOUCH WASH",
-    description: "Perfect for silks, wools, and delicate fabrics with extra care formula.",
-    category: "Powder",
-    imageUrl: "https://storage.googleapis.com/saafi-ariel-aeb41.firebasestorage.app/uploads/7d357b9f-6c10-4e93-b899-80f16c0389b6-a1.jpg",
-    keyFeatures: ["Gentle", "Fabric Care", "Color Safe", "Luxurious Care"],
-    quantity: "100g",
-    packSize: 15,
-    price: 22,
-    discount: 8,
-    stock: 92,
-  },
-  {
-    _id: "6956668d1365970ef1e68c15",
-    name: "POWER STAIN REMOVER",
-    description: "Professional-grade stain removal solution for tough marks and oil stains.",
-    category: "Powder",
-    imageUrl: "https://storage.googleapis.com/saafi-ariel-aeb41.firebasestorage.app/uploads/7d357b9f-6c10-4e93-b899-80f16c0389b6-a1.jpg",
-    keyFeatures: ["Powerful", "Oil Stains", "Tough Marks", "Pre-treat Ready"],
-    quantity: "250g",
-    packSize: 5,
-    price: 28,
-    discount: 12,
-    stock: 67,
-  },
-  {
-    _id: "6956668d1365970ef1e68c16",
-    name: "GLASS CRYSTAL CLEANER",
-    description: "Streak-free cleaning for windows, mirrors, and glass surfaces.",
-    category: "Surface Cleaner",
-    imageUrl: "https://storage.googleapis.com/saafi-ariel-aeb41.firebasestorage.app/uploads/7d357b9f-6c10-4e93-b899-80f16c0389b6-a1.jpg",
-    keyFeatures: ["Streak Free", "Crystal Clear", "Quick Dry", "Ammonia Free"],
-    quantity: "300ml",
-    packSize: 9,
-    price: 15,
-    discount: 0,
-    stock: 178,
-  },
-  {
-    _id: "6956668d1365970ef1e68c17",
-    name: "ANTIBACTERIAL DISH SOAP",
-    description: "Kills 99.9% of bacteria while cleaning dishes effectively.",
-    category: "Dishwashing",
-    imageUrl: "https://storage.googleapis.com/saafi-ariel-aeb41.firebasestorage.app/uploads/7d357b9f-6c10-4e93-b899-80f16c0389b6-a1.jpg",
-    keyFeatures: ["Antibacterial", "Effective", "Pleasant Scent", "Skin Friendly"],
-    quantity: "600ml",
-    packSize: 7,
-    price: 32,
-    discount: 15,
-    stock: 134,
-  },
-]
+
+
 
 export default function ShopPage() {
   const [activeFilter, setActiveFilter] = useState("all")
   const [sortBy, setSortBy] = useState("newest")
   const [cartItems, setCartItems] = useState([])
+  const { seller } = useSelector((state) => state.auth)
+  // const [PRODUCTS,setProducts] = useState([])
+
+
+  // const getProductData = async () => {
+  //   try{
+  //     const role = seller.role ? 
+  //        seller.role === "admin" ? "common" : seller.role
+  //        :
+  //         "common"
+  //     console.log("role -->",role)
+  //     const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/products/getProductss`,{
+  //       role:role
+  //     })
+  //     console.log("product api response-->",res)
+  //     setProducts(res.data.products)
+
+  //   }catch(error){
+  //     toast.error("Failed to laod Product .Please check internet connection.")
+  //   }
+  // }
+
+  // useEffect(()=>{
+  //   getProductData()
+  // },[])
 
   // Filter and Sort Products
+  const { products: PRODUCTS, loading, error } = useSelector(
+    (state) => state.products
+  )
+
+   const dispatch = useDispatch()
+
+    useEffect(() => {
+    if (seller) {
+      dispatch(fetchProducts(seller))
+    }else{
+      dispatch(fetchProducts("common"))
+
+    }
+
+  }, [dispatch, seller])
+
+  useEffect(() => {
+    if (error) {
+      toast.error("Failed to load products. Please check internet connection.")
+    }
+  }, [error])
+  
   const filteredProducts = useMemo(() => {
     let filtered = PRODUCTS
 
@@ -148,7 +94,7 @@ export default function ShopPage() {
     }
 
     return sorted
-  }, [activeFilter, sortBy])
+  }, [PRODUCTS,activeFilter, sortBy])
 
   const handleAddToCart = (product) => {
     setCartItems([...cartItems, product])
@@ -175,11 +121,41 @@ export default function ShopPage() {
             <p className="text-gray-600 font-semibold">{filteredProducts.length} Products</p>
           </div>
 
+          {/* {loading ? 
+          (
+            <ProductGridShimmer count={8} />
+          ):
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
               <ProductCard key={product._id} product={product} onAddToCart={handleAddToCart} />
             ))}
-          </div>
+          </div>} */}
+
+          <AnimatePresence mode="wait">
+          {loading ? (
+            <motion.div
+              key="shimmer"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <ProductGridShimmer />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="products"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {filteredProducts.map((product) => (
+                  <ProductCard key={product._id} product={product} onAddToCart={handleAddToCart}/>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         </div>
 
         {/* Footer Section */}

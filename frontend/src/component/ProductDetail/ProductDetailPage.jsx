@@ -1,46 +1,103 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ProductImageGallery from './ProductImageGallery';
 import ProductInfo from './ProductInfo';
 import CartSection from './CartSection';
 import ProductAbout from './ProductAbout';
+import ProductDetails from './ProductDetails';
+import { useParams } from "react-router-dom"
+import { useDispatch,useSelector } from "react-redux"
+import { fetchProducts } from "../../redux/slices/productSlice"
+import { CheckCircle } from "lucide-react";
+
+function KeyFeatures({ features = [] }) {
+  if (!features.length) return null;
+
+  return (
+    <div >
+      <h3 className="md:text-2xl text-xl font-semibold text-gray-900 mb-3">
+        Key Features
+      </h3>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {features.map((feature, index) => (
+          <div
+            key={index}
+            className="flex items-center gap-3 p-3 bg-green-50 border border-green-100 rounded-lg"
+          >
+            <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+            <p className="text-sm text-gray-800">{feature}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
 
 export default function ProductDetailPage() {
+  const { id } = useParams()
+  const dispatch = useDispatch()
+  const { products, loading } = useSelector((state) => state.products)
+  const { seller } = useSelector((state) => state.auth)
+
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [showFullDescription, setShowFullDescription] = useState(false);
 
+    useEffect(() => {
+      if (seller) {
+        dispatch(fetchProducts(seller))
+      }else{
+        dispatch(fetchProducts("common"))
+
+      }
+    }, [products.length, seller, dispatch])
+
+  const productData = products.find((p) => p._id === id)
+
+ if (loading || products.length === 0) {
+    return <p>Loading product...</p>
+  }
+
+   if (!productData) {
+    return <p>Product not found</p>
+  }
+
+  console.log("productData-->",productData)
+
   const product = {
-    title: "Sreshta Farms Instant Brown Rice Dosa Powder",
+    title: productData.name,
     description:
-      "Sreshta Farms Instant Brown Rice Dosa Powder combines the natural goodness of brown rice with the ease of instant cooking.",
-    fullDescription: [
-      "This premium instant dosa powder is crafted from carefully selected brown rice.",
-      "Perfect for busy mornings and health-conscious individuals."
-    ],
-    price: 249,
+      productData.description,
+    fullDescription: productData.usageInstruction
+    ? [productData.usageInstruction]
+    : [],
+    price:  productData.price * productData.packSize,
     currency: "₹",
     deliveryTime: "3 Hours",
     returnWindow: "7 Days",
     seller: {
-      name: "Umme Kulsum",
+      name: "Saafi Ariel Udyog",
       storeLink: "#",
-      vendorSource: "prod-bridge.sellersetu.in/ondc/wcommerce",
-      image: "/api/placeholder/40/40"
+      vendorSource: "Direct",
+      image: "/logo.jpg",
+      productId : productData._id,
+      productName: productData.name,
+      imageUrl:productData.imageUrl
     },
     attributes: {
-      countryOfOrigin: "India",
-      brand: "Sreshta Farms",
-      availability: "In Stock"
+      countryOfOrigin: "Nepal",
+      brand: "Saafi Ariel",
+      availability: productData.stock > 0 ? "In Stock" : "Out of Stock"
     },
-    status: {
-      cancellable: false,
-      returnable: true
-    },
-    images: [
-      "/api/placeholder/400/400",
-      "/api/placeholder/400/400",
-      "/api/placeholder/400/400"
-    ]
+    images: [productData.imageUrl],
+    packSize:productData.packSize,
+    discount:productData.discount,
+    pricePerProduct:productData.price,
+    quantity:productData.quantity,
+    category:productData.category,
+    keyFeatures:productData.keyFeatures
   };
 
   return (
@@ -68,8 +125,6 @@ export default function ProductDetailPage() {
             />
           </div>
 
-          {/* Cart Section */}
-          {/* Sticky Cart Section */}
         <div className="md:col-span-3 md:sticky md:top-24 h-fit">
         <CartSection 
             price={product.price}
@@ -79,14 +134,27 @@ export default function ProductDetailPage() {
             quantity={quantity}
             onQuantityChange={setQuantity}
             seller={product.seller}
+            packSize={product.packSize}
             status={product.status}
+            pricePerProduct={product.pricePerProduct}
+            discount={product.discount}
         />
         </div>
 
 
           {/* ✅ Product About Section (Below Image + Info) */}
           <div className="md:col-span-9 w-full  ">
-            <ProductAbout product={product} />
+            <ProductAbout description={product.description}  heading={"About Product"} />
+          </div>
+          <div className="md:col-span-9 w-full  ">
+            <KeyFeatures features={product.keyFeatures} />
+
+          </div>
+          <div className="md:col-span-9 w-full  ">
+            <ProductDetails product={product} />
+          </div>
+          <div className="md:col-span-9 w-full  ">
+            <ProductAbout description={product.fullDescription}  heading={"How To Use"} />
           </div>
 
         </div>
