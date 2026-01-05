@@ -41,7 +41,8 @@ import ImageUpload from './component/ImageUpload'
 import DealerDetails from './component/admin-dashboard/DealerDetails'
 import ShopPage from './component/shop/Shop'
 import ProductDetailPage from './component/ProductDetail/ProductDetailPage'
-import CheckoutPage from './component/checkout/CheckoutPage'
+import CheckoutPage from './component/checkout/CartPage'
+import FloatingCartBadge from './component/ProductDetail/FloatingCartBadge'
 
 
 function App() {
@@ -74,7 +75,7 @@ function App() {
         <Route path="/dealers/:dealerId" element={<DealerDetails />} />
         <Route path="/shopProduct" element={<ShopPage />} />
         <Route path="/productDetails/:id" element={<ProductDetailPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/cart" element={<CheckoutPage />} />
 
 
 
@@ -90,6 +91,7 @@ function App() {
 
         
       </Routes>
+      {location.pathname !== "/cart" && <FloatingCartBadge />}
       {!shouldHide && <Footer />}
     
     

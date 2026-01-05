@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom"
 import { useDispatch,useSelector } from "react-redux"
 import { fetchProducts } from "../../redux/slices/productSlice"
 import { CheckCircle } from "lucide-react";
+import ProductDetailShimmer from "./ProductDetailShimmer"
 
 function KeyFeatures({ features = [] }) {
   if (!features.length) return null;
@@ -57,7 +58,7 @@ export default function ProductDetailPage() {
   const productData = products.find((p) => p._id === id)
 
  if (loading || products.length === 0) {
-    return <p>Loading product...</p>
+    return <ProductDetailShimmer />
   }
 
    if (!productData) {

@@ -165,7 +165,7 @@ const handleAddToCart = () => {
           <button
             onClick={() =>
               dispatch(updateCartQty({
-                productId,
+                productId:seller.productId,
                 qty: cartItem.qty - 1
               }))
             }
@@ -180,7 +180,7 @@ const handleAddToCart = () => {
           <button
             onClick={() =>
               dispatch(updateCartQty({
-                productId,
+                productId:seller.productId,
                 qty: cartItem.qty + 1
               }))
             }
@@ -190,7 +190,7 @@ const handleAddToCart = () => {
           </button>
 
           <button
-            onClick={() => dispatch(removeFromCart(productId))}
+            onClick={() => dispatch(removeFromCart(seller.productId))}
             className="ml-auto text-red-600 text-sm font-semibold"
           >
             Remove

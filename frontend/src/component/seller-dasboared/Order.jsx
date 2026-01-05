@@ -288,8 +288,8 @@ function Order() {
                     </div>
                     <div className="flex items-center gap-4">
                       <div className="text-right">
-                        <p className="text-sm text-gray-600 mb-1">Total Amount</p>
-                        <p className="text-2xl font-bold text-red-600">₹{getOrderTotal(order).toLocaleString()}</p>
+                        <p className="text-sm text-gray-600 mb-1 ">Total Amount</p>
+                        <p className="text-2xl font-bold text-red-600">₹{order.totalAmount}</p>
                       </div>
                       <button
                         onClick={() => toggleOrderExpansion(order._id)}
