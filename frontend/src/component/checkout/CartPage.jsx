@@ -70,8 +70,10 @@ export default function ShoppingCartComponent() {
 
 	const handleCheckout = async () => {
 		try {
-			if (!seller?._id) {
+			if (!seller?._id || !token) {
 				toast.error("Please login to continue");
+        localStorage.setItem("current", "/cart");
+				navigate("/login"); 
 				return;
 			}
 
@@ -110,8 +112,6 @@ export default function ShoppingCartComponent() {
 			toast.error(error.response?.data?.message || "Order failed");
 		}
 	};
-
-	
 
 	if (checkoutStatus === "loading") {
 		return (
@@ -160,7 +160,7 @@ export default function ShoppingCartComponent() {
 		);
 	}
 
-  if (cartItems.length === 0) {
+	if (cartItems.length === 0) {
 		return (
 			<div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 flex items-center justify-center px-4">
 				<motion.div

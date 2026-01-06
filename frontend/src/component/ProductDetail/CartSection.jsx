@@ -7,6 +7,9 @@ import {
 	removeFromCart,
 } from "../../redux/slices/cartSlice";
 
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+
 const CartSection = ({
 	price, // price of ONE bag (before discount)
 	discount, // % discount on bag
@@ -21,6 +24,9 @@ const CartSection = ({
 }) => {
 	const dispatch = useDispatch();
 	console.log("seller-->", seller);
+	const navigate = useNavigate();
+
+	const { seller: authSeller, token } = useSelector((state) => state.auth);
 
 	const cartItem = useSelector((state) =>
 		state.cart.items.find((i) => i.productId === seller.productId)
@@ -38,6 +44,11 @@ const CartSection = ({
 	);
 
 	const handleAddToCart = () => {
+		if (!authSeller || !token) {
+			toast.error("Please login to add items to cart");
+			navigate(`/login`);
+			return;
+		}
 		dispatch(
 			addToCart({
 				productId: seller.productId, // pass from parent
@@ -179,14 +190,20 @@ const CartSection = ({
 			) : (
 				<div className="flex items-center gap-3">
 					<button
-						onClick={() =>
+						onClick={() => {
+							if (!authSeller || !token) {
+								toast.error("Please login first");
+								navigate(`/login`);
+								return;
+							}
+
 							dispatch(
 								updateCartQty({
 									productId: seller.productId,
 									qty: cartItem.qty - 1,
 								})
-							)
-						}
+							);
+						}}
 						disabled={cartItem.qty === 1}
 						className="px-3 py-2 bg-gray-200 rounded"
 					>
@@ -196,21 +213,35 @@ const CartSection = ({
 					<span className="font-bold">{cartItem.qty}</span>
 
 					<button
-						onClick={() =>
+						onClick={() => {
+							if (!authSeller || !token) {
+								toast.error("Please login first");
+								navigate(`/login`);
+								return;
+							}
+
 							dispatch(
 								updateCartQty({
 									productId: seller.productId,
 									qty: cartItem.qty + 1,
 								})
-							)
-						}
+							);
+						}}
 						className="px-3 py-2 bg-gray-200 rounded"
 					>
 						<Plus size={14} />
 					</button>
 
 					<button
-						onClick={() => dispatch(removeFromCart(seller.productId))}
+						onClick={() => {
+							if (!authSeller || !token) {
+								toast.error("Please login first");
+								navigate(`/login`);
+								return;
+							}
+
+							dispatch(removeFromCart(seller.productId));
+						}}
 						className="ml-auto text-red-600 text-sm font-semibold"
 					>
 						Remove

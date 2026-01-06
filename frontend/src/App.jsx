@@ -61,7 +61,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About/>} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/shop" element={<Shop />} />
+        {/* <Route path="/shop" element={<Shop />} /> */}
         <Route path="/how-to-wash" element={<WashCloth />} />
         <Route path="/why-choose-us" element={<WhyChooseUs/>} />
         <Route path="/new-offer" element={<OfferDetailsPage/>} />
@@ -73,7 +73,7 @@ function App() {
         <Route path="/offer/:id" element={<OfferDetailPage />} />
         <Route path="/upload" element={<ImageUpload />} />
         <Route path="/dealers/:dealerId" element={<DealerDetails />} />
-        <Route path="/shopProduct" element={<ShopPage />} />
+        <Route path="/shop" element={<ShopPage />} />
         <Route path="/productDetails/:id" element={<ProductDetailPage />} />
         <Route path="/cart" element={<CheckoutPage />} />
 

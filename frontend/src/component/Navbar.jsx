@@ -14,6 +14,8 @@ import { Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/slices/authSlice";
 import toast from "react-hot-toast";
+import useIsMobile from "../hook/useIsMobile"
+import MobileNavbar from "./MobileNavbar";
 
 export default function Navbar() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,6 +29,10 @@ export default function Navbar() {
 	const { seller } = useSelector((state) => state.auth);
 	const [showUserMenu, setShowUserMenu] = useState(false);
 	const cartItems = useSelector((state) => state.cart.items);
+
+  const isMobile = useIsMobile()
+
+  
 
 	// total quantity (badge count)
 	const cartCount = cartItems.reduce((sum, item) => sum + item.qty, 0);
@@ -91,6 +97,10 @@ export default function Navbar() {
 	if (location.pathname === "/login" || location.pathname === "/dashboard") {
 		return null;
 	}
+
+  if(isMobile){
+    return <MobileNavbar/>
+  }
 
 	return (
 		<>

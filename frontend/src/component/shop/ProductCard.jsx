@@ -19,6 +19,8 @@ import {
 } from "../../redux/slices/cartSlice";
 
 export default function ProductCard({ product, onAddToCart }) {
+	const { seller, token } = useSelector((state) => state.auth);
+
 	const [isHovered, setIsHovered] = useState(false);
 	// const [addedToCart, setAddedToCart] = useState(false)
 	// const [quantity, setQuantity] = useState(1)
@@ -44,6 +46,12 @@ export default function ProductCard({ product, onAddToCart }) {
 
 	const handleAddToCart = (e) => {
 		e.stopPropagation();
+
+		if (!seller || !token) {
+			toast.error("Please login to add items to cart.");
+			navigate(`/productDetails/${product._id}`);
+			return;
+		}
 
 		dispatch(
 			addToCart({
@@ -234,7 +242,7 @@ export default function ProductCard({ product, onAddToCart }) {
 							<motion.button
 								onClick={(e) => {
 									e.stopPropagation();
-									 handleQtyChange(quantity + 1, e);
+									handleQtyChange(quantity + 1, e);
 								}}
 								whileTap={{ scale: 0.95 }}
 								className="p-1.5 hover:bg-white rounded-md transition-colors"
