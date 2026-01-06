@@ -17,6 +17,7 @@
     "axios": "^1.13.2",
     "firebase": "^12.7.0",
     "framer-motion": "^12.8.0",
+    "lottie-react": "^2.4.1",
     "lucide-react": "^0.503.0",
     "multer": "^2.0.2",
     "react": "^19.0.0",

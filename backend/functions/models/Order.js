@@ -16,13 +16,22 @@ const orderSchema = new mongoose.Schema(
           required: true,
         },
         qty: { type: Number, required: true },
-        price: { type: Number, required: true } // snapshot price
+        price: { type: Number, required: true } ,// snapshot price
+        discount:{
+          type: Number,
+          default: 0, // % discount
+        },
       }
     ],
 
     totalQty: {
       type: Number,
       required: true,
+    },
+
+    totalDiscount: {
+      type: Number,
+      default: 0,
     },
 
     totalAmount: {

@@ -51,7 +51,7 @@ const SellerDashboardHome = () => {
       setOrders(response.data)
     } catch (err) {
       console.log("Error fetching orders, using mock data", err)
-      toast.err("Server error.Please try after sometime.")
+      toast.error("Server error.Please try after sometime.")
     } finally {
       setLoading(false)
     }

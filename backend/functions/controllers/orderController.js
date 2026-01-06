@@ -11,15 +11,21 @@ export const createOrder = async (req, res) => {
     // calculate totalQty & totalAmount
     let totalQty = 0;
     let totalAmount = 0;
+    let totalDiscount = 0
 
 
     items.forEach((item) => {
       const qty = item.qty || 0;                  // bags
       const pricePerPiece = item.price || 0;
       const packSize = item.packSize || 1;
+      const discount = item.discount || 0
+
+      const grossAmount = qty * packSize * pricePerPiece
+      const discountAmount = (grossAmount * discount) / 100
+      const netAmount = grossAmount - discountAmount
 
       totalQty += qty;
-      totalAmount += qty * packSize * pricePerPiece;
+      totalAmount += netAmount;
       console.log("totalAmount===>",totalAmount)
     });
 
@@ -28,6 +34,7 @@ export const createOrder = async (req, res) => {
       items,
       totalQty,
       totalAmount,
+      totalDiscount,
       offerId: offerId || null,
     });
 

@@ -75,6 +75,12 @@ function Order() {
     )
   }
 
+  const applyPercentageDiscount = (total, percentage) => {
+    if (!percentage || percentage <= 0) return total
+    return total - (total * percentage) / 100
+  }
+
+
   const getTotalPieces = (order) => {
     return order.items.reduce(
       (sum, item) => sum + item.qty * (item.productId?.packSize || 1),
@@ -340,12 +346,18 @@ function Order() {
                               key={item._id}
                               initial={{ opacity: 0, scale: 0.95 }}
                               animate={{ opacity: 1, scale: 1 }}
-                              className="bg-white rounded-lg p-4 border border-gray-200 hover:border-blue-300 transition-colors"
+                              className=" relative bg-white rounded-lg p-4 border border-gray-200 hover:border-blue-300 transition-colors"
                             >
+                              
                               <div className="flex gap-4">
                                 <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
                                   <img src={item.productId.imageUrl}/>
                                 </div>
+                                {item.discount > 0 && (
+                                  <span className="absolute top-3 right-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
+                                    {item.discount}% OFF
+                                  </span>
+                                )}
                                 <div className="flex-1 min-w-0">
                                   <h5 className="font-semibold text-gray-900 mb-1 truncate">{item.productId?.name} {item.productId?.quantity}</h5>
                                   <p className="text-sm text-gray-600 mb-2 line-clamp-2 ">
@@ -367,11 +379,25 @@ function Order() {
                                       </div>
                                   </div>
 
-                                  <div className="mt-2 pt-2 border-t border-gray-100">
-                                    <p className="text-sm font-semibold text-red-600">
-                                      Subtotal: ₹{getItemTotal(item).toLocaleString()}
+                                  <div className="mt-3 pt-3 border-t border-gray-100 space-y-1">
+                                    {/* Original price */}
+                                    <p className={`text-sm ${item.discount > 0 ? "line-through text-gray-400" : "font-semibold text-gray-700"}`}>
+                                      ₹{getItemTotal(item).toLocaleString()}
                                     </p>
+
+                                    {/* Discounted price */}
+                                    {item.discount > 0 && (
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-lg font-bold text-red-600">
+                                          ₹{applyPercentageDiscount(getItemTotal(item), item.discount).toLocaleString()}
+                                        </span>
+                                        <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">
+                                          You save {item.discount}%
+                                        </span>
+                                      </div>
+                                    )}
                                   </div>
+
 
                                 </div>
                               </div>
@@ -388,7 +414,7 @@ function Order() {
                           <div className="flex items-center justify-between pt-3 border-t border-gray-200">
                             <span className="text-lg font-semibold text-gray-900">Total Amount</span>
                             <span className="text-2xl font-bold text-red-600">
-                              ₹{getOrderTotal(order).toLocaleString()}
+                              ₹{order.totalAmount.toLocaleString()}
                             </span>
                           </div>
                         </div>
