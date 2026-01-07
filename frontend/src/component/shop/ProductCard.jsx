@@ -17,6 +17,7 @@ import {
 	updateCartQty,
 	removeFromCart,
 } from "../../redux/slices/cartSlice";
+import toast from "react-hot-toast";
 
 export default function ProductCard({ product, onAddToCart }) {
 	const { seller, token } = useSelector((state) => state.auth);

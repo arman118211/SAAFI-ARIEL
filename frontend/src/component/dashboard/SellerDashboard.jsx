@@ -127,7 +127,8 @@ export default function SellerDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans flex">
+    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans flex ">
+      
       <OfferWinPopup/>
       {/* Sidebar */}
       <aside
@@ -235,7 +236,7 @@ export default function SellerDashboard() {
 
         {/* Content Scroll Area */}
         <div className="flex-1 overflow-y-auto p-6 lg:p-8 bg-gray-50">
-          <div className=" mx-auto">
+          <div className=" mx-auto lg:pb-0 pb-20">
             {activeTab !== "profile" && <div className="flex justify-between items-end mb-8">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 capitalize mb-1">{activeTab}</h1>

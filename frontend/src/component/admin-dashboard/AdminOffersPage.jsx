@@ -9,6 +9,7 @@ import axios from "axios"
 import { useDispatch } from "react-redux";
 import {setOffers as setOffer, addOffer } from "../../redux/slices/offersSlice";
 import toast from "react-hot-toast"
+import ScrollToTop from "../ScrollToTop"
 
 const OfferStatsShimmer = () => (
   <div className="bg-gradient-to-br from-gray-200 to-gray-300 rounded-xl p-4 md:p-6 relative overflow-hidden">
@@ -152,6 +153,7 @@ const AdminOfferPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-indigo-50 p-4 md:p-6 ">
+      <ScrollToTop/>
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
         <div className="flex justify-between items-start md:items-center mb-8 flex-col md:flex-row gap-4">

@@ -5,6 +5,7 @@ import { Search, Users, Package, DollarSign, ChevronRight } from "lucide-react"
 import axios from "axios"
 import { useDispatch, useSelector } from "react-redux";
 import { setSellers, selectSellers } from "../../redux/slices/sellerSlice";
+import ScrollToTop from "../ScrollToTop"
 
 const SellerStatsShimmer = () => (
   <div className="bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg p-6 shadow-lg relative overflow-hidden">
@@ -105,6 +106,7 @@ export default function SellerList() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-white p-6">
+      <ScrollToTop/>
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}

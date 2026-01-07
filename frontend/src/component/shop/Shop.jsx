@@ -9,6 +9,7 @@ import {useDispatch, useSelector } from "react-redux"
 import { fetchProducts } from "../../redux/slices/productSlice"
 import ProductGridShimmer from "./ProductGridShimmer"
 import { AnimatePresence, motion } from "framer-motion"
+import ScrollToTop from "../ScrollToTop"
 
 
 
@@ -104,6 +105,7 @@ export default function ShopPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <ScrollToTop/>
       {/* Header */}
       <ShopHeader />
 

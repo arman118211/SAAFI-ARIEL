@@ -20,6 +20,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { updateOrderStatus as updateStatus } from "../../redux/slices/orderSlice";
 import toast from "react-hot-toast";
+import ScrollToTop from "../ScrollToTop";
 
 const StatsShimmer = () => (
 	<div className="bg-white rounded-lg p-4 shadow-md animate-pulse relative overflow-hidden">
@@ -88,7 +89,7 @@ const AdminOrdersPage = () => {
 	}, []);
 
 	const updateOrderStatus = async (orderId, newStatus) => {
-		console.log("orderId", orderId, "newStatus", newStatus);
+		// console.log("orderId", orderId, "newStatus", newStatus);
 		try {
 			const res = await axios.put(
 				`${import.meta.env.VITE_BASE_URL}/order/status/${orderId}`,
@@ -179,6 +180,7 @@ const AdminOrdersPage = () => {
 
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 md:p-6 w-full">
+			<ScrollToTop />
 			<div className="w-full mx-auto">
 				{/* Header */}
 				<motion.div
@@ -394,7 +396,7 @@ const AdminOrdersPage = () => {
 									animate={{ opacity: 1, y: 0 }}
 									exit={{ opacity: 0, y: -20 }}
 									transition={{ delay: index * 0.05 }}
-									className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden border border-gray-100"
+									className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all  border border-gray-100"
 								>
 									<div
 										className="p-4 "
@@ -455,7 +457,7 @@ const AdminOrdersPage = () => {
 												</span>
 
 												{/* Status Dropdown Menu */}
-												<div className="relative">
+												<div className="relative ">
 													<button
 														onClick={() =>
 															setStatusMenuOpen(
@@ -473,7 +475,7 @@ const AdminOrdersPage = () => {
 																initial={{ opacity: 0, scale: 0.95, y: -10 }}
 																animate={{ opacity: 1, scale: 1, y: 0 }}
 																exit={{ opacity: 0, scale: 0.95, y: -10 }}
-																className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-10 overflow-hidden"
+																className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50 overflow-hidden	"
 															>
 																<div className="py-1">
 																	<div className="px-3 py-2 text-xs font-semibold text-gray-500 border-b border-gray-100">
@@ -553,30 +555,36 @@ const AdminOrdersPage = () => {
 											</div>
 										</div>
 
-										<div className="grid grid-cols-3 gap-3 p-3 bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg mb-3 border border-gray-100">
-											<div>
+										<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg mb-3 border border-gray-100">
+											{/* Order ID - Takes full width on mobile for better readability */}
+											<div className="sm:col-span-1">
 												<p className="text-xs text-gray-500 mb-0.5 font-medium">
 													Order ID
 												</p>
-												<p className="font-mono text-xs text-gray-800 font-semibold">
+												<p className="font-mono text-xs text-gray-800 font-semibold break-all">
 													{order._id}
 												</p>
 											</div>
-											<div>
-												<p className="text-xs text-gray-500 mb-0.5 font-medium ">
-													Items
-												</p>
-												<p className="font-bold text-sm text-gray-800">
-													{order.totalQty} bag(s)
-												</p>
-											</div>
-											<div>
-												<p className="text-xs text-gray-500 mb-0.5 font-medium ">
-													Amount
-												</p>
-												<p className="font-bold text-sm bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
-													₹{order.totalAmount}
-												</p>
+
+											{/* Items and Amount - Side by side on mobile */}
+											<div className="grid grid-cols-2 gap-3 sm:contents">
+												<div>
+													<p className="text-xs text-gray-500 mb-0.5 font-medium">
+														Items
+													</p>
+													<p className="font-bold text-sm text-gray-800">
+														{order.totalQty} bag(s)
+													</p>
+												</div>
+
+												<div>
+													<p className="text-xs text-gray-500 mb-0.5 font-medium">
+														Amount
+													</p>
+													<p className="font-bold text-sm bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
+														₹{order.totalAmount}
+													</p>
+												</div>
 											</div>
 										</div>
 
@@ -602,26 +610,26 @@ const AdminOrdersPage = () => {
 																key={idx}
 																className="flex justify-between items-center p-2.5 bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg border border-gray-100"
 															>
-                                <div className="flex gap-3">
-																<div className="w-12 h-12 rounded-md border border-gray-200 bg-white overflow-hidden flex-shrink-0">
-																	<img
-																		src={item.productId.imageUrl}
-																		alt={item.productId.name}
-																		className="w-full h-full object-contain"
-																	/>
+																<div className="flex gap-3">
+																	<div className="w-12 h-12 rounded-md border border-gray-200 bg-white overflow-hidden flex-shrink-0">
+																		<img
+																			src={item.productId.imageUrl}
+																			alt={item.productId.name}
+																			className="w-full h-full object-contain"
+																		/>
+																	</div>
+																	<div>
+																		<p className="font-bold text-gray-800 text-xs ">
+																			{item.productId.name}{" "}
+																			{item.productId.quantity}
+																		</p>
+																		<p className="text-xs text-gray-600 mt-0.5">
+																			{item.qty} bag(s) ×{" "}
+																			{item.productId.packSize} pcs × ₹
+																			{item.price}
+																		</p>
+																	</div>
 																</div>
-																<div>
-																	<p className="font-bold text-gray-800 text-xs ">
-																		{item.productId.name}{" "}
-																		{item.productId.quantity}
-																	</p>
-																	<p className="text-xs text-gray-600 mt-0.5">
-																		{item.qty} bag(s) ×{" "}
-																		{item.productId.packSize} pcs × ₹
-																		{item.price}
-																	</p>
-																</div>
-                                </div>
 																<div className="text-right min-w-[120px]">
 																	{/* Original Price */}
 																	<p

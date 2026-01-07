@@ -9,6 +9,7 @@ import { useDispatch,useSelector } from "react-redux"
 import { fetchProducts } from "../../redux/slices/productSlice"
 import { CheckCircle } from "lucide-react";
 import ProductDetailShimmer from "./ProductDetailShimmer"
+import ScrollToTop from '../ScrollToTop';
 
 function KeyFeatures({ features = [] }) {
   if (!features.length) return null;
@@ -103,6 +104,7 @@ export default function ProductDetailPage() {
 
   return (
     <div className="bg-gray-50 p-4 md:px-20">
+      <ScrollToTop/>
       <div className="mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
 

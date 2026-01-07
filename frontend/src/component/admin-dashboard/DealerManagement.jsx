@@ -8,83 +8,9 @@ import axios from "axios"
 import toast from "react-hot-toast"
 import { useDispatch, useSelector } from "react-redux"
 import { fetchDealers, approveDealer } from "../../redux/slices/dealerSlice"
+import ScrollToTop from "../ScrollToTop"
 
-const mockDealers = [
-  {
-    _id: "69564dfaad4adc555d90fb82",
-    name: "Nitesh",
-    email: "nitesh@example.com",
-    phone: "7458839431",
-    companyName: "Arman Enterprise",
-    address: "Lucknow Gorakhpur 226010",
-    role: "retailer",
-    isApproved: true,
-    createdAt: "2026-01-01T10:35:38.285Z",
-    updatedAt: "2026-01-01T10:35:38.285Z",
-    orders: [
-      {
-        _id: "69567e953466f0b6feb7567a",
-        totalAmount: 80,
-        status: "pending",
-      },
-      {
-        _id: "69567e953466f0b6feb7567b",
-        totalAmount: 150,
-        status: "confirmed",
-      },
-    ],
-  },
-  {
-    _id: "69564dfaad4adc555d90fb83",
-    name: "Raj Kumar",
-    email: null,
-    phone: "9876543210",
-    companyName: "Kumar Sales Co.",
-    address: "Delhi 110001",
-    role: "retailer",
-    isApproved: false,
-    createdAt: "2026-01-02T08:20:15.125Z",
-    updatedAt: "2026-01-02T08:20:15.125Z",
-    orders: [],
-  },
-  {
-    _id: "69564dfaad4adc555d90fb84",
-    name: "Priya Singh",
-    email: "priya@example.com",
-    phone: "8765432109",
-    companyName: "Singh Distributors",
-    address: "Mumbai 400001",
-    role: "distributor",
-    isApproved: true,
-    createdAt: "2025-12-28T14:45:22.890Z",
-    updatedAt: "2025-12-28T14:45:22.890Z",
-    orders: [
-      {
-        _id: "69567e953466f0b6feb7567c",
-        totalAmount: 500,
-        status: "confirmed",
-      },
-      {
-        _id: "69567e953466f0b6feb7567d",
-        totalAmount: 300,
-        status: "pending",
-      },
-    ],
-  },
-  {
-    _id: "69564dfaad4adc555d90fb85",
-    name: "Amit Patel",
-    email: null,
-    phone: "7654321098",
-    companyName: "Patel Enterprise",
-    address: "Bangalore 560001",
-    role: "retailer",
-    isApproved: false,
-    createdAt: "2026-01-01T16:30:45.456Z",
-    updatedAt: "2026-01-01T16:30:45.456Z",
-    orders: [],
-  },
-]
+
 
 const DealerCardShimmer = () => {
   return (
@@ -340,6 +266,7 @@ export default function DealerManagement() {
 
   return (
     <div className="min-h-screen bg-white p-6 md:p-10">
+      <ScrollToTop/>
       <div className=" mx-auto">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-10 ">
           <div className="flex items-center gap-3 mb-3">
@@ -349,8 +276,8 @@ export default function DealerManagement() {
             </div> */}
           </div>
           <div className="flex items-center gap-3">
-            <Users size={35} />
-            <h1 className="text-4xl md:text-4xl font-bold bg-gradient-to-r from-red-600 via-orange-600 to-red-700 bg-clip-text text-transparent mb-2">
+            <Users size={40} className="text-blue-700" />
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900  mb-2">
               Dealer Management
             </h1>
           </div>

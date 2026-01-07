@@ -1,17 +1,5 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+
 import Navbar from './component/Navbar'
-import HeroSection from "./component/HeroSection"
-import SaafiProductSection from "./component/SaafiProductSection"
-import BannerSection from "./component/BannerSection"
-import FeaturedProducts from "./component/FeaturedProducts"
-import ExclusiveOffer from "./component/ExclusiveOffer"
-import SaafiGram from "./component/SaafiGram"
-import HappyCustomer from "./component/HappyCustomer"
-import OneStepNation from "./component/OneStepNation"
-import Shop from './component/shop'
 import WashCloth from './component/WashCloth'
 import About from './component/About'
 import Contact from './component/Contact'
@@ -54,7 +42,7 @@ function App() {
   return (
     <>  
     
-    <ScrollToTop/>
+    {/* <ScrollToTop/> */}
      {/* <ISOCertificatePopup showOnHomePage={isHomePage} /> */}
       {!shouldHide && <Navbar />}
       <Routes>

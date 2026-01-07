@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 /* Shimmer Animation */
 @keyframes shimmer-slide {
   0% {

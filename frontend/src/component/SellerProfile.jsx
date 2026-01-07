@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { User, Mail, Phone, Building2, MapPin, Lock, Edit2, Save, X, Check } from 'lucide-react';
 import { useDispatch, useSelector } from "react-redux";
 import { updateSellerProfile } from "../redux/slices/authSlice";
+import ScrollToTop from './ScrollToTop';
 
 export default function SellerProfile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -64,7 +65,8 @@ export default function SellerProfile() {
   };
 
   return (
-    <div className="min-h-screen  p-0 md:p-3">
+    <div className="min-h-screen md:p-3 ">
+      <ScrollToTop/>
       {/* Success Notification */}
       {showSuccess && (
         <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50 animate-pulse">
@@ -75,7 +77,7 @@ export default function SellerProfile() {
 
       <div className=" mx-auto">
         {/* Header */}
-        <div className=" mb-8">
+        <div className=" mb-8 px-5 mt-2">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">My Profile</h1>
           <p className="text-gray-600">Manage your account settings and preferences</p>
         </div>

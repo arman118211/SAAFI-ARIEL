@@ -7,6 +7,7 @@ import toast from "react-hot-toast"
 import { useSelector } from "react-redux"
 import axios from "axios"
 import { useEffect } from "react"
+import ScrollToTop from "../ScrollToTop"
 
 
 const WinnerStatShimmer = () => (
@@ -157,6 +158,7 @@ export default function WinnerOffers() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 ">
+      <ScrollToTop/>
       <div className="mx-auto">
         {/* Stats Cards */}
         <motion.div

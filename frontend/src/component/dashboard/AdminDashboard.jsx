@@ -40,62 +40,11 @@ import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import WinnerOffers from "../seller-dasboared/WinnerOffers"
 import DealerManagement from "../admin-dashboard/DealerManagement"
+import ScrollToTop from "../ScrollToTop"
 
 
 
-// --- Mock Data ---
-const SALES_DATA = [
-  { time: "00:00", sales: 4000, orders: 240 },
-  { time: "04:00", sales: 3000, orders: 139 },
-  { time: "08:00", sales: 2000, orders: 980 },
-  { time: "12:00", sales: 2780, orders: 390 },
-  { time: "16:00", sales: 1890, orders: 480 },
-  { time: "20:00", sales: 2390, orders: 380 },
-  { time: "23:59", sales: 3490, orders: 430 },
-]
 
-const INVENTORY_DATA = [
-  { name: "Liquid", value: 85 },
-  { name: "Powder", value: 65 },
-  { name: "Pods", value: 45 },
-  { name: "Softener", value: 90 },
-  { name: "Bleach", value: 30 },
-]
-
-const RECENT_ORDERS = [
-  {
-    id: "ORD-7782",
-    customer: "Sarah Johnson",
-    product: "Lavender Liquid (5L)",
-    status: "Completed",
-    amount: "$42.00",
-    date: "2m ago",
-  },
-  {
-    id: "ORD-7783",
-    customer: "Mike Chen",
-    product: "Oxi-Power Powder",
-    status: "Processing",
-    amount: "$35.50",
-    date: "15m ago",
-  },
-  {
-    id: "ORD-7784",
-    customer: "Emma Davis",
-    product: "Fabric Softener x3",
-    status: "Shipped",
-    amount: "$28.90",
-    date: "1h ago",
-  },
-  {
-    id: "ORD-7785",
-    customer: "James Wilson",
-    product: "Industrial Bleach",
-    status: "Pending",
-    amount: "$120.00",
-    date: "2h ago",
-  },
-]
 
 const OFFERS = [
   {
@@ -168,6 +117,7 @@ const ChartCard = ({ title, children, height = "h-64" }) => (
 const DashboardHome = ({states, salesData, inventoryData, recentData, loading}) => (
   
   <div className="space-y-6 p-4">
+    <ScrollToTop/>
     {/* Top Stats Row */}
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {loading? (
@@ -462,6 +412,7 @@ const TableRowShimmer = () => (
 
 
 export default function AdminDashboard() {
+  
   const location = useLocation();
   const adminCurrentPage = localStorage.getItem("adminCurrentPage")
   const [activeTab, setActiveTab] = useState(
@@ -564,7 +515,8 @@ export default function AdminDashboard() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans flex">
+    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans flex ">
+      
       {/* Sidebar */}
       <aside
         className={`
@@ -690,8 +642,8 @@ export default function AdminDashboard() {
         </header>
 
         {/* Content Scroll Area */}
-        <div className="flex-1  bg-gray-50">
-          <div className="mx-auto">
+        <div className="flex-1 bg-gray-50">
+          <div className="mx-auto lg:pb-0 pb-20">
 
 
             <AnimatePresence mode="wait">

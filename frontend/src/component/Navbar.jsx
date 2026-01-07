@@ -94,12 +94,15 @@ export default function Navbar() {
 		setIsLangMenuOpen(false);
 		setIsMobileLangMenuOpen(false);
 	};
-	if (location.pathname === "/login" || location.pathname === "/dashboard") {
-		return null;
-	}
+
+	
 
   if(isMobile){
     return <MobileNavbar/>
+  }else{
+	if (location.pathname === "/login" || location.pathname === "/dashboard") {
+		return null;
+	}
   }
 
 	return (

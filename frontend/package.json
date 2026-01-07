@@ -15,6 +15,7 @@
     "@reduxjs/toolkit": "^2.10.1",
     "@tailwindcss/vite": "^4.1.4",
     "axios": "^1.13.2",
+    "drift-zoom": "^1.5.1",
     "firebase": "^12.7.0",
     "framer-motion": "^12.8.0",
     "lottie-react": "^2.4.1",

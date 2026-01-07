@@ -6,6 +6,7 @@
   import axios from 'axios'
 
 
+
   const OfferDetailsShimmer = () => (
     <div className="min-h-screen bg-gray-50 font-sans">
       {/* HERO SHIMMER */}
@@ -143,5 +144,8 @@
   }
 
 
-    return <OfferDetails offer={offer} />
+    return <div>
+      <OfferDetails offer={offer} />
+
+    </div> 
   }

@@ -2,12 +2,12 @@ import Seller from "../models/Seller.js";
 import jwt from "jsonwebtoken";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
-import admin from "firebase-admin"
+import admin from "firebase-admin";
 
-admin.initializeApp()
+admin.initializeApp();
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
+	return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
 
 // REGISTER SELLER
@@ -135,72 +135,70 @@ const generateToken = (id) => {
 // };
 
 export const registerSeller = async (req, res) => {
-  try {
-    const {
-      name,
-      email,
-      phone,
-      password,
-      companyName,
-      address,
-      role = "seller",
-    } = req.body;
+	try {
+		const {
+			name,
+			email,
+			phone,
+			password,
+			companyName,
+			address,
+			role = "seller",
+		} = req.body;
 
-    // 🔒 Basic validation
-    if (!name || !phone || !password || !companyName || !address) {
-      return res.status(400).json({
-        message: "All required fields must be provided",
-      });
-    }
+		// 🔒 Basic validation
+		if (!name || !phone || !password || !companyName || !address) {
+			return res.status(400).json({
+				message: "All required fields must be provided",
+			});
+		}
 
-    // ✅ Check phone uniqueness (MANDATORY)
-    const phoneExists = await Seller.findOne({ phone });
-    if (phoneExists) {
-      return res.status(400).json({
-        message: "Phone number already registered",
-      });
-    }
+		// ✅ Check phone uniqueness (MANDATORY)
+		const phoneExists = await Seller.findOne({ phone });
+		if (phoneExists) {
+			return res.status(400).json({
+				message: "Phone number already registered",
+			});
+		}
 
-    // ✅ Check email uniqueness (ONLY if provided)
-    if (email) {
-      const emailExists = await Seller.findOne({ email });
-      if (emailExists) {
-        return res.status(400).json({
-          message: "Email already registered",
-        });
-      }
-    }
+		// ✅ Check email uniqueness (ONLY if provided)
+		if (email) {
+			const emailExists = await Seller.findOne({ email });
+			if (emailExists) {
+				return res.status(400).json({
+					message: "Email already registered",
+				});
+			}
+		}
 
-    // ✅ Dealer approval logic
-    const isApproved = role === "dealer" ? false : true;
+		// ✅ Dealer approval logic
+		const isApproved = role === "dealer" ? false : true;
 
-    // ✅ Create seller
-    const seller = await Seller.create({
-      name,
-      email: email || null,
-      phone,
-      password, // ⚠️ make sure password hashing middleware exists
-      companyName,
-      address,
-      role,
-      isApproved,
-    });
+		// ✅ Create seller
+		const seller = await Seller.create({
+			name,
+			email: email || null,
+			phone,
+			password, // ⚠️ make sure password hashing middleware exists
+			companyName,
+			address,
+			role,
+			isApproved,
+		});
 
-    // ✅ Send response
-    res.status(201).json({
-      message: "Seller registered successfully",
-      seller,
-      token: generateToken(seller._id),
-    });
-
-  } catch (error) {
-    console.error("Register Seller Error:", error);
-    res.status(500).json({
-      message: "Internal server error",
-    });
-  }
+		// ✅ Send response
+		res.status(201).json({
+			message: "Seller registered successfully",
+			seller,
+			token: generateToken(seller._id),
+		});
+	} catch (error) {
+		console.error("Register Seller Error:", error);
+		res.status(500).json({
+			message: "Internal server error",
+		});
+	}
 };
-
 
 // LOGIN SELLER
 // export const loginSeller = async (req, res) => {
@@ -225,48 +223,47 @@ export const registerSeller = async (req, res) => {
 // };
 
 export const loginSeller = async (req, res) => {
-  try {
-    const { identifier, password } = req.body;
-    // identifier = email OR phone
+	try {
+		const { identifier, password } = req.body;
+		// identifier = email OR phone
 
-    if (!identifier || !password) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
+		if (!identifier || !password) {
+			return res.status(400).json({ message: "All fields are required" });
+		}
 
-    // ✅ Find by email OR phone
-    const seller = await Seller.findOne({
-      $or: [{ email: identifier }, { phone: identifier }],
-    });
+		// ✅ Find by email OR phone
+		const seller = await Seller.findOne({
+			$or: [{ email: identifier }, { phone: identifier }],
+		});
 
-    if (!seller) {
-      return res.status(400).json({ message: "Seller not found" });
-    }
+		if (!seller) {
+			return res.status(400).json({ message: "Seller not found" });
+		}
 
-    // 🚫 Block unapproved users (e.g. dealers)
-    if (!seller.isApproved) {
-      return res.status(403).json({
-        message: "Your account is pending approval . Please try after some time or contact to the admin for quick Approval.",
-      });
-    }
+		// 🚫 Block unapproved users (e.g. dealers)
+		if (!seller.isApproved) {
+			return res.status(403).json({
+				message:
+					"Your account is pending approval . Please try after some time or contact to the admin for quick Approval.",
+			});
+		}
 
-    // 🔑 Password check
-    const isMatch = await seller.matchPassword(password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
+		// 🔑 Password check
+		const isMatch = await seller.matchPassword(password);
+		if (!isMatch) {
+			return res.status(401).json({ message: "Invalid credentials" });
+		}
 
-    res.json({
-      message: "Login successful",
-      seller,
-      token: generateToken(seller._id),
-    });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: error.message });
-  }
+		res.json({
+			message: "Login successful",
+			seller,
+			token: generateToken(seller._id),
+		});
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ message: error.message });
+	}
 };
-
 
 //get all seller
 // export const getAllseller = async (req, res) => {
@@ -323,169 +320,166 @@ export const loginSeller = async (req, res) => {
 // };
 
 export const getAllseller = async (req, res) => {
-  try {
-    console.log("api is calling -->")
-    const { role } = req.body; // seller | retailer | dealer
+	try {
+		console.log("api is calling -->");
+		const { role } = req.body; // seller | retailer | dealer
 
-    // ✅ Validate role
-    const allowedRoles = ["seller", "retailer", "dealer"];
-    if (role && !allowedRoles.includes(role)) {
-      return res.status(400).json({ message: "Invalid role" });
-    }
+		// ✅ Validate role
+		const allowedRoles = ["seller", "retailer", "dealer"];
+		if (role && !allowedRoles.includes(role)) {
+			return res.status(400).json({ message: "Invalid role" });
+		}
 
-    // ✅ Build query dynamically
-    const query = role ? { role } : {};
+		// ✅ Build query dynamically
+		const query = role ? { role } : {};
 
-    const sellers = await Seller.find(query)
-      .select("-password")
-      .lean();
+		const sellers = await Seller.find(query).select("-password").lean();
 
-    const finalResponse = await Promise.all(
-      sellers.map(async (seller) => {
-        const orders = await Order.find({ sellerId: seller._id }).lean();
+		const finalResponse = await Promise.all(
+			sellers.map(async (seller) => {
+				const orders = await Order.find({ sellerId: seller._id })
+					.sort({ createdAt: -1 })
+					.lean();
 
-        const populatedOrders = await Promise.all(
-          orders.map(async (order) => {
-            const updatedItems = await Promise.all(
-              order.items.map(async (item) => {
-                const product = await Product.findById(item.productId)
-                  .select("name imageUrl packSize quantity")
-                  .lean();
+				const populatedOrders = await Promise.all(
+					orders.map(async (order) => {
+						const updatedItems = await Promise.all(
+							order.items.map(async (item) => {
+								const product = await Product.findById(item.productId)
+									.select("name imageUrl packSize quantity")
+									.lean();
 
-                return {
-                  ...item,
-                  product: product
-                    ? {
-                        packSize:product.packSize,
-                        quantity:product.quantity,
-                        name: product.name,
-                        imageUrl: product.imageUrl,
-                      }
-                    : null,
-                };
-              })
-            );
+								return {
+									productId: item.productId,
+									qty: item.qty,
+									price: item.price,
+									discount: item.discount || 0,
 
-            return {
-              ...order,
-              items: updatedItems,
-            };
-          })
-        );
+									product: product
+										? {
+												packSize: product.packSize,
+												quantity: product.quantity,
+												name: product.name,
+												imageUrl: product.imageUrl,
+										  }
+										: null,
+								};
+							})
+						);
 
-        return {
-          ...seller,
-          orders: populatedOrders,
-        };
-      })
-    );
+						return {
+							...order,
+							items: updatedItems,
+						};
+					})
+				);
 
-    res.json({
-      message: `List of ${role || "all"} users with orders`,
-      data: finalResponse,
-    });
+				return {
+					...seller,
+					orders: populatedOrders,
+				};
+			})
+		);
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      message: "Server error",
-      error: err.message,
-    });
-  }
+		res.json({
+			message: `List of ${role || "all"} users with orders`,
+			data: finalResponse,
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({
+			message: "Server error",
+			error: err.message,
+		});
+	}
 };
 
 //update the isApproved for the delear
 
 export const updateSellerApproval = async (req, res) => {
-  try {
-    const { sellerId, isApproved } = req.body;
+	try {
+		const { sellerId, isApproved } = req.body;
 
-    // ✅ Basic validation
-    if (!sellerId || typeof isApproved !== "boolean") {
-      return res.status(400).json({
-        message: "sellerId and isApproved (boolean) are required",
-      });
-    }
+		// ✅ Basic validation
+		if (!sellerId || typeof isApproved !== "boolean") {
+			return res.status(400).json({
+				message: "sellerId and isApproved (boolean) are required",
+			});
+		}
 
-    const seller = await Seller.findById(sellerId);
-    if (!seller) {
-      return res.status(404).json({ message: "Seller not found" });
-    }
+		const seller = await Seller.findById(sellerId);
+		if (!seller) {
+			return res.status(404).json({ message: "Seller not found" });
+		}
 
-    seller.isApproved = isApproved;
-    await seller.save();
+		seller.isApproved = isApproved;
+		await seller.save();
 
-    res.status(200).json({
-      message: `Seller ${isApproved ? "approved" : "disapproved"} successfully`,
-      data: {
-        _id: seller._id,
-        name: seller.name,
-        role: seller.role,
-        isApproved: seller.isApproved,
-      },
-    });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Server error",
-      error: error.message,
-    });
-  }
+		res.status(200).json({
+			message: `Seller ${isApproved ? "approved" : "disapproved"} successfully`,
+			data: {
+				_id: seller._id,
+				name: seller.name,
+				role: seller.role,
+				isApproved: seller.isApproved,
+			},
+		});
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({
+			message: "Server error",
+			error: error.message,
+		});
+	}
 };
-
-
 
 export const updateSellerProfile = async (req, res) => {
-  try {
-   
-    const { name, address, currentPassword, newPassword,id } = req.body;
-     console.log("user-->",id)
-    const sellerId = id; // from auth middleware
+	try {
+		const { name, address, currentPassword, newPassword, id } = req.body;
+		console.log("user-->", id);
+		const sellerId = id; // from auth middleware
 
-    const seller = await Seller.findById(sellerId);
-    if (!seller) {
-      return res.status(404).json({ message: "Seller not found" });
-    }
+		const seller = await Seller.findById(sellerId);
+		if (!seller) {
+			return res.status(404).json({ message: "Seller not found" });
+		}
 
-    // Update name & address
-    if (name) seller.name = name;
-    if (address) seller.address = address;
+		// Update name & address
+		if (name) seller.name = name;
+		if (address) seller.address = address;
 
-    // 🔐 Password update flow
-    if (currentPassword || newPassword) {
-      if (!currentPassword || !newPassword) {
-        return res.status(400).json({
-          message: "Both currentPassword and newPassword are required",
-        });
-      }
+		// 🔐 Password update flow
+		if (currentPassword || newPassword) {
+			if (!currentPassword || !newPassword) {
+				return res.status(400).json({
+					message: "Both currentPassword and newPassword are required",
+				});
+			}
 
-      const isMatch = await seller.matchPassword(currentPassword);
-      if (!isMatch) {
-        return res.status(401).json({
-          message: "Current password is incorrect",
-        });
-      }
+			const isMatch = await seller.matchPassword(currentPassword);
+			if (!isMatch) {
+				return res.status(401).json({
+					message: "Current password is incorrect",
+				});
+			}
 
-      seller.password = newPassword; // auto-hashed via pre-save hook
-    }
+			seller.password = newPassword; // auto-hashed via pre-save hook
+		}
 
-    await seller.save();
+		await seller.save();
 
-    res.status(200).json({
-      message: "Profile updated successfully",
-      seller: {
-        _id: seller._id,
-        name: seller.name,
-        email: seller.email,
-        phone: seller.phone,
-        address: seller.address,
-        role: seller.role,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+		res.status(200).json({
+			message: "Profile updated successfully",
+			seller: {
+				_id: seller._id,
+				name: seller.name,
+				email: seller.email,
+				phone: seller.phone,
+				address: seller.address,
+				role: seller.role,
+			},
+		});
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
 };
-
-
