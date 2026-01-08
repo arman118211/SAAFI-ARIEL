@@ -8,7 +8,8 @@ import {
   toggleActive,
   allStats,
   getInventoryGraphData,
-  getProductsByRole
+  getProductsByRole,
+  searchProductsByRole
 } from "../controllers/productController.js";
 
 const router = express.Router();
@@ -21,6 +22,8 @@ router.get("/", getProducts);
 router.get("/allStates",allStats)
 router.get("/getInventoryGraphData",getInventoryGraphData)
 router.post("/getProductss",getProductsByRole)
+
+router.post("/products/search", searchProductsByRole);
 
 
 router.get("/:id", getProduct);

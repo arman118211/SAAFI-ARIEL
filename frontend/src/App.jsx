@@ -31,6 +31,7 @@ import ShopPage from './component/shop/Shop'
 import ProductDetailPage from './component/ProductDetail/ProductDetailPage'
 import CheckoutPage from './component/checkout/CartPage'
 import FloatingCartBadge from './component/ProductDetail/FloatingCartBadge'
+import ProductSearch from './component/Search/SearchPage'
 
 
 function App() {
@@ -64,6 +65,8 @@ function App() {
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/productDetails/:id" element={<ProductDetailPage />} />
         <Route path="/cart" element={<CheckoutPage />} />
+        <Route path="/search/:searchQuery" element={<ProductSearch />} />
+
 
 
 

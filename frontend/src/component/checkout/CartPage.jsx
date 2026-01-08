@@ -123,14 +123,13 @@ export default function ShoppingCartComponent() {
 			</div>
 		);
 	}
-
 	if (checkoutStatus === "success") {
 		return (
-			<div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-slate-100 dark:from-slate-950 dark:to-slate-900 px-4">
+			<div className="min-h-screen flex items-center justify-center px-4">
 				<motion.div
 					initial={{ opacity: 0, scale: 0.9 }}
 					animate={{ opacity: 1, scale: 1 }}
-					className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8 max-w-md w-full text-center border border-slate-200 dark:border-slate-700"
+					className=" dark:bg-slate-800 p-8 max-w-md w-full text-center "
 				>
 					<Lottie
 						animationData={orderSuccess}

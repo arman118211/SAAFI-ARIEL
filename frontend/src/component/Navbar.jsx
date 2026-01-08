@@ -8,13 +8,14 @@ import {
 	LogOut,
 	LayoutDashboard,
 	ShoppingCart,
+	Search,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/slices/authSlice";
 import toast from "react-hot-toast";
-import useIsMobile from "../hook/useIsMobile"
+import useIsMobile from "../hook/useIsMobile";
 import MobileNavbar from "./MobileNavbar";
 
 export default function Navbar() {
@@ -29,10 +30,20 @@ export default function Navbar() {
 	const { seller } = useSelector((state) => state.auth);
 	const [showUserMenu, setShowUserMenu] = useState(false);
 	const cartItems = useSelector((state) => state.cart.items);
+	const [searchQuery, setSearchQuery] = useState("");
 
-  const isMobile = useIsMobile()
+	const isMobile = useIsMobile();
+	const navigate = useNavigate();
 
-  
+	const handleSearchKeyDown = (e) => {
+		if (e.key === "Enter") {
+			const query = searchQuery.trim();
+			if (!query) return;
+
+			navigate(`/search/${encodeURIComponent(query)}`);
+			setSearchQuery("");
+		}
+	};
 
 	// total quantity (badge count)
 	const cartCount = cartItems.reduce((sum, item) => sum + item.qty, 0);
@@ -95,39 +106,35 @@ export default function Navbar() {
 		setIsMobileLangMenuOpen(false);
 	};
 
-	
-
-  if(isMobile){
-    return <MobileNavbar/>
-  }else{
-	if (location.pathname === "/login" || location.pathname === "/dashboard") {
-		return null;
+	if (isMobile) {
+		return <MobileNavbar />;
+	} else {
+		if (location.pathname === "/login" || location.pathname === "/dashboard") {
+			return null;
+		}
 	}
-  }
 
 	return (
 		<>
 			<motion.div
-				className={`w-full sticky top-0 left-0 right-0 z-40 bg-white  ${
-					isScrolled ? "shadow-lg" : ""
-				} transition-all duration-300`}
+				className={`w-full sticky top-0 left-0 right-0 z-40 bg-white transition-all duration-300 ${
+					isScrolled ? "shadow-md" : ""
+				}`}
 				initial={{ y: 0 }}
-				animate={{ y: showNavbar ? 0 : -37 }}
+				animate={{ y: showNavbar ? 0 : -50 }}
 				transition={{ duration: 0.3 }}
 			>
-				{/* Top section */}
-				<div className="max-w-7xl mx-auto flex justify-between items-center p-2  mr-4">
-					<div className="flex-1 hidden md:block"></div>
+				{/* --- TOP SECTION (White) --- */}
+				<div className=" mx-auto flex justify-between items-center px-6 py-2   ">
+					<div className="hidden md:block w-32 lg:w-48"></div>
 
-					<div className="flex-1 flex justify-center md:justify-end items-center gap-4">
-						{/* Updated links in desktop view */}
-						<div className="hidden md:flex items-center space-x-4">
-							{/* Added Login link */}
-							{/* AUTH SECTION */}
+					<div className="flex items-center gap-6 flex-1 justify-end">
+						{/* Auth Links */}
+						<div className="hidden md:flex items-center gap-5 border-r pr-6 border-gray-100">
 							{!seller ? (
 								<Link
 									to="/login"
-									className="text-blue-700 hover:text-blue-900 font-bold transition-colors text-sm"
+									className="text-blue-700 hover:text-blue-900 font-bold text-[13px] tracking-wide transition-colors"
 								>
 									LOGIN
 								</Link>
@@ -137,233 +144,147 @@ export default function Navbar() {
 									onMouseEnter={() => setShowUserMenu(true)}
 									onMouseLeave={() => setShowUserMenu(false)}
 								>
-									<button className="flex items-center gap-2 text-blue-700 font-bold text-sm">
-										<User size={16} />
-										{seller.name}
+									<button className="flex items-center gap-2 text-blue-700 font-bold text-[13px]">
+										<User size={15} /> {seller.name.toUpperCase()}{" "}
 										<ChevronDown size={14} />
 									</button>
-
 									<AnimatePresence>
 										{showUserMenu && (
 											<motion.div
-												initial={{ opacity: 0, y: 8 }}
+												initial={{ opacity: 0, y: 10 }}
 												animate={{ opacity: 1, y: 0 }}
-												exit={{ opacity: 0, y: 8 }}
-												className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border z-50"
+												exit={{ opacity: 0, y: 10 }}
+												className="absolute right-0 mt-1 w-44 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-50"
 											>
 												<Link
 													to="/dashboard"
-													className="flex items-center gap-2 px-4 py-2 hover:bg-blue-50 text-sm"
+													className="flex items-center gap-2 px-4 py-2 hover:bg-blue-50 text-sm text-gray-700"
 												>
-													<LayoutDashboard size={16} />
-													Dashboard
+													<LayoutDashboard size={15} /> Dashboard
 												</Link>
-
-												<Link
-													to="/dashboard"
-													state={{ activeTab: "profile" }}
-													className="flex items-center gap-2 px-4 py-2 hover:bg-blue-50 text-sm"
-												>
-													<User size={16} />
-													Profile
-												</Link>
-
 												<button
-													onClick={() => {
-														dispatch(logout());
-														toast.success("Logged out successfully 👋");
-													}}
-													className="w-full text-left flex items-center gap-2 px-4 py-2 hover:bg-red-50 text-sm text-red-600"
+													onClick={() => dispatch(logout())}
+													className="w-full text-left flex items-center gap-2 px-4 py-2 hover:bg-red-50 text-sm text-red-600 border-t mt-1"
 												>
-													<LogOut size={16} />
-													Logout
+													<LogOut size={15} /> Logout
 												</button>
 											</motion.div>
 										)}
 									</AnimatePresence>
 								</div>
 							)}
-
-							<Link
-								to="/why-choose-us"
-								className="text-blue-700 hover:text-blue-900 font-bold transition-colors text-sm"
-							>
-								WHY CHOOSE US
-							</Link>
 							<Link
 								to="/contact"
-								className="text-blue-700 hover:text-blue-900 font-bold transition-colors text-sm"
+								className="text-blue-700 hover:text-blue-900 font-bold text-[13px] tracking-wide"
 							>
 								CONTACT US
 							</Link>
 						</div>
 
-						{/* Hide all top links in mobile view as requested */}
-
-						<div className="relative">
+						{/* Language Selector */}
+						<div className="relative border-r pr-6 border-gray-100">
 							<button
-								className="text-blue-700 font-bold flex items-center gap-1 text-sm"
 								onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+								className="text-blue-700 font-bold flex items-center gap-1 text-[13px] tracking-wide"
 							>
-								<Globe size={14} />
-								NEPAL - ENGLISH
-								<motion.div
-									animate={{ rotate: isLangMenuOpen ? 180 : 0 }}
-									transition={{ duration: 0.3 }}
-								>
-									<ChevronDown size={14} />
-								</motion.div>
+								<Globe size={15} /> EN <ChevronDown size={14} />
 							</button>
-
+							{/* RESTORED DESKTOP LANG MENU */}
 							<AnimatePresence>
 								{isLangMenuOpen && (
 									<motion.div
-										initial={{ opacity: 0, y: -10 }}
+										initial={{ opacity: 0, y: 10 }}
 										animate={{ opacity: 1, y: 0 }}
-										exit={{ opacity: 0, y: -10 }}
-										transition={{ duration: 0.2 }}
-										className="absolute top-full right-0 bg-white shadow-xl rounded-lg mt-1 w-40 z-30 overflow-hidden"
+										exit={{ opacity: 0, y: 10 }}
+										className="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-50"
 									>
-										<Link to="/" onClick={handleLanguageSelect}>
-											<div className="py-2 px-4 hover:bg-blue-50 cursor-pointer transition-colors">
-												English
-											</div>
-										</Link>
-										<Link to="/Nepal" onClick={handleLanguageSelect}>
-											<div className="py-2 px-4 hover:bg-blue-50 cursor-pointer transition-colors">
-												नेपाली
-											</div>
-										</Link>
+										<div
+											onClick={handleLanguageSelect}
+											className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm text-gray-700"
+										>
+											English
+										</div>
+										<div
+											onClick={handleLanguageSelect}
+											className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm text-gray-700 font-nepali"
+										>
+											नेपाली
+										</div>
 									</motion.div>
 								)}
 							</AnimatePresence>
 						</div>
+
+						{/* SEARCH BAR - After Language Selector */}
+						<div className="hidden lg:block w-64">
+							<div className="relative group">
+								<input
+									type="text"
+									placeholder="Search..."
+									value={searchQuery}
+									onChange={(e) => setSearchQuery(e.target.value)}
+									onKeyDown={handleSearchKeyDown}
+									className="w-full bg-gray-100 border-transparent border focus:bg-white focus:border-blue-500 rounded-full py-1.5 pl-4 pr-10 text-sm outline-none transition-all duration-300"
+								/>
+								<button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600">
+									<Search size={16} />
+								</button>
+							</div>
+						</div>
 					</div>
 				</div>
 
-				{/* Red bar with logo */}
-				<div className="w-full relative h-8 bg-red-600">
-					{/* Logo */}
-					<motion.div
-						className="absolute left-6 md:left-16 lg:left-24 top-1/2 transform -translate-y-1/2 z-10 "
-						transition={{ type: "spring", stiffness: 400, damping: 10 }}
-					>
+				{/* --- RED BAR --- */}
+				<div className="w-full relative h-12 bg-red-600 flex items-center shadow-inner">
+					<div className="absolute left-6 md:left-16 lg:left-24 top-0 z-50">
 						<Link to="/">
-							<div className="relative w-19 h-14 rounded-t-full overflow-hidden bg-white top-5 ">
-								<div className="absolute inset-0 bg-gradient-to-b from-blue-100 to-white opacity-50 mix-blend-overlay"></div>
+							<div className="bg-white p-1 rounded-b-2xl shadow-lg border-x border-b border-gray-100 transition-transform hover:scale-105">
 								<img
 									src="/logo.jpg"
-									alt="Gay Chap Logo"
-									className="h-14 w-21 object-contain "
+									alt="Logo"
+									className="h-16 w-20 object-contain"
 								/>
 							</div>
 						</Link>
-					</motion.div>
-
-					{/* Mobile menu button */}
-					<button
-						id="menu-button"
-						className="md:hidden absolute right-4 top-1/2 transform -translate-y-1/2 z-20"
-						onClick={() => {
-							setIsMenuOpen(!isMenuOpen);
-							if (!isMenuOpen) setShowNavbar(true);
-						}}
-						aria-label="Toggle menu"
-					>
-						<Menu size={20} color="white" />
-					</button>
-				</div>
-
-				{/* Main navigation */}
-				<div className="bg-white pt-8 pb-1 ">
-					{/* Desktop navigation */}
-					<div className="hidden absolute top-16 left-100 md:flex justify-center ">
-						<nav className="flex gap-12 py-1">
-							<motion.div
-								className="text-blue-700 hover:text-blue-900 font-bold text-base relative"
-								whileHover="hover"
-							>
-								<Link to="/shop">Shop Products</Link>
-								<motion.span
-									className="absolute -bottom-1 left-0 h-0.5 bg-blue-700 w-0"
-									variants={{
-										hover: { width: "100%" },
-									}}
-									transition={{ duration: 0.3 }}
-								></motion.span>
-							</motion.div>
-
-							{/* Added New Offer link */}
-							<motion.div
-								className="text-blue-700 hover:text-blue-900 font-bold text-base relative"
-								whileHover="hover"
-							>
-								<Link to="/new-offer">New Offer</Link>
-								<motion.span
-									className="absolute -bottom-1 left-0 h-0.5 bg-blue-700 w-0"
-									variants={{
-										hover: { width: "100%" },
-									}}
-									transition={{ duration: 0.3 }}
-								></motion.span>
-							</motion.div>
-
-							<motion.div
-								className="text-blue-700 hover:text-blue-900 font-bold text-base relative"
-								whileHover="hover"
-							>
-								<Link to="/how-to-wash">How To Wash Cloths</Link>
-								<motion.span
-									className="absolute -bottom-1 left-0 h-0.5 bg-blue-700 w-0"
-									variants={{
-										hover: { width: "100%" },
-									}}
-									transition={{ duration: 0.3 }}
-								></motion.span>
-							</motion.div>
-							<motion.div
-								className="text-blue-700 hover:text-blue-900 font-bold text-base relative"
-								whileHover="hover"
-							>
-								<Link to="/about">About Saafi Ariel</Link>
-								<motion.span
-									className="absolute -bottom-1 left-0 h-0.5 bg-blue-700 w-0"
-									variants={{
-										hover: { width: "100%" },
-									}}
-									transition={{ duration: 0.3 }}
-								></motion.span>
-							</motion.div>
-							<motion.div
-								className="relative text-blue-700 hover:text-blue-900 font-bold text-base"
-								whileHover="hover"
-							>
-								<Link to="/cart" className="flex items-center gap-2">
-									<ShoppingCart size={18} />
-									Cart
-									{cartCount > 0 && (
-										<span
-											className="
-        absolute -top-2 -right-3
-        bg-green-600 text-white
-        text-xs font-bold
-        w-5 h-5 rounded-full
-        flex items-center justify-center
-      "
-										>
-											{cartCount}
-										</span>
-									)}
-								</Link>
-
-								<motion.span
-									className="absolute -bottom-1 left-0 h-0.5 bg-blue-700 w-0"
-									variants={{ hover: { width: "100%" } }}
-									transition={{ duration: 0.3 }}
-								/>
-							</motion.div>
-						</nav>
 					</div>
+					<nav className="hidden md:flex flex-1 justify-start items-center gap-10 pl-55">
+						<Link
+							to="/shop"
+							className="text-white text-[15px] font-bold tracking-widest hover:text-blue-100"
+						>
+							SHOP PRODUCTS
+						</Link>
+						<Link
+							to="/new-offer"
+							className="text-white text-[15px] font-bold tracking-widest hover:text-blue-100"
+						>
+							NEW OFFER
+						</Link>
+						<Link
+							to="/how-to-wash"
+							className="text-white text-[15px] font-bold tracking-widest hover:text-blue-100"
+						>
+							HOW TO WASH
+						</Link>
+						<Link
+							to="/about"
+							className="text-white text-[15px] font-bold tracking-widest hover:text-blue-100"
+						>
+							ABOUT US
+						</Link>
+						<Link
+							to="/cart"
+							className="flex items-center gap-2 text-white hover:text-blue-100 relative"
+						>
+							<ShoppingCart size={18} />
+							<span className="font-bold text-[15px]">CART</span>
+							{cartCount > 0 && (
+								<span className="absolute -top-2 -right-3 bg-white text-red-600 text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center">
+									{cartCount}
+								</span>
+							)}
+						</Link>
+					</nav>
 				</div>
 			</motion.div>
 

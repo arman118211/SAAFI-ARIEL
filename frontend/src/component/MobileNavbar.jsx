@@ -14,6 +14,8 @@ import {
 	Droplets,
 	Award,
 	Home,
+	Search,
+	History as HistoryIcon,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -22,15 +24,57 @@ import { logout } from "../redux/slices/authSlice";
 import toast from "react-hot-toast";
 import useIsMobile from "../hook/useIsMobile";
 
+const RECENT_SEARCH_KEY = "recent_searches";
+
+const getStoredSearches = () => {
+	try {
+		return JSON.parse(localStorage.getItem(RECENT_SEARCH_KEY)) || [];
+	} catch {
+		return [];
+	}
+};
+
+const saveSearches = (searches) => {
+	localStorage.setItem(RECENT_SEARCH_KEY, JSON.stringify(searches));
+};
+
 export default function MobileNavbar() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [showUserMenu, setShowUserMenu] = useState(false);
+	const [isSearchOpen, setIsSearchOpen] = useState(false);
+	const [searchQuery, setSearchQuery] = useState("");
+
 	const location = useLocation();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const isMobile = useIsMobile();
 
-	const isDashboard = location.pathname === "/dashboard";
+	const [recentSearches, setRecentSearches] = useState([]);
+
+	useEffect(() => {
+		setRecentSearches(getStoredSearches());
+	}, []);
+
+	const handleSearchSubmit = (query) => {
+		if (!query.trim()) return;
+
+		const updatedSearches = [
+			query,
+			...recentSearches.filter((item) => item !== query),
+		].slice(0, 5); // keep last 5 searches
+
+		setRecentSearches(updatedSearches);
+		saveSearches(updatedSearches);
+
+		setIsSearchOpen(false);
+		setSearchQuery("");
+
+		navigate(`/search/${encodeURIComponent(query)}`);
+	};
+
+	const isDashboard =
+		location.pathname === "/dashboard" ||
+		location.pathname.startsWith("/search/");
 
 	const { seller } = useSelector((state) => state.auth);
 	const cartItems = useSelector((state) => state.cart.items || []);
@@ -77,7 +121,7 @@ export default function MobileNavbar() {
 		<>
 			{/* --- TOP BRAND BAR --- */}
 			{!(isMobile && isDashboard) && (
-				<nav className="fixed top-0 left-0 right-0 z-[45] bg-white/90 backdrop-blur-md border-b border-gray-100 px-5 py-3 flex items-center justify-between md:hidden shadow-sm ">
+				<nav className="fixed top-0 left-0 right-0 z-[45] bg-white/90 backdrop-blur-md border-b border-gray-100 px-5 py-3 flex items-center justify-between md:hidden shadow-sm">
 					<Link to="/" className="flex items-center gap-3">
 						<motion.div
 							whileTap={{ scale: 0.95 }}
@@ -99,65 +143,149 @@ export default function MobileNavbar() {
 						</div>
 					</Link>
 
-					{/* Smart User Icon / Dropdown */}
-					<div className="relative">
+					<div className="flex items-center gap-2">
+						{/* SEARCH ICON */}
 						<motion.button
 							whileTap={{ scale: 0.9 }}
-							onClick={handleUserClick}
-							className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 ${
-								seller
-									? "bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-200 font-bold"
-									: "bg-gray-50 border border-gray-200 text-gray-500"
-							}`}
+							onClick={() => setIsSearchOpen(true)}
+							className="w-10 h-10 rounded-2xl flex items-center justify-center bg-gray-50 border border-gray-200 text-gray-500"
 						>
-							{seller ? (
-								getInitials(seller.name)
-							) : (
-								<User size={20} strokeWidth={2.5} />
-							)}
+							<Search size={20} strokeWidth={2.5} />
 						</motion.button>
 
-						<AnimatePresence>
+						{/* USER ICON */}
+						<div className="relative">
+							<motion.button
+								whileTap={{ scale: 0.9 }}
+								onClick={handleUserClick}
+								className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+									seller
+										? "bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-200 font-bold"
+										: "bg-gray-50 border border-gray-200 text-gray-500"
+								}`}
+							>
+								{seller ? (
+									getInitials(seller.name)
+								) : (
+									<User size={20} strokeWidth={2.5} />
+								)}
+							</motion.button>
 							{showUserMenu && seller && (
-								<>
-									<motion.div
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1 }}
-										exit={{ opacity: 0 }}
-										className="fixed inset-0 z-10"
-										onClick={() => setShowUserMenu(false)}
-									/>
-									<motion.div
-										initial={{ opacity: 0, y: 10, scale: 0.95 }}
-										animate={{ opacity: 1, y: 0, scale: 1 }}
-										exit={{ opacity: 0, y: 10, scale: 0.95 }}
-										className="absolute right-0 mt-3 w-56 bg-white rounded-3xl shadow-2xl border border-gray-100 p-2 z-20 overflow-hidden"
+								<motion.div
+									initial={{ opacity: 0, y: 10 }}
+									animate={{ opacity: 1, y: 0 }}
+									exit={{ opacity: 0, y: 10 }}
+									className="absolute right-0 mt-3 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 z-[100]"
+								>
+									<Link
+										to="/profile"
+										className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-t-2xl"
 									>
-										<Link
-											to="/dashboard"
-											className="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-2xl text-gray-700"
-										>
-											<LayoutDashboard size={18} className="text-blue-600" />
-											<span className="font-semibold text-sm">Dashboard</span>
-										</Link>
-										<button
-											onClick={() => {
-												dispatch(logout());
-												setShowUserMenu(false);
-												toast.success("Logged out");
-											}}
-											className="w-full flex items-center gap-3 p-3 hover:bg-red-50 rounded-2xl text-red-600 mt-1"
-										>
-											<LogOut size={18} />
-											<span className="font-semibold text-sm">Sign Out</span>
-										</button>
-									</motion.div>
-								</>
+										<User size={16} />
+										<span className="font-medium">Profile</span>
+									</Link>
+
+									<Link
+										to="/dashboard"
+										className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"
+									>
+										<LayoutDashboard size={16} />
+										<span className="font-medium">Dashboard</span>
+									</Link>
+
+									<button
+										onClick={() => {
+											dispatch(logout());
+											toast.success("Logged out");
+											navigate("/");
+										}}
+										className="flex items-center gap-3 px-4 py-3 w-full text-left hover:bg-red-50 text-red-600 rounded-b-2xl"
+									>
+										<LogOut size={16} />
+										<span className="font-medium">Logout</span>
+									</button>
+								</motion.div>
 							)}
-						</AnimatePresence>
+						</div>
 					</div>
 				</nav>
 			)}
+
+			{/* --- FULL SCREEN SEARCH OVERLAY --- */}
+			<AnimatePresence>
+				{isSearchOpen && (
+					<motion.div
+						initial={{ opacity: 0, y: -20 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: -20 }}
+						className="fixed inset-0 z-[70] bg-white flex flex-col md:hidden"
+					>
+						{/* Search Header */}
+						<div className="p-5 flex items-center gap-3 border-b border-gray-100">
+							<div className="flex-1 flex items-center gap-3 bg-gray-100 px-4 py-3 rounded-2xl">
+								<Search size={20} className="text-gray-400" />
+								<input
+									autoFocus
+									type="text"
+									placeholder="Search products..."
+									className="bg-transparent border-none outline-none w-full text-gray-800 font-medium"
+									value={searchQuery}
+									onChange={(e) => setSearchQuery(e.target.value)}
+									onKeyDown={(e) => {
+										if (e.key === "Enter") {
+											handleSearchSubmit(searchQuery);
+										}
+									}}
+								/>
+							</div>
+							<button
+								onClick={() => setIsSearchOpen(false)}
+								className="p-2 text-gray-500 font-semibold"
+							>
+								Cancel
+							</button>
+						</div>
+
+						{/* Recent Searches */}
+						<div className="p-6">
+							<div className="flex items-center justify-between mb-4">
+								<h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">
+									Recent Searches
+								</h3>
+							</div>
+							<div className="space-y-4">
+								{recentSearches.map((item, idx) => (
+									<div
+										key={idx}
+										className="flex items-center justify-between group"
+									>
+										<button
+											onClick={() => handleSearchSubmit(item)}
+											className="flex items-center gap-3 text-left"
+										>
+											<HistoryIcon size={18} className="text-gray-300" />
+											<span className="text-gray-700 font-medium">{item}</span>
+										</button>
+
+										<button
+											onClick={() => {
+												const filtered = recentSearches.filter(
+													(_, i) => i !== idx
+												);
+												setRecentSearches(filtered);
+												saveSearches(filtered);
+											}}
+											className="text-gray-300 hover:text-red-500 transition"
+										>
+											<X size={16} />
+										</button>
+									</div>
+								))}
+							</div>
+						</div>
+					</motion.div>
+				)}
+			</AnimatePresence>
 
 			{/* --- HIGH-CONTRAST FLOATING BOTTOM NAV --- */}
 			<div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[50] w-[92%] max-w-md md:hidden">
@@ -269,7 +397,7 @@ export default function MobileNavbar() {
 			{/* Spacer for Content */}
 			<div
 				className={`md:hidden ${
-					location.pathname === "/dashboard" ? "h-0" : "h-16"
+					location.pathname === "/dashboard" || location.pathname.startsWith("/search/") ? "h-0" : "h-16"
 				}`}
 			/>
 		</>
