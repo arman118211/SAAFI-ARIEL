@@ -19,6 +19,7 @@ import { useSelector } from "react-redux";
 import Lottie from "lottie-react";
 import loaderAnimation from "../../../public/lottie/Loading_car.json";
 import noResultsAnimation from "../../../public/lottie/empty.json";
+import { useRef } from "react";
 
 const MOCK_PRODUCTS = [
 	{
@@ -169,10 +170,29 @@ const MOCK_PRODUCTS = [
 
 const CATEGORIES = ["All", "Electronics", "Accessories", "Cables", "Storage"];
 
+const NoResults = ({ searchQuery }) => (
+	<div className="flex flex-col items-center justify-center py-32 text-center">
+		<Lottie
+			animationData={noResultsAnimation}
+			loop={false}
+			className="w-56 h-56"
+		/>
+
+		<h3 className="mt-4 text-xl font-black text-gray-900">No products found</h3>
+
+		<p className="mt-2 text-sm text-gray-500 max-w-md">
+			We couldn’t find any products matching{" "}
+			<span className="font-semibold text-gray-700">“{searchQuery}”</span>
+		</p>
+	</div>
+);
+
 export default function ProductSearch() {
 	const { seller } = useSelector((state) => state.auth);
+	console.log("seller-->", seller);
 
 	const { searchQuery } = useParams();
+	console.log("searchQuery-->", searchQuery);
 	const navigate = useNavigate();
 
 	// API States
@@ -184,15 +204,17 @@ export default function ProductSearch() {
 	const [selectedCategory, setSelectedCategory] = useState("All");
 	const [priceRange, setPriceRange] = useState(null);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+	const searchInputRef = useRef(null);
 
 	// 1. Fetch from API (Mocked) whenever URL searchQuery changes
 	const getSearchData = async () => {
 		try {
-			const role = seller.role
+			const role = seller
 				? seller.role === "admin"
 					? "common"
 					: seller.role
 				: "common";
+			console.log("role-->", role);
 
 			const res = await axios.post(
 				`${import.meta.env.VITE_BASE_URL}/products/products/search`,
@@ -203,6 +225,7 @@ export default function ProductSearch() {
 			);
 			console.log("response-->", res);
 			setDbProducts(res.data.products);
+			// setDbProducts(MOCK_PRODUCTS);
 		} catch (err) {
 			toast.error("something went wrong");
 		}
@@ -210,9 +233,14 @@ export default function ProductSearch() {
 
 	useEffect(() => {
 		const fetchFromApi = async () => {
-			setIsLoading(true);
-			getSearchData();
-			setIsLoading(false);
+			try {
+				setIsLoading(true);
+				await getSearchData();
+			} catch (err) {
+				toast.error("something went wrong");
+			} finally {
+				setIsLoading(false);
+			}
 		};
 		fetchFromApi();
 		setLocalInput(searchQuery || "");
@@ -224,14 +252,28 @@ export default function ProductSearch() {
 			const matchesCategory =
 				selectedCategory === "All" || product.category === selectedCategory;
 
-			const matchesPrice = priceRange === null || product.price <= priceRange;
+			const pricePerPacket = Number(product.price);
+			const packSize = Number(product.packSize || 1);
+			const discount = Number(product.discount || 0);
+
+			const originalTotalPrice = pricePerPacket * packSize;
+			const discountAmount = (originalTotalPrice * discount) / 100;
+			const finalPrice = originalTotalPrice - discountAmount;
+
+			const matchesPrice = priceRange === null || finalPrice <= priceRange;
 
 			return matchesCategory && matchesPrice;
 		});
 	}, [dbProducts, selectedCategory, priceRange]);
 
+	console.log("filtered products -->", filteredProducts);
+
 	const handleSearch = (e) => {
 		if (e.key === "Enter" && localInput.trim()) {
+			// ✅ Close mobile keyboard
+			e.target.blur();
+			searchInputRef.current?.blur();
+
 			navigate(`/search/${encodeURIComponent(localInput.trim())}`);
 		}
 	};
@@ -259,6 +301,7 @@ export default function ProductSearch() {
 						<div className="relative flex-1 group md:hidden">
 							<Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-teal-600 w-4 h-4 lg:w-5 lg:h-5" />
 							<input
+								ref={searchInputRef}
 								type="text"
 								placeholder="Search our collection..."
 								value={localInput}
@@ -324,7 +367,7 @@ export default function ProductSearch() {
 					</aside>
 
 					{/* MAIN PRODUCTS AREA */}
-					<main className="lg:col-span-3">
+					{/* <main className="lg:col-span-3">
 						{isLoading ? (
 							<div className="flex flex-col items-center justify-center py-32">
 								<Lottie
@@ -337,38 +380,6 @@ export default function ProductSearch() {
 									Loading Products...
 								</p>
 							</div>
-						) : filteredProducts.length === 0 ? (
-							/* NO RESULTS */
-							<motion.div className="flex flex-col items-center justify-center py-32 text-center">
-								<Lottie
-									animationData={noResultsAnimation}
-									loop={false}
-									className="w-56 h-56"
-								/>
-
-								<h3 className="mt-4 text-xl font-black text-gray-900">
-									No products found
-								</h3>
-
-								<p className="mt-2 text-sm text-gray-500 max-w-md">
-									We couldn’t find any products matching
-									<span className="font-semibold text-gray-700">
-										{" "}
-										“{searchQuery}”
-									</span>
-									. Try adjusting your filters or search keywords.
-								</p>
-
-								<button
-									onClick={() => {
-										setSelectedCategory("All");
-										setPriceRange(null);
-									}}
-									className="mt-6 px-6 py-2.5 rounded-xl bg-teal-600 text-white font-bold text-sm hover:bg-teal-700 transition"
-								>
-									Clear Filters
-								</button>
-							</motion.div>
 						) : (
 							<motion.div
 								layout
@@ -377,7 +388,49 @@ export default function ProductSearch() {
 								<AnimatePresence mode="popLayout">
 									{filteredProducts.map((product) => (
 										<motion.div
-											key={product.id}
+											key={product._id}
+											layout
+											initial={{ opacity: 0, scale: 0.9 }}
+											animate={{ opacity: 1, scale: 1 }}
+											exit={{ opacity: 0, scale: 0.9 }}
+											transition={{ duration: 0.2 }}
+										>
+											<ProductCard product={product} />
+										</motion.div>
+									))}
+								</AnimatePresence>
+							</motion.div>
+						)}
+					</main> */}
+
+					<main className="lg:col-span-3">
+						{isLoading && (
+							<div className="flex flex-col items-center justify-center py-32">
+								<Lottie
+									animationData={loaderAnimation}
+									loop
+									autoplay
+									className="w-40 h-40"
+								/>
+								<p className="mt-4 font-bold uppercase tracking-widest text-xs text-gray-400">
+									Loading Products...
+								</p>
+							</div>
+						)}
+
+						{!isLoading && filteredProducts.length === 0 && (
+							<NoResults searchQuery={searchQuery} />
+						)}
+
+						{!isLoading && filteredProducts.length > 0 && (
+							<motion.div
+								layout
+								className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-6"
+							>
+								<AnimatePresence>
+									{filteredProducts.map((product) => (
+										<motion.div
+											key={product._id}
 											layout
 											initial={{ opacity: 0, scale: 0.9 }}
 											animate={{ opacity: 1, scale: 1 }}

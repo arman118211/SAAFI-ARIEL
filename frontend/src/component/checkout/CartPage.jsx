@@ -20,6 +20,7 @@ import axios from "axios";
 import Lottie from "lottie-react";
 import checkoutLoader from "../../../public/lottie/Loading_car.json";
 import orderSuccess from "../../../public/lottie/Completed _Successfully.json";
+import ScrollToTop from "../ScrollToTop";
 
 export const createOrderApi = (data, token) => {
 	return axios.post(`${import.meta.env.VITE_BASE_URL}/order/create`, data, {
@@ -189,6 +190,7 @@ export default function ShoppingCartComponent() {
 
 	return (
 		<div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 py-8 sm:py-12 lg:py-16 px-3 sm:px-4">
+			<ScrollToTop/>
 			<div className="max-w-7xl mx-auto">
 				<motion.div
 					initial={{ opacity: 0, y: -20 }}

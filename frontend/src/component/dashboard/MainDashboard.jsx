@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import SellerDashboard from './SellerDashboard';
 import AdminDashboard from './AdminDashboard';
 import { useNavigate } from "react-router-dom";
+import ScrollToTop from '../ScrollToTop';
 
 function MainDashboard() {
     const { seller, token } = useSelector((state) => state.auth);
@@ -20,6 +21,7 @@ function MainDashboard() {
     }
   return (
     <div>
+      <ScrollToTop/>
         {
             (seller.role === "seller" ||seller.role === "retailer"||seller.role === "dealer") && <SellerDashboard/>
         }

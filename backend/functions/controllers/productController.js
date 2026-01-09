@@ -291,6 +291,7 @@ export const getProductsByRole = async (req, res) => {
 export const searchProductsByRole = async (req, res) => {
 	try {
 		const { query = "", role = "common" } = req.body;
+		console.log("Querry -->", query)
 
 		// 🔍 Build search condition
 		const searchCondition = {

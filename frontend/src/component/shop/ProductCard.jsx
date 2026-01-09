@@ -152,7 +152,7 @@ export default function ProductCard({ product, onAddToCart }) {
 					</div>
 
 					{/* Key Features - Preserved but limited to 1 on mobile to prevent overflow */}
-					{product.keyFeatures && product.keyFeatures.length > 0 && (
+					{/* {product.keyFeatures && product.keyFeatures.length > 0 && (
 						<div className="flex flex-wrap gap-1 mb-2">
 							{product.keyFeatures.slice(0, 1).map((feature, idx) => (
 								<span
@@ -163,16 +163,27 @@ export default function ProductCard({ product, onAddToCart }) {
 								</span>
 							))}
 						</div>
-					)}
+					)} */}
 
 					{/* Price Section */}
 					<div className="mt-auto mb-2 pt-2 border-t border-gray-50">
-						<div className="flex items-baseline gap-1 lg:gap-2">
-							<span className="text-sm lg:text-xl font-bold text-gray-900">
-								₹{finalPrice.toFixed(0)}
-							</span>
-							<span className="text-[10px] lg:text-sm text-gray-400 line-through font-medium">
-								₹{originalTotalPrice.toFixed(0)}
+						<div className="flex justify-between items-center">
+							<div className="flex items-baseline gap-1 lg:gap-2">
+								<span className="text-sm lg:text-xl font-bold text-gray-900">
+									₹{finalPrice.toFixed(0)}
+								</span>
+								<span className="text-[10px] lg:text-sm text-gray-400 line-through font-medium">
+									₹{originalTotalPrice.toFixed(0)}
+								</span>
+							</div>
+							<span
+								className={`text-[10px] font-bold ${
+									product.stock > 10 ? "text-green-600" : "text-orange-600"
+								}`}
+							>
+								{product.stock > 0
+									? `${product.stock} In Stock`
+									: "Out of Stock"}
 							</span>
 						</div>
 						<p className="text-gray-500 text-[9px] lg:text-xs font-semibold">
@@ -181,7 +192,7 @@ export default function ProductCard({ product, onAddToCart }) {
 					</div>
 
 					{/* Stock & Shipping */}
-					<div className="flex items-center justify-between mb-3">
+					{/* <div className="flex items-center justify-between mb-3">
 						<span
 							className={`text-[10px] font-bold ${
 								product.stock > 10 ? "text-green-600" : "text-orange-600"
@@ -192,7 +203,7 @@ export default function ProductCard({ product, onAddToCart }) {
 						<div className="hidden lg:flex items-center gap-1 text-[10px] text-gray-500">
 							<Truck size={10} /> <span>Free</span>
 						</div>
-					</div>
+					</div> */}
 
 					{/* Cart Actions */}
 					{!addedToCart ? (

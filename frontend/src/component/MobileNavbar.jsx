@@ -69,7 +69,7 @@ export default function MobileNavbar() {
 		setIsSearchOpen(false);
 		setSearchQuery("");
 
-		navigate(`/search/${encodeURIComponent(query)}`);
+		navigate(`/search/${query}`);
 	};
 
 	const isDashboard =
