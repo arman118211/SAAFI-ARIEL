@@ -108,7 +108,7 @@ export default function ShopPage() {
 			<ShopHeader />
 
 			{/* Main Content */}
-			<div className="mx-auto px-6 lg:px-50">
+			<div className="mx-auto px-6 lg:px-50 ">
 				{/* Filter Section */}
 				<ProductFilter
 					onFilterChange={setActiveFilter}

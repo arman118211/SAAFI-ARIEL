@@ -27,7 +27,7 @@ export default function ProductFilter({ onFilterChange, onSortChange }) {
   return (
     <div className="mb-8">
       {/* MOBILE VIEW: Single Row with Icon Buttons */}
-      <div className="flex lg:hidden items-center gap-2 w-full">
+      <div className="flex lg:hidden items-center gap-2 w-full py-4">
         <button 
           onClick={() => setIsMobileMenuOpen(true)}
           className="flex-1 flex items-center justify-between bg-white border border-gray-200 p-3 rounded-xl shadow-sm"

@@ -133,7 +133,7 @@ function Order() {
 		<div className="min-h-screen ">
 			<div className=" mx-auto">
 				{/* Statistics Cards */}
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+				<div className="hidden md:grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 					{loading ? (
 						Array.from({ length: 4 }).map((_, i) => (
 							<OrderStatShimmer key={i} />
@@ -151,11 +151,11 @@ function Order() {
 										<p className="text-sm font-medium text-gray-600 mb-1">
 											Total Orders
 										</p>
-										<p className="text-3xl font-bold text-gray-900">
+										<p className="md:text-3xl text-xl font-bold text-gray-900">
 											{stats.totalOrders}
 										</p>
 									</div>
-									<div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+									<div className="md:w-12 md:h-12 w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center">
 										<ShoppingCart className="w-6 h-6 text-blue-600" />
 									</div>
 								</div>
@@ -167,16 +167,16 @@ function Order() {
 								transition={{ delay: 0.2 }}
 								className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-600"
 							>
-								<div className="flex items-center justify-between">
+								<div className="flex items-center justify-between gap-3">
 									<div>
 										<p className="text-sm font-medium text-gray-600 mb-1">
 											Total Revenue
 										</p>
-										<p className="text-3xl font-bold text-gray-900">
+										<p className="md:text-3xl text-xl font-bold text-gray-900">
 											₹{stats.totalRevenue.toLocaleString()}
 										</p>
 									</div>
-									<div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+									<div className="md:w-12 md:h-12 w-9 h-9 bg-red-100 rounded-lg flex items-center justify-center ">
 										<DollarSign className="w-6 h-6 text-red-600" />
 									</div>
 								</div>
@@ -193,11 +193,11 @@ function Order() {
 										<p className="text-sm font-medium text-gray-600 mb-1">
 											Pending
 										</p>
-										<p className="text-3xl font-bold text-gray-900">
+										<p className="md:text-3xl text-xl font-bold text-gray-900">
 											{stats.pendingOrders}
 										</p>
 									</div>
-									<div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+									<div className="md:w-12 md:h-12 w-9 h-9 bg-yellow-100 rounded-lg flex items-center justify-center">
 										<Clock className="w-6 h-6 text-yellow-500" />
 									</div>
 								</div>
@@ -214,11 +214,11 @@ function Order() {
 										<p className="text-sm font-medium text-gray-600 mb-1">
 											Completed
 										</p>
-										<p className="text-3xl font-bold text-gray-900">
+										<p className="md:text-3xl text-xl font-bold text-gray-900">
 											{stats.completedOrders}
 										</p>
 									</div>
-									<div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+									<div className="md:w-12 md:h-12 w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center">
 										<CheckCircle2 className="w-6 h-6 text-green-600" />
 									</div>
 								</div>

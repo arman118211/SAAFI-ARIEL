@@ -14,7 +14,8 @@ import {
   getWinnerNotification,
   markWinSeen,
   getWinningOffersForSeller,
-  getAllOfferWinners
+  getAllOfferWinners,
+  getOfferDashboardData
 } from "../controllers/offerController.js";
 
 const router = express.Router();
@@ -42,6 +43,11 @@ router.get(
 router.get(
   "/admin/offers/winners",
   getAllOfferWinners
+);
+
+router.post(
+  "/dashBoardData",
+  getOfferDashboardData
 );
 
 

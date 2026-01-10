@@ -20,162 +20,7 @@ import { selectOffers, setOffers } from "../../redux/slices/offersSlice";
 import axios from "axios";
 import ScrollToTop from "../ScrollToTop";
 
-// const mockOffers = [
-//   {
-//     _id: "691ccba7414db57fb18eb0d1",
-//     title: "Festival Bulk Purchase Offer",
-//     description: "Buy in bulk and get special festive discounts!",
-//     products: [
-//       {
-//         productId: {
-//           _id: "691cadaf1d00cc1b51a5a881",
-//           name: "Detergent Powder",
-//           price: 450,
-//           unit: "kg",
-//           stock: 100,
-//           category: "Detergent",
-//           imageUrl: "https://www.saafiariel.com/product/a1.jpg",
-//         },
-//         minQty: 10,
-//         _id: "691ccba7414db57fb18eb0d2",
-//       },
-//       {
-//         productId: {
-//           _id: "691cc937414db57fb18eb0c4",
-//           name: "Organic Basmati Rice",
-//           price: 120,
-//           unit: "kg",
-//           stock: 200,
-//           category: "Groceries",
-//           imageUrl: "https://example.com/images/rice.jpg",
-//         },
-//         minQty: 50,
-//         _id: "691ccba7414db57fb18eb0d3",
-//       },
-//       {
-//         productId: {
-//           _id: "691cc95e414db57fb18eb0c6",
-//           name: "Fresh Cow Milk",
-//           price: 60,
-//           unit: "liter",
-//           stock: 150,
-//           category: "Dairy",
-//           imageUrl: "https://example.com/images/milk.jpg",
-//         },
-//         minQty: 30,
-//         _id: "691ccba7414db57fb18eb0d4",
-//       },
-//     ],
-//     startDate: "2025-11-20T00:00:00.000Z",
-//     endDate: "2025-12-05T23:59:59.999Z",
-//     status: "active",
-//     sellerPurchases: [
-//       {
-//         sellerId: {
-//           _id: "691b6cdb54bbb4dcecdb01e3",
-//           name: "Rohit Sharma",
-//           email: "rohit@gmail.com",
-//           phone: "9876543210",
-//         },
-//         totalQty: 180,
-//         orders: [
-//           {
-//             orderId: {
-//               _id: "6921fc4febe1d1f217384409",
-//               totalAmount: 12300,
-//             },
-//             qty: 90,
-//             _id: "6921fc4febe1d1f217384413",
-//             date: "2025-11-22T18:09:19.822Z",
-//           },
-//           {
-//             orderId: {
-//               _id: "69233068bc45dc9c46694609",
-//               totalAmount: 12300,
-//             },
-//             qty: 90,
-//             _id: "69233068bc45dc9c46694614",
-//             date: "2025-11-23T16:03:52.522Z",
-//           },
-//         ],
-//         _id: "6921fc4febe1d1f217384412",
-//       },
-//       {
-//         sellerId: {
-//           _id: "691b6d4054bbb4dcecdb01e6",
-//           name: "MD Arman",
-//           email: "arman@gmail.com",
-//           phone: "7458839431",
-//         },
-//         totalQty: 90,
-//         orders: [
-//           {
-//             orderId: {
-//               _id: "6927580a2ca77e9b2ca50660",
-//               totalAmount: 12300,
-//             },
-//             qty: 90,
-//             _id: "6927580a2ca77e9b2ca5066d",
-//             date: "2025-11-26T19:42:02.837Z",
-//           },
-//         ],
-//         _id: "6927580a2ca77e9b2ca5066c",
-//       },
-//     ],
-//     winner: null,
-//     createdAt: "2025-11-18T19:40:23.511Z",
-//     updatedAt: "2025-11-26T19:42:02.843Z",
-//   },
-//   {
-//     _id: "691ccbf4414db57fb18eb0d7",
-//     title: "Win iPhone 16 on these products",
-//     description: "Buy in bulk and get special festive discounts!",
-//     products: [
-//       {
-//         productId: {
-//           _id: "691cc95e414db57fb18eb0c6",
-//           name: "Fresh Cow Milk",
-//           price: 60,
-//           unit: "liter",
-//           stock: 150,
-//           category: "Dairy",
-//           imageUrl: "https://example.com/images/milk.jpg",
-//         },
-//         minQty: 30,
-//         _id: "691ccbf4414db57fb18eb0d8",
-//       },
-//     ],
-//     startDate: "2025-11-20T00:00:00.000Z",
-//     endDate: "2025-12-05T23:59:59.999Z",
-//     status: "active",
-//     sellerPurchases: [
-//       {
-//         sellerId: {
-//           _id: "691b6cdb54bbb4dcecdb01e3",
-//           name: "Rohit Sharma",
-//           email: "rohit@gmail.com",
-//           phone: "9876543210",
-//         },
-//         totalQty: 30,
-//         orders: [
-//           {
-//             orderId: {
-//               _id: "69220458ebe1d1f2173844a0",
-//               totalAmount: 1800,
-//             },
-//             qty: 30,
-//             _id: "69220458ebe1d1f2173844a6",
-//             date: "2025-11-22T18:43:36.753Z",
-//           },
-//         ],
-//         _id: "69220458ebe1d1f2173844a5",
-//       },
-//     ],
-//     winner: null,
-//     createdAt: "2025-11-18T19:41:40.725Z",
-//     updatedAt: "2025-11-22T18:43:36.755Z",
-//   },
-// ]
+
 
 const OfferDetailPage = () => {
 	const { id } = useParams();
@@ -301,13 +146,13 @@ const OfferDetailPage = () => {
 						className="bg-white rounded-2xl shadow-md overflow-hidden border border-slate-200"
 					>
 						<div className="h-32 md:h-48 bg-gradient-to-r from-blue-200 to-indigo-200 relative overflow-hidden">
-							<div className="flex h-full items-center justify-center gap-2 md:gap-4 p-3 md:p-6">
+							<div className="flex h-full items-center justify-center gap-2 md:gap-4 p-3 md:p-6 ">
 								{offer.products.slice(0, 3).map((product, i) => (
 									<motion.img
 										key={i}
 										src={product.productId.imageUrl}
 										alt={product.productId.name}
-										className="w-20 md:w-32 h-20 md:h-32 object-cover rounded-lg md:rounded-xl shadow-lg border-4 border-white"
+										className="w-20 md:w-32 h-20 md:h-32 object-cover rounded-lg md:rounded-xl shadow-lg border-4 border-white "
 									/>
 								))}
 							</div>
@@ -383,7 +228,7 @@ const OfferDetailPage = () => {
 									{/* flex-col for mobile (stacked), md:flex-row for desktop (side-by-side) */}
 									<div className="flex flex-col md:flex-row gap-4 md:gap-6">
 										{/* Image Container: Full width on mobile with fixed height, square on desktop */}
-										<div className="w-full md:w-32 h-48 md:h-32 shrink-0 overflow-hidden rounded-lg shadow-md bg-white">
+										<div className="w-full md:w-32 h-48 md:h-32 shrink-0 overflow-hidden rounded-lg shadow-md bg-white ">
 											<img
 												src={product.productId.imageUrl || "/placeholder.svg"}
 												alt={product.productId.name}

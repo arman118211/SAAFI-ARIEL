@@ -310,13 +310,13 @@ export default function OfferDetails({ offer, onAddToCart }) {
 								className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-300"
 							>
 								<div className="flex flex-col sm:flex-row">
-									<div className="sm:w-48 h-48 sm:h-auto bg-gray-100 relative shrink-0">
-										<img
-											src={item.productId.imageUrl || "/placeholder.svg"}
-											alt={item.productId.name}
-											className="w-full h-full object-cover"
-										/>
-									</div>
+									<div className="w-full h-64 sm:w-48 sm:h-auto bg-gray-100 relative shrink-0 overflow-hidden rounded-xl">
+    <img
+        src={item.productId.imageUrl || "/placeholder.svg"}
+        alt={item.productId.name}
+        className="w-full h-full object-contain" 
+    />
+</div>
 									<div className="p-6 flex-1 flex flex-col justify-between">
 										<div>
 											<div className="flex justify-between items-start mb-2">

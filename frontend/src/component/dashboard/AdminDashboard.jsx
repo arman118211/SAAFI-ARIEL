@@ -116,10 +116,10 @@ const ChartCard = ({ title, children, height = "h-64" }) => (
 
 const DashboardHome = ({states, salesData, inventoryData, recentData, loading}) => (
   
-  <div className="space-y-6 p-4">
+  <div className="space-y-6 p-4 ">
     <ScrollToTop/>
     {/* Top Stats Row */}
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {loading? (
         Array.from({ length: 4 }).map((_, i) => <StatCardShimmer key={i} />)
       ) :(

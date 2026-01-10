@@ -279,20 +279,23 @@ export default function SellerDashboard() {
 				>
 					<div className=" mx-auto lg:pb-0 pb-20">
 						{activeTab !== "profile" && (
-							<div className="flex justify-between items-end mb-8">
-								<div>
-									<h1 className="text-2xl font-bold text-gray-900 capitalize mb-1">
+							<div className="flex items-center justify-between gap-3 mb-6 md:mb-8 px-1">
+								{/* Left Side: Title and Description */}
+								<div className="min-w-0 flex-1">
+									<h1 className="text-lg md:text-2xl font-bold text-gray-900 capitalize truncate leading-tight">
 										{activeTab}
 									</h1>
-									<p className="text-gray-500 text-sm">
-										Manage your detergent production and distribution metrics.
+									<p className="text-gray-500 text-[10px] md:text-sm truncate sm:whitespace-normal leading-tight">
+										Manage production & distribution
 									</p>
 								</div>
-								<div className="flex gap-3">
+
+								{/* Right Side: Action Button */}
+								<div className="flex-shrink-0">
 									<Link to="/shop">
-										<button className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm shadow-blue-200 flex items-center gap-2">
-											<Plus className="w-4 h-4" />
-											Buy More Product
+										<button className="flex items-center gap-1.5 px-3 py-2 md:px-4 md:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs md:text-sm font-semibold transition-all active:scale-95 shadow-md shadow-blue-100">
+											<Plus className="w-3.5 h-3.5 md:w-4 h-4" />
+											<span className="whitespace-nowrap">Buy Product</span>
 										</button>
 									</Link>
 								</div>
@@ -308,7 +311,7 @@ export default function SellerDashboard() {
 								transition={{ duration: 0.2 }}
 							>
 								{activeTab === "dashboard" ? (
-									<SellerDashboardHome />
+									<SellerDashboardHome setActiveTab = {setActiveTab} />
 								) : activeTab === "offers" ? (
 									<OffersPage />
 								) : activeTab === "orders" ? (
