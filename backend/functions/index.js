@@ -9,6 +9,8 @@ import productRoutes from "./routes/productRoutes.js";
 import offerRoutes from "./routes/offerRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
+
 
 dotenv.config();
 connectDB();
@@ -32,6 +34,7 @@ app.use("/seller/auth", sellerAuthRoutes);
 app.use("/products", productRoutes);
 app.use("/offers", offerRoutes);
 app.use("/order", orderRoutes);
+app.use("/notification", notificationRoutes);
 
 // 404 handler
 app.use((req, res) => {

@@ -7,3 +7,4 @@ if (!admin.apps.length) {
 }
 
 export const bucket = admin.storage().bucket();
+export const messaging = admin.messaging();

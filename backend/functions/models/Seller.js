@@ -10,6 +10,10 @@ const SellerSchema = new mongoose.Schema(
     companyName: { type: String },
     address: { type: String },
     role: { type: String, enum: ["seller", "retailer", "dealer", "admin"], default: "seller" },
+    fcmTokens: {
+      type: [String],
+      default: []
+    },
     isApproved: {
       type: Boolean,
       default: false,

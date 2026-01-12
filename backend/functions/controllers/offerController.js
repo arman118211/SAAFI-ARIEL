@@ -3,12 +3,31 @@ import mongoose from "mongoose";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import Seller from "../models/Seller.js";
+import { getOfferTargetTokens } from "../utills/getOfferTargetTokens.js";
+import { sendFcmNotification } from "../utills/sendFcmNotification.js";
 
 // CREATE OFFER (Admin)
 export const createOffer = async (req, res) => {
 	try {
 		console.log("req body", req.body);
 		const offer = await Offer.create(req.body);
+		console.log("offer -->",offer)
+
+		const tokens = await getOfferTargetTokens(offer.offerFor);
+
+		await sendFcmNotification({
+            tokens,
+            title: "🎉 New Offer Available!",
+            body: offer.title,
+            // Add icon and image here
+            icon: "https://demo.saafiariel.com/logo.png", 
+            image: offer.imageUrl || "https://www.vecteezy.com/free-vector/sale-banner", 
+            data: {
+                url: `https://demo.saafiariel.com/offers/${offer._id}`,
+                offerId: offer._id.toString(),
+            },
+        });
+
 		res.status(201).json({ success: true, message: "Offer created", offer });
 	} catch (error) {
 		res.status(500).json({ success: false, error: error.message });

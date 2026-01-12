@@ -7,10 +7,19 @@ import { BrowserRouter } from 'react-router-dom';
 import { store } from "./redux/store";
 import { Toaster } from "react-hot-toast";
 
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("/firebase-messaging-sw.js")
+    .then(() => console.log("✅ FCM Service Worker registered"))
+    .catch((err) =>
+      console.error("❌ FCM Service Worker registration failed", err)
+    );
+}
+
 createRoot(document.getElementById('root')).render(
    <Provider store={store}>
       <BrowserRouter>
-      {/* <Toaster position="top-right" /> */}
+      <Toaster position="top-right" />
         <App />
       </BrowserRouter>,
   </Provider>

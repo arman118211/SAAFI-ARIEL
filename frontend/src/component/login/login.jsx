@@ -237,10 +237,26 @@ const Login = () => {
 				})
 			);
 
-
 			if (result.meta.requestStatus === "fulfilled") {
 				setMessage("Login Success: " + result.payload.seller.name);
 				toast.success("Login Successfully");
+
+				const authToken = result.payload.token;
+
+				// ASK PERMISSION FIRST (USER CONTEXT STILL ACTIVE)
+				const { requestNotificationPermission } = await import(
+					"../../utils/requestNotificationPermission"
+				);
+
+				const granted = await requestNotificationPermission();
+
+				if (granted) {
+					const { registerFcmToken } = await import(
+						"../../utils/registerFcmToken"
+					);
+					await registerFcmToken(authToken);
+				}
+
 				setMessageType("success");
 				setIsLoading(false);
 				navigate(localStorage.getItem("current") || "/dashboard");
