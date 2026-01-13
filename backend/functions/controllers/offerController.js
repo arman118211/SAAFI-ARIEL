@@ -224,6 +224,27 @@ export const declareWinner = async (req, res) => {
 		offer.status = "closed";
 		await offer.save();
 
+		const winnerDetails = await Seller.findById(winnerId);
+        const targetTokens = await getOfferTargetTokens(offer.offerFor);
+
+		if (targetTokens.length > 0) {
+            const winnerName = winnerDetails?.name || "A lucky participant";
+            
+            // 3. Send Notification to all targeted users
+            await sendFcmNotification({
+                tokens: targetTokens,
+                title: "🏆 Offer Winner Declared!",
+                body: `The winner of "${offer.title}" is ${winnerName}! Congratulations!`,
+                // You can add an image of the offer or a trophy icon
+                image: "https://your-domain.com/winner-banner.jpg", 
+                data: {
+                    url: `https://demo.saafiariel.com/offers/${offer._id}`,
+                    offerId: offer._id.toString(),
+                    type: "OFFER_WINNER_DECLARED"
+                },
+            });
+        }
+
 		res.json({ success: true, message: "Winner selected", offer });
 	} catch (error) {
 		res.status(500).json({ success: false, error: error.message });

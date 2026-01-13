@@ -1,4 +1,4 @@
-import { messaging } from "../config/firebase.js";
+import { messaging } from "../config/firebaseAdmin.js";
 
 export const sendFcmNotification = async ({
 	tokens,

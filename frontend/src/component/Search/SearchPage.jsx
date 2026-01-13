@@ -223,7 +223,7 @@ export default function ProductSearch() {
 					query: searchQuery,
 				}
 			);
-			console.log("response-->", res);
+			// console.log("response-->", res);
 			setDbProducts(res.data.products);
 			// setDbProducts(MOCK_PRODUCTS);
 		} catch (err) {

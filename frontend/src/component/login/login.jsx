@@ -238,6 +238,7 @@ const Login = () => {
 			);
 
 			if (result.meta.requestStatus === "fulfilled") {
+				setMessageType("success");
 				setMessage("Login Success: " + result.payload.seller.name);
 				toast.success("Login Successfully");
 

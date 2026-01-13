@@ -87,7 +87,7 @@ function Order() {
 			const response = await axios.get(
 				`${import.meta.env.VITE_BASE_URL}/order/seller/${seller._id}`
 			);
-			console.log("response", response.data);
+			// console.log("response", response.data);
 			setOrders(response.data);
 			setLoading(false);
 		} catch (err) {
@@ -97,7 +97,6 @@ function Order() {
 		}
 	};
 
-	console.log("order is ---->", orders);
 
 	useEffect(() => {
 		getorder();

@@ -21,6 +21,8 @@ import { useDispatch } from "react-redux";
 import { updateOrderStatus as updateStatus } from "../../redux/slices/orderSlice";
 import toast from "react-hot-toast";
 import ScrollToTop from "../ScrollToTop";
+import Lottie from "lottie-react";
+import statusLoader from "../../../public/lottie/Loader.json";
 
 const StatsShimmer = () => (
 	<div className="bg-white rounded-lg p-4 shadow-md animate-pulse relative overflow-hidden">
@@ -62,6 +64,7 @@ const AdminOrdersPage = () => {
 	const [showFilters, setShowFilters] = useState(false);
 	const [statusMenuOpen, setStatusMenuOpen] = useState(null);
 	const [isLoading, setIsLoading] = useState(true);
+	const [updatingOrderId, setUpdatingOrderId] = useState(null);
 
 	const statusOptions = [
 		{ value: "all", label: "All Orders", color: "gray" },
@@ -91,6 +94,7 @@ const AdminOrdersPage = () => {
 	const updateOrderStatus = async (orderId, newStatus) => {
 		// console.log("orderId", orderId, "newStatus", newStatus);
 		try {
+			setUpdatingOrderId(orderId);
 			const res = await axios.put(
 				`${import.meta.env.VITE_BASE_URL}/order/status/${orderId}`,
 				{
@@ -104,6 +108,7 @@ const AdminOrdersPage = () => {
 				)
 			);
 			toast.success("Status updated succesfully");
+			setStatusMenuOpen(null);
 			// dispatch(updateStatus({
 			// orderId: orderId,
 			// status: newStatus
@@ -112,6 +117,8 @@ const AdminOrdersPage = () => {
 		} catch (err) {
 			console.log("something went wrong", err);
 			toast.error("Status updated failed,Please try again.");
+		} finally {
+			setUpdatingOrderId(null); // ✅ stop loader
 		}
 	};
 
@@ -518,16 +525,34 @@ const AdminOrdersPage = () => {
 																				onClick={() =>
 																					updateOrderStatus(order._id, status)
 																				}
-																				disabled={order.status === status}
-																				className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 transition-colors ${
+																				disabled={
+																					updatingOrderId === order._id ||
 																					order.status === status
+																				}
+																				className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 transition-colors ${
+																					updatingOrderId === order._id
+																						? "bg-gray-100 text-gray-400 cursor-wait"
+																						: order.status === status
 																						? "bg-gray-100 text-gray-400 cursor-not-allowed"
 																						: `${config.bg} ${config.color} font-medium`
 																				}`}
 																			>
-																				<Icon className="w-4 h-4" />
-																				{status.charAt(0).toUpperCase() +
-																					status.slice(1)}
+																				{updatingOrderId === order._id &&
+																				order.status !== status ? (
+																					<div className="w-6 h-6">
+																						<Lottie
+																							animationData={statusLoader}
+																							loop
+																						/>
+																					</div>
+																				) : (
+																					<>
+																						<Icon className="w-4 h-4" />
+																						{status.charAt(0).toUpperCase() +
+																							status.slice(1)}
+																					</>
+																				)}
+
 																				{order.status === status && (
 																					<span className="ml-auto text-xs">
 																						(Current)

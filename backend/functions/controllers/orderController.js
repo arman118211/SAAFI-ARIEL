@@ -188,6 +188,7 @@ export const updateOrderStatus = async (req, res) => {
 			};
 
 			const title = statusMessages[status] || "Order Update";
+			console.log(seller.fcmTokens);
 
 			// 3. Send Notification to Seller
 			await sendFcmNotification({

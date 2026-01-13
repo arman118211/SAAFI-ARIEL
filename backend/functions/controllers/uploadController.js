@@ -1,4 +1,4 @@
-import { bucket } from "../config/firebase.js";
+import { bucket } from "../config/firebaseAdmin.js";
 import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
 

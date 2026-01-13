@@ -43,7 +43,7 @@ const ProductManager = () => {
 		try {
 			setIsLoading(true);
 			const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/products`);
-			console.log("response", res.data);
+			// console.log("response", res.data);
 			setProducts(res.data.products);
 		} catch (err) {
 			// console.log("something went wrong", err)

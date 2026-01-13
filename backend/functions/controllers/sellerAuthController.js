@@ -2,9 +2,10 @@ import Seller from "../models/Seller.js";
 import jwt from "jsonwebtoken";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
-import admin from "firebase-admin";
+import admin from "../config/firebaseAdmin.js";
+import { sendFcmNotification } from "../utills/sendFcmNotification.js";
 
-admin.initializeApp();
+
 
 const generateToken = (id) => {
 	return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
@@ -185,6 +186,34 @@ export const registerSeller = async (req, res) => {
 			role,
 			isApproved,
 		});
+
+		try {
+            // Find all admins who have active FCM tokens
+            const admins = await Seller.find({ role: "admin" }).select("fcmTokens");
+            const adminTokens = admins.flatMap((admin) => admin.fcmTokens || []);
+
+            if (adminTokens.length > 0) {
+                const needsApproval = role === "dealer" ? " (Approval Required) 🚨" : "";
+                
+                await sendFcmNotification({
+                    tokens: adminTokens,
+                    title: "👤 New User Registered",
+                    body: `${name} has joined as a ${role.toUpperCase()}.${needsApproval}`,
+                    // You can use a specific icon for registration alerts
+                    icon: "https://demo.saafiariel.com/icons/new-user.png", 
+                    data: {
+                        url: `https://demo.saafiariel.com/dashboard`, // Link for admin to manage users
+                        sellerId: seller._id.toString(),
+                        role: role,
+                        type: "NEW_REGISTRATION"
+                    },
+                });
+            }
+        } catch (fcmError) {
+            // Log the error but don't stop the registration process
+            console.error("Admin Notification Error:", fcmError);
+        }
+	
 
 		// ✅ Send response
 		res.status(201).json({
