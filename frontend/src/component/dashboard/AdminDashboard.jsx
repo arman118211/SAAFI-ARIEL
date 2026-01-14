@@ -25,6 +25,8 @@ import {
   Settings,
   Shield,
   Trophy,
+  Plus,
+  Minus,
 } from "lucide-react"
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Line } from "recharts"
 import ProductPage from "../admin-dashboard/ProductPage"
@@ -114,204 +116,195 @@ const ChartCard = ({ title, children, height = "h-64" }) => (
   </div>
 )
 
-const DashboardHome = ({states, salesData, inventoryData, recentData, loading}) => (
-  
-  <div className="space-y-6 p-4 ">
-    <ScrollToTop/>
-    {/* Top Stats Row */}
-    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {loading? (
-        Array.from({ length: 4 }).map((_, i) => <StatCardShimmer key={i} />)
-      ) :(
-      <>
-        <StatCard
-          title="Total Revenue"
-          value={`₹ ${states.totalRevenue}`}
-          trendUp={true}
-          icon={DollarSign}
-          color="text-blue-600"
-        />
-        <StatCard
-          title="Total Seller"
-          value={states.totalSellers}
-          trendUp={true}
-          icon={Droplets}
-          color="text-blue-500"
-        />
-        <StatCard
-          title="Deliverd Orders"
-          value={states.deliveredOrders}
-          trendUp={false}
-          icon={Package}
-          color="text-indigo-600"
-        />
-        <StatCard
-          title="Pending Orders"
-          value={states.pendingAndConfirmedOrders}
-          trend="Action Req"
-          trendUp={false}
-          icon={AlertCircle}
-          color="text-red-600"
-        />
-      </>
-      )
-     } 
-    </div>
+const StatusBadge = ({ status }) => {
+  const styles = {
+    Completed: "bg-green-50 text-green-700 border-green-200",
+    Processing: "bg-blue-50 text-blue-700 border-blue-200",
+    Pending: "bg-yellow-50 text-yellow-700 border-yellow-200",
+  };
+  const currentStyle = styles[status] || "bg-gray-100 text-gray-600 border-gray-200";
 
-    {/* Main Charts Row */}
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {loading?
-      (
-        <>
-          <div className="lg:col-span-2"><ChartShimmer /></div>
-          <div className="lg:col-span-1"><ChartShimmer /></div>
-        </>
-      ) :(
-      <>
-        <div className="lg:col-span-2">
-          <ChartCard title="Sales Velocity (24h)">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={salesData}>
-                <defs>
-                  <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#2563eb" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
-                <XAxis dataKey="time" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis
-                  stroke="#9ca3af"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(value) => `$${value}`}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#ffffff",
-                    borderColor: "#e5e7eb",
-                    color: "#111827",
-                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                  }}
-                  itemStyle={{ color: "#111827" }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="sales"
-                  stroke="#2563eb"
-                  strokeWidth={2}
-                  fillOpacity={1}
-                  fill="url(#colorSales)"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="orders"
-                  stroke="#ef4444"
-                  strokeWidth={2}
-                  fill="transparent"
-                  strokeDasharray="5 5"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </ChartCard>
-        </div>
+  return (
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${currentStyle}`}>
+      {(status === "Completed" || status === "Processing" || status === "Pending") && (
+        <div className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+          status === "Completed" ? "bg-green-500" : 
+          status === "Processing" ? "bg-blue-500" : "bg-yellow-500"
+        }`} />
+      )}
+      {status}
+    </span>
+  );
+};
 
-        <div className="lg:col-span-1">
-          <ChartCard title="Inventory Levels">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={inventoryData} layout="vertical" margin={{ left: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" horizontal={true} vertical={false} />
-                <XAxis type="number" hide />
-                <YAxis
-                  dataKey="name"
-                  type="category"
-                  stroke="#6b7280"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                  width={60}
-                />
-                <Tooltip
-                  cursor={{ fill: "#f3f4f6" }}
-                  contentStyle={{
-                    backgroundColor: "#ffffff",
-                    borderColor: "#e5e7eb",
-                    color: "#111827",
-                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                  }}
-                />
-                <Bar dataKey="value" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={20} />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartCard>
-        </div>
-      </>
-      )
-      }
-    </div>
+const DashboardHome = ({ states, salesData, inventoryData, recentData, loading }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
-    {/* Recent Orders Table */}
-    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-      <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-        <h3 className="text-sm font-semibold text-gray-900">Recent Transactions</h3>
-        <div className="flex gap-2">
-          <button className="p-2 hover:bg-gray-100 rounded-md text-gray-400 hover:text-gray-900 transition-colors">
-            <Filter className="w-4 h-4" />
-          </button>
-          <button className="p-2 hover:bg-gray-100 rounded-md text-gray-400 hover:text-gray-900 transition-colors">
-            <Download className="w-4 h-4" />
-          </button>
-        </div>
+  // Safety check for data
+  const safeRecentData = recentData || [];
+  const totalPages = Math.ceil(safeRecentData.length / itemsPerPage) || 1;
+  const currentOrders = safeRecentData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  return (
+    <div className="space-y-6 p-4">
+      <ScrollToTop />
+      
+      {/* Top Stats Row */}
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {loading ? (
+          Array.from({ length: 4 }).map((_, i) => <StatCardShimmer key={i} />)
+        ) : (
+          <>
+            <StatCard
+              title="Total Revenue"
+              value={`₹ ${states?.totalRevenue || 0}`}
+              trendUp={true}
+              icon={DollarSign}
+              color="text-blue-600"
+            />
+            <StatCard
+              title="Total Seller"
+              value={states?.totalSellers || 0}
+              trendUp={true}
+              icon={Droplets}
+              color="text-blue-500"
+            />
+            <StatCard
+              title="Delivered Orders"
+              value={states?.deliveredOrders || 0}
+              trendUp={false}
+              icon={Package}
+              color="text-indigo-600"
+            />
+            <StatCard
+              title="Pending Orders"
+              value={states?.pendingAndConfirmedOrders || 0}
+              trend="Action Req"
+              trendUp={false}
+              icon={AlertCircle}
+              color="text-red-600"
+            />
+          </>
+        )}
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left">
-          <thead className="text-xs text-gray-500 uppercase bg-gray-50/50">
-            <tr>
-              <th className="px-6 py-3 font-medium">Order ID</th>
-              <th className="px-6 py-3 font-medium">Customer</th>
-              <th className="px-6 py-3 font-medium">Product</th>
-              <th className="px-6 py-3 font-medium">Status</th>
-              <th className="px-6 py-3 font-medium text-right">Amount</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {loading?
-            (
-              Array.from({ length: 5 }).map((_, i) => <TableRowShimmer key={i} />)
-            ) :(recentData.map((order) => (
-              <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 font-mono text-gray-600">{order.id}</td>
-                <td className="px-6 py-4 text-gray-900 font-medium">{order.customer}</td>
-                <td className="px-6 py-4 text-gray-500">{order.product}</td>
-                <td className="px-6 py-4">
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
-                    ${
-                      order.status === "Completed"
-                        ? "bg-green-50 text-green-700 border-green-200"
-                        : order.status === "Processing"
-                          ? "bg-blue-50 text-blue-700 border-blue-200"
-                          : order.status === "Pending"
-                            ? "bg-yellow-50 text-yellow-700 border-yellow-200"
-                            : "bg-gray-100 text-gray-600 border-gray-200"
-                    }`}
-                  >
-                    {order.status === "Completed" && <div className="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5" />}
-                    {order.status === "Processing" && <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5" />}
-                    {order.status === "Pending" && <div className="w-1.5 h-1.5 rounded-full bg-yellow-500 mr-1.5" />}
-                    {order.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-right font-mono text-gray-900">{order.amount}</td>
+
+      {/* Main Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {loading ? (
+          <>
+            <div className="lg:col-span-2"><ChartShimmer /></div>
+            <div className="lg:col-span-1"><ChartShimmer /></div>
+          </>
+        ) : (
+          <>
+            <div className="lg:col-span-2">
+              <ChartCard title="Sales Velocity (24h)">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={salesData}>
+                    <defs>
+                      <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#2563eb" stopOpacity={0.2} />
+                        <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+                    <XAxis dataKey="time" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} />
+                    <Tooltip contentStyle={{ backgroundColor: "#ffffff", borderRadius: "8px", border: "1px solid #e5e7eb" }} />
+                    <Area type="monotone" dataKey="sales" stroke="#2563eb" strokeWidth={2} fillOpacity={1} fill="url(#colorSales)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </ChartCard>
+            </div>
+
+            <div className="lg:col-span-1">
+              <ChartCard title="Inventory Levels">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={inventoryData} layout="vertical" margin={{ left: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" horizontal={true} vertical={false} />
+                    <XAxis type="number" hide />
+                    <YAxis dataKey="name" type="category" stroke="#6b7280" fontSize={12} tickLine={false} axisLine={false} width={60} />
+                    <Tooltip cursor={{ fill: "#f3f4f6" }} />
+                    <Bar dataKey="value" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={20} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartCard>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Recent Orders Table */}
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+          <h3 className="text-sm font-semibold text-gray-900">Recent Transactions</h3>
+          <div className="flex gap-2">
+            <button className="p-2 hover:bg-gray-100 rounded-md text-gray-400 hover:text-gray-900 transition-colors">
+              <Filter className="w-4 h-4" />
+            </button>
+            <button className="p-2 hover:bg-gray-100 rounded-md text-gray-400 hover:text-gray-900 transition-colors">
+              <Download className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="text-xs text-gray-500 uppercase bg-gray-50/50">
+              <tr>
+                <th className="px-6 py-3 font-medium">Order ID</th>
+                <th className="px-6 py-3 font-medium">Customer</th>
+                <th className="px-6 py-3 font-medium">Product</th>
+                <th className="px-6 py-3 font-medium">Status</th>
+                <th className="px-6 py-3 font-medium text-right">Amount</th>
               </tr>
-            )))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => <TableRowShimmer key={i} />)
+              ) : (
+                currentOrders.map((order) => (
+                  <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 font-mono text-gray-600">{order.id}</td>
+                    <td className="px-6 py-4 text-gray-900 font-medium">{order.customer}</td>
+                    <td className="px-6 py-4 text-gray-500">{order.product}</td>
+                    <td className="px-6 py-4"><StatusBadge status={order.status} /></td>
+                    <td className="px-6 py-4 text-right font-mono text-gray-900">{order.amount}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination Footer */}
+        {!loading && (
+          <div className="px-6 py-4 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
+            <span className="text-xs text-gray-500">
+              Page {currentPage} of {totalPages}
+            </span>
+            <div className="flex gap-2">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(prev => prev - 1)}
+                className="p-2 border rounded bg-white hover:bg-gray-50 disabled:opacity-50 transition-colors"
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(prev => prev + 1)}
+                className="p-2 border rounded bg-white hover:bg-gray-50 disabled:opacity-50 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
-  </div>
-)
+  );
+};
 
 const OffersPage = () => (
   <div className="space-y-6">

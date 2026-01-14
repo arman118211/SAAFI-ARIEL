@@ -250,6 +250,7 @@ const Login = () => {
 				);
 
 				const granted = await requestNotificationPermission();
+				console.log("granted",granted)
 
 				if (granted) {
 					const { registerFcmToken } = await import(

@@ -8,8 +8,10 @@ import {
 	AlertCircle,
 	Filter,
 	Download,
-  User,
-  TicketPercent,
+	User,
+	TicketPercent,
+	Minus,
+	Plus,
 } from "lucide-react";
 import {
 	ResponsiveContainer,
@@ -24,6 +26,23 @@ import {
 } from "recharts";
 import toast from "react-hot-toast";
 import OfferDashboard from "./OfferDashBoard";
+
+const StatusBadge = ({ status }) => {
+  const config = {
+    Completed: "bg-emerald-50 text-emerald-700 border-emerald-100 ring-emerald-500/10",
+    Processing: "bg-sky-50 text-sky-700 border-sky-100 ring-sky-500/10",
+    Pending: "bg-amber-50 text-amber-700 border-amber-100 ring-amber-500/10",
+  };
+
+  const style = config[status] || "bg-gray-50 text-gray-600 border-gray-100 ring-gray-500/10";
+
+  return (
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border ring-1 ${style} tracking-wide uppercase`}>
+      <span className={`w-1 h-1 rounded-full mr-1.5 animate-pulse ${status === 'Completed' ? 'bg-emerald-500' : 'bg-current'}`} />
+      {status}
+    </span>
+  );
+};
 
 const SellerStatShimmer = () => (
 	<div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm relative overflow-hidden">
@@ -67,7 +86,7 @@ const SellerTableRowShimmer = () => (
 	</tr>
 );
 
-const SellerDashboardHome = ({setActiveTab}) => {
+const SellerDashboardHome = ({ setActiveTab }) => {
 	const { seller, token } = useSelector((state) => state.auth);
 	const [orders, setOrders] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -79,7 +98,7 @@ const SellerDashboardHome = ({setActiveTab}) => {
 			);
 			setOrders(response.data);
 		} catch (err) {
-			console.log("Error fetching orders, using mock data", err);
+			// console.log("Error fetching orders, using mock data", err);
 			toast.error("Server error.Please try after sometime.");
 		} finally {
 			setLoading(false);
@@ -117,13 +136,12 @@ const SellerDashboardHome = ({setActiveTab}) => {
 		sales: order.totalAmount,
 		orders: order.totalQty,
 	}));
-	console.log("orders data", orders);
-	
+	// console.log("orders data", orders);
 
 	const INVENTORY_DATA = Array.from(
 		new Set(
-			orders.flatMap(
-				(order) => order.items.map((item) => item.productId).filter(Boolean) 
+			orders.flatMap((order) =>
+				order.items.map((item) => item.productId).filter(Boolean)
 			)
 		)
 	)
@@ -145,14 +163,31 @@ const SellerDashboardHome = ({setActiveTab}) => {
 		amount: `₹${order.totalAmount.toLocaleString()}`,
 	}));
 
+	const [currentPage, setCurrentPage] = useState(1);
+	const itemsPerPage = 5; // You can change this number
+
+	// Calculate pagination
+	const indexOfLastItem = currentPage * itemsPerPage;
+	const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+	const currentOrders = RECENT_ORDERS.slice(indexOfFirstItem, indexOfLastItem);
+	const totalPages = Math.ceil(RECENT_ORDERS.length / itemsPerPage);
+
+	const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
 	// StatCard Component (same as before)
-	const StatCard = ({ title, value, trend, trendUp, icon: Icon, color ,tab}) => (
-		<div className="bg-white border border-gray-100 md:border-gray-200 rounded-xl p-3 md:p-6 shadow-sm hover:shadow-md transition-shadow "
-    onClick={()=>(
-      setActiveTab(tab)
-    )
-      
-    }>
+	const StatCard = ({
+		title,
+		value,
+		trend,
+		trendUp,
+		icon: Icon,
+		color,
+		tab,
+	}) => (
+		<div
+			className="bg-white border border-gray-100 md:border-gray-200 rounded-xl p-3 md:p-6 shadow-sm hover:shadow-md transition-shadow "
+			onClick={() => setActiveTab(tab)}
+		>
 			<div className="flex items-start justify-between gap-2">
 				<div className="min-w-0">
 					{" "}
@@ -166,7 +201,7 @@ const SellerDashboardHome = ({setActiveTab}) => {
 					{trend && (
 						<div
 							className={`mt-1 flex items-center gap-1 text-[10px] md:text-xs font-bold ${
-								trendUp && "text-gray-500" 
+								trendUp && "text-gray-500"
 							}`}
 						>
 							{/* Optional: Add a small arrow icon for trend */}
@@ -220,19 +255,17 @@ const SellerDashboardHome = ({setActiveTab}) => {
 							trendUp={true}
 							icon={DollarSign}
 							color="text-blue-600"
-              tab = "orders"
+							tab="orders"
 						/>
 						<StatCard
 							title="Offers"
 							// value={`${stats.litersSold.toLocaleString()} L`}
 							value={"My offer"}
-
 							trend="check latest offer"
 							trendUp={true}
 							icon={TicketPercent}
 							color="text-blue-500"
-              tab = "offers"
-
+							tab="offers"
 						/>
 						<StatCard
 							title="Winner"
@@ -241,8 +274,7 @@ const SellerDashboardHome = ({setActiveTab}) => {
 							trendUp={true}
 							icon={Package}
 							color="text-indigo-600"
-              tab = "winner"
-
+							tab="winner"
 						/>
 						<StatCard
 							title="Profile"
@@ -252,15 +284,14 @@ const SellerDashboardHome = ({setActiveTab}) => {
 							trendUp={true}
 							icon={User}
 							color="text-indigo-600"
-              tab = "profile"
-
+							tab="profile"
 						/>
 					</>
 				)}
 			</div>
 
 			{/* Main Charts Row */}
-			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+			{/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 				{loading ? (
 					<>
 						<div className="lg:col-span-2">
@@ -390,88 +421,128 @@ const SellerDashboardHome = ({setActiveTab}) => {
 						</div>
 					</>
 				)}
-			</div>
-      <OfferDashboard/>
+			</div> */}
+			<OfferDashboard />
 
-			{/* Recent Orders Table */}
-			<div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-				<div className="p-6 border-b border-gray-100 flex justify-between items-center">
-					<h3 className="text-sm font-semibold text-gray-900">
-						Recent Transactions
-					</h3>
-					<div className="flex gap-2">
-						<button className="p-2 hover:bg-gray-100 rounded-md text-gray-400 hover:text-gray-900 transition-colors">
-							<Filter className="w-4 h-4" />
-						</button>
-						<button className="p-2 hover:bg-gray-100 rounded-md text-gray-400 hover:text-gray-900 transition-colors">
-							<Download className="w-4 h-4" />
-						</button>
-					</div>
-				</div>
-				<div className="overflow-x-auto">
-					<table className="w-full text-sm text-left">
-						<thead className="text-xs text-gray-500 uppercase bg-gray-50/50">
-							<tr>
-								<th className="px-6 py-3 font-medium">Order ID</th>
-								<th className="px-6 py-3 font-medium">Customer</th>
-								<th className="px-6 py-3 font-medium">Product</th>
-								<th className="px-6 py-3 font-medium">Status</th>
-								<th className="px-6 py-3 font-medium text-right">Amount</th>
-							</tr>
-						</thead>
-						<tbody className="divide-y divide-gray-100">
-							{loading
-								? Array.from({ length: 5 }).map((_, i) => (
-										<SellerTableRowShimmer key={i} />
-								  ))
-								: RECENT_ORDERS.map((order) => (
-										<tr
-											key={order.id}
-											className="hover:bg-gray-50 transition-colors"
-										>
-											<td className="px-6 py-4 font-mono text-gray-600">
-												{order.id}
-											</td>
-											<td className="px-6 py-4 text-gray-900 font-medium">
-												{order.customer}
-											</td>
-											<td className="px-6 py-4 text-gray-500">
-												{order.product}
-											</td>
-											<td className="px-6 py-4">
-												<span
-													className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
-                      ${
-												order.status === "Completed"
-													? "bg-green-50 text-green-700 border-green-200"
-													: order.status === "Processing"
-													? "bg-blue-50 text-blue-700 border-blue-200"
-													: order.status === "Pending"
-													? "bg-yellow-50 text-yellow-700 border-yellow-200"
-													: "bg-gray-100 text-gray-600 border-gray-200"
-											}`}
-												>
-													{order.status === "Completed" && (
-														<div className="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5" />
-													)}
-													{order.status === "Processing" && (
-														<div className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5" />
-													)}
-													{order.status === "Pending" && (
-														<div className="w-1.5 h-1.5 rounded-full bg-yellow-500 mr-1.5" />
-													)}
-													{order.status}
-												</span>
-											</td>
-											<td className="px-6 py-4 text-right font-mono text-gray-900">
-												{order.amount}
-											</td>
-										</tr>
-								  ))}
-						</tbody>
-					</table>
-				</div>
-			</div>
+			{/* Recent Orders Table Container */}
+			{/* Professional Recent Transactions Section */}
+<div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+  {/* Header Section */}
+  <div className="px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-50">
+    <div>
+      <h3 className="text-lg font-bold text-gray-900 tracking-tight">Recent Transactions</h3>
+      <p className="text-xs text-gray-500 mt-0.5">Overview of your latest sales activity</p>
+    </div>
+    <div className="flex items-center gap-2">
+      <button className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg transition-all active:scale-95">
+        <Filter size={14} /> Filter
+      </button>
+      <button className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-all active:scale-95">
+        <Download size={14} /> Export
+      </button>
+    </div>
+  </div>
+
+  {/* Table / Mobile View Wrapper */}
+  <div className="relative">
+    {/* Desktop View: Clean & Spacious */}
+    <div className="hidden md:block">
+      <table className="w-full text-left border-collapse">
+        <thead>
+          <tr className="bg-gray-50/50">
+            <th className="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest">Transaction ID</th>
+            <th className="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest">Customer</th>
+            <th className="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest">Product Details</th>
+            <th className="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest text-center">Status</th>
+            <th className="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest text-right">Amount</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-50">
+          {!loading && currentOrders.map((order) => (
+            <tr key={order.id} className="group hover:bg-blue-50/30 transition-colors">
+              <td className="px-6 py-4 text-sm font-medium text-gray-500 font-mono">#{order.id}</td>
+              <td className="px-6 py-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-gray-100 to-gray-200 flex items-center justify-center text-[10px] font-bold text-gray-600 border border-white shadow-sm">
+                    {order.customer.split(' ').map(n => n[0]).join('')}
+                  </div>
+                  <span className="text-sm font-semibold text-gray-800">{order.customer}</span>
+                </div>
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-600">{order.product}</td>
+              <td className="px-6 py-4 text-center">
+                <StatusBadge status={order.status} />
+              </td>
+              <td className="px-6 py-4 text-right">
+                <span className="text-sm font-bold text-gray-900">{order.amount}</span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    {/* Mobile View: Modern Cards */}
+    <div className="md:hidden divide-y divide-gray-50">
+      {!loading && currentOrders.map((order) => (
+        <div key={order.id} className="p-5 hover:bg-gray-50 active:bg-gray-100 transition-colors">
+          <div className="flex justify-between items-start mb-2">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-[9px] font-bold text-blue-700">
+                {order.customer.split(' ').map(n => n[0]).join('')}
+              </div>
+              <span className="font-bold text-gray-900 text-sm">{order.customer}</span>
+            </div>
+            <span className="text-sm font-bold text-gray-900">{order.amount}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-xs text-gray-400 font-mono">ID: {order.id}</span>
+            <StatusBadge status={order.status} />
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  {/* Professional Pagination Section */}
+  <div className="px-6 py-4 bg-white border-t border-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <p className="text-xs font-medium text-gray-400">
+      Displaying <span className="text-gray-900">{indexOfFirstItem + 1}-{Math.min(indexOfLastItem, RECENT_ORDERS.length)}</span> of <span className="text-gray-900">{RECENT_ORDERS.length}</span>
+    </p>
+    
+    <nav className="flex items-center gap-1 bg-gray-100/50 p-1 rounded-xl">
+      <button
+        onClick={() => paginate(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="p-2 text-gray-500 hover:text-blue-600 disabled:opacity-30 disabled:hover:text-gray-500 transition-all"
+      >
+        <Minus size={16} strokeWidth={2.5} />
+      </button>
+      
+      {Array.from({ length: totalPages }).map((_, i) => (
+        <button
+          key={i}
+          onClick={() => paginate(i + 1)}
+          className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+            currentPage === i + 1 
+            ? "bg-white text-blue-600 shadow-sm scale-110" 
+            : "text-gray-400 hover:text-gray-600"
+          }`}
+        >
+          {i + 1}
+        </button>
+      ))}
+
+      <button
+        onClick={() => paginate(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="p-2 text-gray-500 hover:text-blue-600 disabled:opacity-30 disabled:hover:text-gray-500 transition-all"
+      >
+        <Plus size={16} strokeWidth={2.5} />
+      </button>
+    </nav>
+  </div>
+</div>
 		</div>
 	);
 };

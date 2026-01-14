@@ -288,7 +288,7 @@ export default function DealerManagement() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10"
+          className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10"
         >
           <div className="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-xl p-6">
             <p className="text-gray-600 text-sm font-semibold mb-2">TOTAL DEALERS</p>

@@ -37,7 +37,6 @@ export default function OfferDetails({ offer, onAddToCart }) {
 		setQuantities(initialQuantities);
 	}, [offer.products]);
 
-
 	useEffect(() => {
 		const calculateTimeLeft = () => {
 			const difference = new Date(offer.endDate) - new Date();
@@ -311,12 +310,12 @@ export default function OfferDetails({ offer, onAddToCart }) {
 							>
 								<div className="flex flex-col sm:flex-row">
 									<div className="w-full h-64 sm:w-48 sm:h-auto bg-gray-100 relative shrink-0 overflow-hidden rounded-xl">
-    <img
-        src={item.productId.imageUrl || "/placeholder.svg"}
-        alt={item.productId.name}
-        className="w-full h-full object-contain" 
-    />
-</div>
+										<img
+											src={item.productId.imageUrl || "/placeholder.svg"}
+											alt={item.productId.name}
+											className="w-full h-full object-contain"
+										/>
+									</div>
 									<div className="p-6 flex-1 flex flex-col justify-between">
 										<div>
 											<div className="flex justify-between items-start mb-2">
@@ -354,7 +353,8 @@ export default function OfferDetails({ offer, onAddToCart }) {
 											</p>
 										</div>
 
-										<div className="flex items-center justify-between pt-4 border-t border-gray-50">
+										<div className="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t border-gray-50 gap-4">
+											{/* Status & Min Qty Group */}
 											<div className="flex items-center gap-4 text-sm">
 												<div className="flex items-center gap-1.5 text-green-600 font-medium">
 													<Check size={16} />
@@ -362,53 +362,60 @@ export default function OfferDetails({ offer, onAddToCart }) {
 												</div>
 												<div className="flex items-center gap-1.5 text-gray-600">
 													<Package size={16} />
-													Minimum: {item.minQty}
+													Min: {item.minQty}
 												</div>
 											</div>
 
-											{/* Quantity Selector */}
-											<div className="flex items-center gap-3">
-												<span className="text-sm text-gray-600 font-medium">
-													Quantity:
-												</span>
-												<div className="flex items-center border border-gray-300 rounded-lg">
-													<button
-														onClick={() => decreaseQuantity(item.productId._id)}
-														disabled={
-															quantities[item.productId._id] <= item.minQty
-														}
-														className="p-2 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-													>
-														<Minus size={16} />
-													</button>
-													<input
-														type="number"
-														value={
-															quantities[item.productId._id] || item.minQty
-														}
-														onChange={(e) =>
-															handleQuantityChange(
-																item.productId._id,
-																e.target.value
-															)
-														}
-														min={item.minQty}
-														max={item.productId.stock}
-														className="w-16 text-center border-0 bg-transparent py-2 focus:outline-none focus:ring-0"
-													/>
-													<button
-														onClick={() => increaseQuantity(item.productId._id)}
-														disabled={
-															quantities[item.productId._id] >=
-															item.productId.stock
-														}
-														className="p-2 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-													>
-														<Plus size={16} />
-													</button>
+											{/* Quantity Selector Group */}
+											<div className="flex items-center justify-between sm:justify-end gap-3">
+												<div className="flex items-center gap-3">
+													<span className="text-sm text-gray-600 font-medium">
+														Quantity:
+													</span>
+													<div className="flex items-center border border-gray-300 rounded-lg">
+														<button
+															onClick={() =>
+																decreaseQuantity(item.productId._id)
+															}
+															disabled={
+																quantities[item.productId._id] <= item.minQty
+															}
+															className="p-2 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+														>
+															<Minus size={16} />
+														</button>
+														<input
+															type="number"
+															value={
+																quantities[item.productId._id] || item.minQty
+															}
+															onChange={(e) =>
+																handleQuantityChange(
+																	item.productId._id,
+																	e.target.value
+																)
+															}
+															min={item.minQty}
+															max={item.productId.stock}
+															className="w-12 sm:w-16 text-center border-0 bg-transparent py-2 focus:outline-none focus:ring-0 text-sm"
+														/>
+														<button
+															onClick={() =>
+																increaseQuantity(item.productId._id)
+															}
+															disabled={
+																quantities[item.productId._id] >=
+																item.productId.stock
+															}
+															className="p-2 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+														>
+															<Plus size={16} />
+														</button>
+													</div>
 												</div>
-												<div className="text-sm text-gray-500">
-													{/* ${((item.productId.price * (quantities[item.productId._id] || item.minQty)).toFixed(2))} */}
+
+												{/* Price - Moves to the far right on mobile too */}
+												<div className="text-sm font-semibold text-gray-900">
 													₹
 													{getItemTotalPrice(
 														item,

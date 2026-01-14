@@ -108,6 +108,17 @@ export default function MobileNavbar() {
 		);
 	};
 
+	const handleAuthNavigation = (path, pageKey) => {
+	if (seller?.role === "admin") {
+		localStorage.setItem("adminCurrentPage", pageKey);
+	} else {
+		localStorage.setItem("sellerCurrentPage", pageKey);
+	}
+
+	setIsMenuOpen(false);
+	navigate(path);
+};
+
 	const menuItems = [
 		{ path: "/how-to-wash", label: "Washing Guide", icon: Droplets },
 		{ path: "/about", label: "Our Journey", icon: Info },
@@ -116,6 +127,27 @@ export default function MobileNavbar() {
 	];
 
 	if (["/login"].includes(location.pathname)) return null;
+
+	const authMenuItems = seller
+	? [
+			{
+				label: "Dashboard",
+				path: "/dashboard",
+				icon: LayoutDashboard,
+			},
+			// {
+			// 	label: "My Orders",
+			// 	path: "/orders",
+			// 	icon: ShoppingBag,
+			// },
+			// {
+			// 	label: "Profile",
+			// 	path: "/profile",
+			// 	icon: User,
+			// },
+	  ]
+	: [];
+
 
 	return (
 		<>
@@ -177,13 +209,13 @@ export default function MobileNavbar() {
 									exit={{ opacity: 0, y: 10 }}
 									className="absolute right-0 mt-3 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 z-[100]"
 								>
-									<Link
+									{/* <Link
 										to="/profile"
 										className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-t-2xl"
 									>
 										<User size={16} />
 										<span className="font-medium">Profile</span>
-									</Link>
+									</Link> */}
 
 									<Link
 										to="/dashboard"
@@ -351,36 +383,108 @@ export default function MobileNavbar() {
 						</div>
 
 						<div className="flex-1 px-4 py-6 space-y-2">
-							{menuItems.map((item, i) => (
-								<motion.div
-									initial={{ opacity: 0, x: 20 }}
-									animate={{ opacity: 1, x: 0 }}
-									transition={{ delay: i * 0.05 }}
-									key={item.path}
-								>
-									<Link
-										to={item.path}
-										className={`flex items-center justify-between p-4 rounded-2xl ${
-											isActive(item.path)
-												? "bg-blue-600 text-white shadow-lg shadow-blue-100"
-												: "text-gray-700 hover:bg-gray-50"
-										}`}
-									>
-										<div className="flex items-center gap-4">
-											<div
-												className={`p-2 rounded-xl ${
-													isActive(item.path) ? "bg-white/20" : "bg-gray-100"
-												}`}
-											>
-												<item.icon size={20} />
-											</div>
-											<span className="font-bold text-lg">{item.label}</span>
-										</div>
-										<ChevronRight size={18} className="opacity-50" />
-									</Link>
-								</motion.div>
-							))}
+	{/* AUTH MENU (Only when logged in) */}
+	{seller &&
+		authMenuItems.map((item, i) => (
+			<motion.div
+				key={item.path}
+				initial={{ opacity: 0, x: 20 }}
+				animate={{ opacity: 1, x: 0 }}
+				transition={{ delay: i * 0.05 }}
+			>
+				<Link
+					to={item.path}
+					className={`flex items-center justify-between p-4 rounded-2xl ${
+						isActive(item.path)
+							? "bg-blue-600 text-white shadow-lg shadow-blue-100"
+							: "text-gray-700 hover:bg-gray-50"
+					}`}
+					onClick={() => setIsMenuOpen(false)}
+				>
+					<div className="flex items-center gap-4">
+						<div
+							className={`p-2 rounded-xl ${
+								isActive(item.path) ? "bg-white/20" : "bg-gray-100"
+							}`}
+						>
+							<item.icon size={20} />
 						</div>
+						<span className="font-bold text-lg">{item.label}</span>
+					</div>
+					<ChevronRight size={18} className="opacity-50" />
+				</Link>
+			</motion.div>
+		))}
+
+	{/* PUBLIC MENU (Always visible) */}
+	{menuItems.map((item, i) => (
+		<motion.div
+			key={item.path}
+			initial={{ opacity: 0, x: 20 }}
+			animate={{ opacity: 1, x: 0 }}
+			transition={{ delay: (authMenuItems.length + i) * 0.05 }}
+		>
+			<Link
+				to={item.path}
+				className={`flex items-center justify-between p-4 rounded-2xl ${
+					isActive(item.path)
+						? "bg-blue-600 text-white shadow-lg shadow-blue-100"
+						: "text-gray-700 hover:bg-gray-50"
+				}`}
+				onClick={() => setIsMenuOpen(false)}
+			>
+				<div className="flex items-center gap-4">
+					<div
+						className={`p-2 rounded-xl ${
+							isActive(item.path) ? "bg-white/20" : "bg-gray-100"
+						}`}
+					>
+						<item.icon size={20} />
+					</div>
+					<span className="font-bold text-lg">{item.label}</span>
+				</div>
+				<ChevronRight size={18} className="opacity-50" />
+			</Link>
+		</motion.div>
+	))}
+
+	{/* LOGIN CTA (Only when NOT logged in) */}
+	{!seller && (
+		<motion.div
+			initial={{ opacity: 0, y: 20 }}
+			animate={{ opacity: 1, y: 0 }}
+			className="mt-6"
+		>
+			<button
+				onClick={() => {
+					setIsMenuOpen(false);
+					navigate("/login");
+				}}
+				className="w-full flex items-center justify-center gap-3 bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg shadow-blue-200"
+			>
+				<User size={20} />
+				Login
+			</button>
+		</motion.div>
+	)}
+
+	{/* LOGOUT (Only when logged in) */}
+	{seller && (
+		<motion.button
+			onClick={() => {
+				dispatch(logout());
+				toast.success("Logged out");
+				setIsMenuOpen(false);
+				navigate("/");
+			}}
+			className="mt-6 w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-bold text-red-600 hover:bg-red-50"
+		>
+			<LogOut size={20} />
+			Logout
+		</motion.button>
+	)}
+</div>
+
 
 						<div className="p-10 text-center border-t border-gray-50">
 							<p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.3em]">

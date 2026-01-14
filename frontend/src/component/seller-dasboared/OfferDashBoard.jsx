@@ -89,7 +89,7 @@ const OfferDashboard = () => {
     if (loading) return <div className="p-10 text-center animate-pulse text-slate-400 font-medium">Loading Exclusive Offers...</div>;
 
     return (
-        <div className="w-full  mx-auto p-4 md:p-8 space-y-12">
+        <div className="w-full mx-auto  md:p-8 space-y-12">
             
             {/* --- ACTIVE OFFERS SECTION --- */}
             {offers.length > 0 && (
