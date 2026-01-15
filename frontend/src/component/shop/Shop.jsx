@@ -168,25 +168,7 @@ export default function ShopPage() {
 					</AnimatePresence>
 				</div>
 
-				{/* Footer Section */}
-				<div className="bg-gradient-to-r from-blue-600 to-teal-600 rounded-3xl p-12 text-white text-center mb-12 overflow-hidden">
-					<h3 className="text-3xl font-bold mb-4">
-						Subscribe to Our Newsletter
-					</h3>
-					<p className="text-lg mb-6 opacity-90">
-						Get exclusive deals and cleaning tips delivered to your inbox
-					</p>
-					<div className="flex gap-3 max-w-md mx-auto">
-						<input
-							type="email"
-							placeholder="Enter your email"
-							className="flex-1 px-4 py-3 rounded-lg focus:outline-none text-gray-900 font-semibold"
-						/>
-						<button className="px-8 py-3 bg-white text-blue-600 rounded-lg font-bold hover:bg-gray-100 transition-all">
-							Subscribe
-						</button>
-					</div>
-				</div>
+				
 			</div>
 		</div>
 	);

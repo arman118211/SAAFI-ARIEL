@@ -1,306 +1,369 @@
-import React, { useState } from 'react';
-import { User, Mail, Phone, Building2, MapPin, Lock, Edit2, Save, X, Check } from 'lucide-react';
+import React, { useState } from "react";
+import {
+	User,
+	Mail,
+	Phone,
+	Building2,
+	MapPin,
+	Lock,
+	Edit2,
+	Save,
+	X,
+	Check,
+	ShieldCheck,
+	Key,
+} from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateSellerProfile } from "../redux/slices/authSlice";
-import ScrollToTop from './ScrollToTop';
+import ScrollToTop from "./ScrollToTop";
+import toast from "react-hot-toast";
 
 export default function SellerProfile() {
-  const [isEditing, setIsEditing] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const seller = useSelector((state) => state.auth.seller);
-  const dispatch = useDispatch();
-  console.log("seller",seller)
+	const [activeTab, setActiveTab] = useState("profile"); // 'profile' or 'security'
+	const [isEditing, setIsEditing] = useState(false);
+	const [showSuccess, setShowSuccess] = useState(false);
+	const seller = useSelector((state) => state.auth.seller);
+	const dispatch = useDispatch();
 
-  if (!seller) return <p>Not logged in</p>;
+  const { loading } = useSelector((state) => state.auth);
 
-  const [formData, setFormData] = useState({
-    name: seller.name,
-    email: seller.email,
-    phone: seller.phone,
-    companyName: seller.companyName,
-    address: seller.address,
-    role: seller.role,
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
 
-  const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+	const [formData, setFormData] = useState({
+		name: seller?.name || "",
+		email: seller?.email || "",
+		phone: seller?.phone || "",
+		companyName: seller?.companyName || "",
+		address: seller?.address || "",
+		currentPassword: "",
+		newPassword: "",
+		confirmPassword: "",
+	});
 
-  const handleSave = () => {
-    try{
-        console.log('Saving profile:', {
-        name: formData.name,
-        address: formData.address,
-        ...(formData.newPassword && { password: formData.newPassword })
-        });
-        console.log("formData",formData)
-        dispatch(
-            updateSellerProfile({
-            nmae:formData.name,
-            address:formData.address,
-            currentPassword: formData.currentPassword,
-            newPassword:formData.newPassword,
-            id:seller._id
-            })
-        );
-        
-        setIsEditing(false);
-        setShowSuccess(true);
-        setFormData({ ...formData, currentPassword: '', newPassword: '', confirmPassword: '' });
-        setTimeout(() => setShowSuccess(false), 3000);
+	if (!seller)
+		return (
+			<div className="min-h-screen flex items-center justify-center text-gray-400 font-medium">
+				Loading profile...
+			</div>
+		);
 
-    }catch(err){
-        console.log("something went wrong",err)
-    }
-    
-    
-  };
+	const handleInputChange = (e) => {
+		setFormData({ ...formData, [e.target.name]: e.target.value });
+	};
 
-  const handleCancel = () => {
-    setIsEditing(false);
-    setFormData({ ...formData, currentPassword: '', newPassword: '', confirmPassword: '' });
-  };
+	// const handleSave = () => {
+	//   dispatch(updateSellerProfile({
+	//     name: formData.name,
+	//     address: formData.address,
+	//     currentPassword: formData.currentPassword,
+	//     newPassword: formData.newPassword,
+	//     id: seller._id
+	//   }));
+	//   setIsEditing(false);
+	//   setShowSuccess(true);
+	//   // Reset password fields
+	//   setFormData(prev => ({ ...prev, currentPassword: '', newPassword: '', confirmPassword: '' }));
+	//   setTimeout(() => setShowSuccess(false), 3000);
+	// };
+	const handleSave = async () => {
+		// 🔐 Password validation
+		if (activeTab === "security") {
+			if (!formData.currentPassword) {
+				toast.error("Current password is required");
+				return;
+			}
 
-  return (
-    <div className="min-h-screen md:p-3 ">
-      <ScrollToTop/>
-      {/* Success Notification */}
-      {showSuccess && (
-        <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50 animate-pulse">
-          <Check size={20} />
-          Profile updated successfully!
-        </div>
-      )}
+			if (formData.newPassword.length < 4) {
+				toast.error("Password must be at least 4 characters");
+				return;
+			}
 
-      <div className=" mx-auto">
-        {/* Header */}
-        <div className=" mb-8 px-5 mt-2">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">My Profile</h1>
-          <p className="text-gray-600">Manage your account settings and preferences</p>
-        </div>
+			if (formData.newPassword !== formData.confirmPassword) {
+				toast.error("Passwords do not match");
+				return;
+			}
+		}
 
-        {/* Profile Card */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          {/* Banner */}
-          <div className="h-32 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
-          
-          {/* Avatar Section */}
-          <div className="relative px-6 pb-6">
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between -mt-16 mb-6">
-              <div className="flex items-end gap-4">
-                <div className="w-32 h-32 bg-white rounded-full shadow-lg flex items-center justify-center border-4 border-white">
-                  <User size={64} className="text-indigo-500" />
-                </div>
-                <div className="mb-4">
-                  <h2 className="text-2xl font-bold text-gray-800">{formData.name}</h2>
-                  <p className="text-gray-600 capitalize">{formData.role}</p>
-                </div>
-              </div>
-              
-              {!isEditing && (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="mt-4 md:mt-0 bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors shadow-md"
-                >
-                  <Edit2 size={18} />
-                  Edit Profile
-                </button>
-              )}
-            </div>
+		try {
+			await dispatch(
+				updateSellerProfile({
+					name: formData.name,
+					address: formData.address,
+					currentPassword: formData.currentPassword,
+					newPassword: formData.newPassword,
+					id: seller._id,
+				})
+			).unwrap(); // 🔥 IMPORTANT
 
-            {/* Form */}
-            <div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Name - Editable */}
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                    <User size={18} className="text-indigo-500" />
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    disabled={!isEditing}
-                    className={`w-full px-4 py-3 rounded-lg border ${
-                      isEditing 
-                        ? 'border-indigo-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200' 
-                        : 'border-gray-200 bg-gray-50'
-                    } transition-all outline-none`}
-                  />
-                </div>
+			setIsEditing(false);
+			setShowSuccess(true);
 
-                {/* Email - Read Only */}
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                    <Mail size={18} className="text-indigo-500" />
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    disabled
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-600"
-                  />
-                </div>
+			setFormData((prev) => ({
+				...prev,
+				currentPassword: "",
+				newPassword: "",
+				confirmPassword: "",
+			}));
 
-                {/* Phone - Read Only */}
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                    <Phone size={18} className="text-indigo-500" />
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    disabled
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-600"
-                  />
-                </div>
+			setTimeout(() => setShowSuccess(false), 3000);
+		} catch (err) {
+			toast.error(err || "Update failed");
+		}
+	};
 
-                {/* Company - Read Only */}
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                    <Building2 size={18} className="text-indigo-500" />
-                    Company Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.companyName}
-                    disabled
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-600"
-                  />
-                </div>
+	return (
+		<div className="min-h-screen bg-[#F9FAFB] py-7 px-4 sm:px-6">
+			<ScrollToTop />
 
-                {/* Address - Editable */}
-                <div className="space-y-2 md:col-span-2">
-                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                    <MapPin size={18} className="text-indigo-500" />
-                    Address
-                  </label>
-                  <textarea
-                    name="address"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    disabled={!isEditing}
-                    rows={2}
-                    className={`w-full px-4 py-3 rounded-lg border ${
-                      isEditing 
-                        ? 'border-indigo-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200' 
-                        : 'border-gray-200 bg-gray-50'
-                    } transition-all outline-none resize-none`}
-                  />
-                </div>
+			{/* Success Notification */}
+			{showSuccess && (
+				<div className="fixed top-8 right-8 z-50 flex items-center gap-3 bg-white border border-green-100 shadow-xl px-6 py-4 rounded-2xl animate-in slide-in-from-right-10 border-l-4 border-l-green-500">
+					<div className="bg-green-100 p-1.5 rounded-full">
+						<Check size={18} className="text-green-600" />
+					</div>
+					<span className="text-gray-800 font-semibold text-sm">
+						Settings updated successfully
+					</span>
+				</div>
+			)}
 
-                {/* Password Section - Only visible when editing */}
-                {isEditing && (
-                  <>
-                    <div className="md:col-span-2 pt-4 border-t border-gray-200">
-                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Change Password (Optional)</h3>
-                    </div>
+			<div className=" mx-auto">
+				{/* Header */}
+				<div className="mb-8">
+					<h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+						Account Settings
+					</h1>
+					<p className="text-sm text-gray-500 mt-1">
+						Manage your business profile and security preferences
+					</p>
+				</div>
 
-                    <div className="space-y-2">
-                      <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                        <Lock size={18} className="text-indigo-500" />
-                        Current Password
-                      </label>
-                      <input
-                        type="password"
-                        name="currentPassword"
-                        value={formData.currentPassword}
-                        onChange={handleInputChange}
-                        placeholder="Enter current password"
-                        className="w-full px-4 py-3 rounded-lg border border-indigo-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none"
-                      />
-                    </div>
+				{/* Tab Navigation */}
+				<div className="flex gap-1 mb-6 bg-gray-200/50 p-1 rounded-2xl w-fit">
+					<button
+						onClick={() => {
+							setActiveTab("profile");
+							setIsEditing(false);
+						}}
+						className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
+							activeTab === "profile"
+								? "bg-white text-gray-900 shadow-sm"
+								: "text-gray-500 hover:text-gray-700"
+						}`}
+					>
+						<User size={16} /> Profile
+					</button>
+					<button
+						onClick={() => {
+							setActiveTab("security");
+							setIsEditing(false);
+						}}
+						className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
+							activeTab === "security"
+								? "bg-white text-gray-900 shadow-sm"
+								: "text-gray-500 hover:text-gray-700"
+						}`}
+					>
+						<Lock size={16} /> Security
+					</button>
+				</div>
 
-                    <div className="space-y-2">
-                      <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                        <Lock size={18} className="text-indigo-500" />
-                        New Password
-                      </label>
-                      <input
-                        type="password"
-                        name="newPassword"
-                        value={formData.newPassword}
-                        onChange={handleInputChange}
-                        placeholder="Enter new password"
-                        className="w-full px-4 py-3 rounded-lg border border-indigo-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none"
-                      />
-                    </div>
+				{/* Main Content Card */}
+				<div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden min-h-[500px]">
+					<div className="p-8 md:p-12">
+						{/* Header within Card */}
+						<div className="flex justify-between items-center mb-10 pb-6 border-b border-gray-50">
+							<h2 className="text-lg font-bold text-gray-900">
+								{activeTab === "profile"
+									? "Profile Information"
+									: "Password & Security"}
+							</h2>
+							{!isEditing && (
+								<button
+									onClick={() => setIsEditing(true)}
+									className="px-4 py-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 text-xs font-bold rounded-xl transition-all flex items-center gap-2"
+								>
+									<Edit2 size={14} /> Edit Details
+								</button>
+							)}
+						</div>
 
-                    <div className="space-y-2 md:col-span-2">
-                      <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                        <Lock size={18} className="text-indigo-500" />
-                        Confirm New Password
-                      </label>
-                      <input
-                        type="password"
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={handleInputChange}
-                        placeholder="Confirm new password"
-                        className="w-full px-4 py-3 rounded-lg border border-indigo-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none"
-                      />
-                    </div>
-                  </>
-                )}
-              </div>
+						{/* TAB 1: PROFILE INFORMATION */}
+						{activeTab === "profile" && (
+							<div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+								<div className="flex flex-col md:flex-row gap-12">
+									<div className="flex flex-col items-center w-full md:w-1/4">
+										<div className="w-28 h-28 bg-indigo-50 rounded-full flex items-center justify-center border-4 border-white shadow-sm mb-4">
+											<span className="text-3xl font-bold text-indigo-600 uppercase">
+												{formData.name.charAt(0)}
+											</span>
+										</div>
+										<div className="text-center">
+											<p className="font-bold text-gray-900 text-sm">
+												{formData.companyName}
+											</p>
+											<div className="flex flex-col">
+												<span className="text-xl text-black-700 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider mt-2 inline-block">
+													{formData.name}
+												</span>
 
-              {/* Action Buttons */}
-              {isEditing && (
-                <div className="flex gap-4 mt-8 pt-6 border-t border-gray-200">
-                  <button
-                    onClick={handleSave}
-                    className="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-md font-semibold"
-                  >
-                    <Save size={20} />
-                    Save Changes
-                  </button>
-                  <button
-                    onClick={handleCancel}
-                    className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg flex items-center justify-center gap-2 transition-colors font-semibold"
-                  >
-                    <X size={20} />
-                    Cancel
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+												<span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider mt-2 inline-block">
+													Verified
+												</span>
+											</div>
+										</div>
+									</div>
 
-        {/* Info Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-          <div className="bg-white rounded-xl shadow-md p-6 text-center">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Mail size={24} className="text-blue-500" />
-            </div>
-            <h3 className="font-semibold text-gray-800 mb-1">Verified Email</h3>
-            <p className="text-sm text-gray-600">Your email is verified</p>
-          </div>
-          
-          <div className="bg-white rounded-xl shadow-md p-6 text-center">
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Lock size={24} className="text-green-500" />
-            </div>
-            <h3 className="font-semibold text-gray-800 mb-1">Secure Account</h3>
-            <p className="text-sm text-gray-600">Password protected</p>
-          </div>
-          
-          <div className="bg-white rounded-xl shadow-md p-6 text-center">
-            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <User size={24} className="text-purple-500" />
-            </div>
-            <h3 className="font-semibold text-gray-800 mb-1">Active Seller</h3>
-            <p className="text-sm text-gray-600">Account in good standing</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+									<div className="flex-1 space-y-6">
+										<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+											<ProfileField
+												label="Full Name"
+												name="name"
+												value={formData.name}
+												isEditing={isEditing}
+												onChange={handleInputChange}
+											/>
+											<ProfileField
+												label="Email Address"
+												value={formData.email}
+												disabled={true}
+											/>
+											<ProfileField
+												label="Phone Number"
+												value={formData.phone}
+												disabled={true}
+											/>
+											<ProfileField
+												label="Company Name"
+												value={formData.companyName}
+												disabled={true}
+											/>
+										</div>
+										<div className="space-y-1">
+											<label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">
+												Business Address
+											</label>
+											<textarea
+												name="address"
+												value={formData.address}
+												onChange={handleInputChange}
+												disabled={!isEditing}
+												rows={3}
+												className={`w-full px-4 py-3 rounded-xl border transition-all resize-none text-sm font-medium outline-none ${
+													isEditing
+														? "border-indigo-500 ring-4 ring-indigo-50"
+														: "border-gray-50 bg-gray-50 text-gray-600"
+												}`}
+											/>
+										</div>
+									</div>
+								</div>
+							</div>
+						)}
+
+						{/* TAB 2: CHANGE PASSWORD */}
+						{activeTab === "security" && (
+							<div className=" mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300 pt-4">
+								<div className="flex items-center gap-4 mb-8 p-4 bg-gray-50 rounded-2xl">
+									<div className="p-3 bg-white rounded-xl shadow-sm text-indigo-600">
+										<Key size={20} />
+									</div>
+									<div>
+										<p className="text-sm font-bold text-gray-900">
+											Security Requirement
+										</p>
+										<p className="text-xs text-gray-500">
+											Ensure your new password is at least 8 characters long.
+										</p>
+									</div>
+								</div>
+
+								<div className="space-y-6">
+									<ProfileField
+										label="Current Password"
+										type="password"
+										name="currentPassword"
+										value={formData.currentPassword}
+										isEditing={isEditing}
+										onChange={handleInputChange}
+										placeholder="••••••••"
+									/>
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+										<ProfileField
+											label="New Password"
+											type="password"
+											name="newPassword"
+											value={formData.newPassword}
+											isEditing={isEditing}
+											onChange={handleInputChange}
+											placeholder="New password"
+										/>
+										<ProfileField
+											label="Confirm Password"
+											type="password"
+											name="confirmPassword"
+											value={formData.confirmPassword}
+											isEditing={isEditing}
+											onChange={handleInputChange}
+											placeholder="Repeat password"
+										/>
+									</div>
+								</div>
+							</div>
+						)}
+
+						{/* Action Footer */}
+						{isEditing && (
+							<div className="mt-12 pt-8 border-t border-gray-50 flex justify-end gap-3 animate-in fade-in">
+								<button
+									onClick={() => setIsEditing(false)}
+									className="px-6 py-2.5 text-sm font-bold text-gray-400 hover:text-gray-600 transition-colors"
+								>
+									Discard
+								</button>
+								<button
+									onClick={handleSave}
+                  disabled={loading}
+									className="px-8 py-2.5 bg-gray-900 text-white text-sm font-bold rounded-xl hover:bg-black transition-all shadow-lg active:scale-95 flex items-center gap-2"
+								>
+									<Save size={16} /> Save Changes
+								</button>
+							</div>
+						)}
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+function ProfileField({
+	label,
+	value,
+	isEditing,
+	disabled,
+	name,
+	onChange,
+	type = "text",
+	placeholder,
+}) {
+	return (
+		<div className="space-y-1">
+			<label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">
+				{label}
+			</label>
+			<input
+				type={type}
+				name={name}
+				value={value}
+				onChange={onChange}
+				placeholder={placeholder}
+				disabled={disabled || !isEditing}
+				className={`w-full px-4 py-3 rounded-xl border text-sm font-semibold transition-all outline-none ${
+					isEditing && !disabled
+						? "border-indigo-500 ring-4 ring-indigo-50 text-gray-900 shadow-sm bg-white"
+						: "border-gray-50 bg-gray-50 text-gray-500"
+				}`}
+			/>
+		</div>
+	);
 }

@@ -4,6 +4,7 @@
   import OfferDetails from './OfferDetails'
   import { ArrowLeft } from 'lucide-react'
   import axios from 'axios'
+import ScrollToTop from '../ScrollToTop'
 
 
 
@@ -145,6 +146,7 @@
 
 
     return <div>
+      <ScrollToTop/>
       <OfferDetails offer={offer} />
 
     </div> 

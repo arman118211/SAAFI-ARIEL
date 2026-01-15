@@ -7,12 +7,14 @@ import ExclusiveOffer from './ExclusiveOffer'
 import SaafiGram from './SaafiGram'
 import HappyCustomer from './HappyCustomer'
 import OneStepNation from './OneStepNation'
+import ProfessionalOffers from './OffersSection'
 
 function Home() {
   return (
     <div>
       <HeroSection/>
       <SaafiProductSection/>
+      <ProfessionalOffers/>
       <BannerSection />
       <FeaturedProducts />
       <ExclusiveOffer />

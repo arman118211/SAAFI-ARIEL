@@ -39,6 +39,15 @@ const ProductManager = () => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [expandedDesc, setExpandedDesc] = useState({});
 
+	const CATEGORY_OPTIONS = [
+		"Detergent",
+		"Dishwashing",
+		"Surface Cleaner",
+		"Soap",
+		"Handwash",
+		"Other",
+	];
+
 	const getProductData = async () => {
 		try {
 			setIsLoading(true);
@@ -788,14 +797,25 @@ const ProductManager = () => {
 													<label className="block text-sm font-bold text-gray-700 mb-2">
 														Category
 													</label>
-													<input
-														type="text"
+													<select
 														name="category"
 														value={formData.category}
 														onChange={handleInputChange}
-														className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none text-gray-900 placeholder-gray-400 transition-all"
-														placeholder="e.g., Electronics"
-													/>
+														required
+														className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl
+  focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none
+  text-gray-900 transition-all"
+													>
+														<option value="" disabled>
+															Select Category
+														</option>
+
+														{CATEGORY_OPTIONS.map((cat) => (
+															<option key={cat} value={cat}>
+																{cat}
+															</option>
+														))}
+													</select>
 												</div>
 
 												<div>

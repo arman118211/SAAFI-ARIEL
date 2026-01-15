@@ -53,7 +53,7 @@ export const updateSellerProfile = createAsyncThunk(
       return res.data; // { message, seller }
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Profile update failed"
+        error.response?.data?.message || error.message || "Profile update failed"
       );
     }
   }

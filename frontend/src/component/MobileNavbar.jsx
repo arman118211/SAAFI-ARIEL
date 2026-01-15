@@ -16,6 +16,7 @@ import {
 	Home,
 	Search,
 	History as HistoryIcon,
+	UserCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -345,9 +346,9 @@ export default function MobileNavbar() {
 						badge={cartCount}
 					/>
 					<TabItem
-						to="/new-offer"
-						icon={<Sparkles size={22} />}
-						active={isActive("/new-offer")}
+						to="/dashboard"
+						icon={<UserCircle size={22} />}
+						active={isActive("/dashboard")}
 					/>
 				</div>
 			</div>
