@@ -25,6 +25,50 @@ const TimerUnit = ({ value, label }) => (
 	</div>
 );
 
+const OfferSkeleton = () => {
+	return (
+		<div className="relative bg-white border border-slate-200 rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-sm">
+			{/* Progress bar */}
+			<div className="h-1.5 w-full shimmer" />
+
+			<div className="flex flex-col lg:flex-row">
+				{/* Left Panel */}
+				<div className="lg:w-[35%] p-8 md:p-12 bg-slate-300 shimmer">
+					<div className="w-12 h-12 rounded-xl bg-slate-400 mb-6 shimmer" />
+					<div className="h-20 w-24 rounded-lg bg-slate-400 mb-3 shimmer" />
+					<div className="h-4 w-32 rounded bg-slate-400 shimmer" />
+				</div>
+
+				{/* Right Panel */}
+				<div className="lg:w-[65%] p-6 md:p-12 space-y-6">
+					<div className="h-6 w-40 rounded-full shimmer" />
+
+					<div className="h-10 w-3/4 rounded-xl shimmer" />
+
+					<div className="space-y-3">
+						<div className="h-4 w-full rounded shimmer" />
+						<div className="h-4 w-5/6 rounded shimmer" />
+						<div className="h-4 w-2/3 rounded shimmer" />
+					</div>
+
+					<div className="flex items-center justify-between pt-6 border-t border-slate-100">
+						<div className="flex gap-2">
+							<div className="h-10 w-10 rounded-xl shimmer" />
+							<div className="flex gap-2">
+								<div className="h-10 w-12 rounded shimmer" />
+								<div className="h-10 w-12 rounded shimmer" />
+								<div className="h-10 w-12 rounded shimmer" />
+							</div>
+						</div>
+
+						<div className="h-12 w-40 rounded-2xl shimmer" />
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+};
+
 const ProfessionalOffersPage = () => {
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -107,8 +151,10 @@ const ProfessionalOffersPage = () => {
 				{/* Offers List */}
 				<div className="space-y-8 md:space-y-12">
 					{loading ? (
-						<div className="text-center py-20 text-slate-400 font-bold animate-pulse">
-							Loading Premium Offers...
+						<div className="space-y-8 md:space-y-12">
+							{[...Array(3)].map((_, i) => (
+								<OfferSkeleton key={i} />
+							))}
 						</div>
 					) : (
 						offers.map((offer) => {

@@ -23,10 +23,10 @@ export default function SellerProfile() {
 	const [isEditing, setIsEditing] = useState(false);
 	const [showSuccess, setShowSuccess] = useState(false);
 	const seller = useSelector((state) => state.auth.seller);
+	console.log("seller", seller);
 	const dispatch = useDispatch();
 
-  const { loading } = useSelector((state) => state.auth);
-
+	const { loading } = useSelector((state) => state.auth);
 
 	const [formData, setFormData] = useState({
 		name: seller?.name || "",
@@ -34,6 +34,7 @@ export default function SellerProfile() {
 		phone: seller?.phone || "",
 		companyName: seller?.companyName || "",
 		address: seller?.address || "",
+		role: seller?.role || "seller",
 		currentPassword: "",
 		newPassword: "",
 		confirmPassword: "",
@@ -111,7 +112,7 @@ export default function SellerProfile() {
 	};
 
 	return (
-		<div className="min-h-screen bg-[#F9FAFB] py-7 px-4 sm:px-6">
+		<div className="min-h-screen bg-[#F9FAFB] py-7 px-0 sm:px-6">
 			<ScrollToTop />
 
 			{/* Success Notification */}
@@ -197,19 +198,28 @@ export default function SellerProfile() {
 												{formData.name.charAt(0)}
 											</span>
 										</div>
-										<div className="text-center">
-											<p className="font-bold text-gray-900 text-sm">
+										<div className="text-center space-y-2">
+											{/* Company Name */}
+											<p className="font-semibold text-gray-700 text-sm tracking-wide">
 												{formData.companyName}
 											</p>
-											<div className="flex flex-col">
-												<span className="text-xl text-black-700 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider mt-2 inline-block">
+
+											{/* Name + Role */}
+											<div className="flex items-center justify-center gap-2">
+												<span className="text-xl text-gray-900 font-bold uppercase tracking-wider">
 													{formData.name}
 												</span>
 
-												<span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider mt-2 inline-block">
-													Verified
+												{/* Role Badge */}
+												<span className="text-xs px-2 rounded-full bg-blue-100 text-blue-700 font-semibold uppercase ">
+													{formData.role}
 												</span>
 											</div>
+
+											{/* Verified Badge */}
+											<span className="inline-block text-[11px] px-3 py-1 rounded-full bg-green-100 text-green-700 font-semibold uppercase tracking-wide">
+												Verified
+											</span>
 										</div>
 									</div>
 
@@ -322,7 +332,7 @@ export default function SellerProfile() {
 								</button>
 								<button
 									onClick={handleSave}
-                  disabled={loading}
+									disabled={loading}
 									className="px-8 py-2.5 bg-gray-900 text-white text-sm font-bold rounded-xl hover:bg-black transition-all shadow-lg active:scale-95 flex items-center gap-2"
 								>
 									<Save size={16} /> Save Changes

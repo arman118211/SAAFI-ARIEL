@@ -32,6 +32,7 @@ import ProductDetailPage from './component/ProductDetail/ProductDetailPage'
 import CheckoutPage from './component/checkout/CartPage'
 import FloatingCartBadge from './component/ProductDetail/FloatingCartBadge'
 import ProductSearch from './component/Search/SearchPage'
+import OrderDetailPage from './component/order/OrderDetailPage'
 
 
 function App() {
@@ -66,6 +67,7 @@ function App() {
         <Route path="/productDetails/:id" element={<ProductDetailPage />} />
         <Route path="/cart" element={<CheckoutPage />} />
         <Route path="/search/:searchQuery" element={<ProductSearch />} />
+        <Route path="/order/xyz" element={<OrderDetailPage />} />
 
 
 

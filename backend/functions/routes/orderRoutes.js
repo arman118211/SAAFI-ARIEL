@@ -10,10 +10,12 @@ import {
   getSalesGraphData,
 } from "../controllers/orderController.js";
 
+import { authMiddleware } from "../middleware/authMiddleware.js";
+
 
 const router = express.Router();
 
-router.post("/create", createOrder);
+router.post("/create", authMiddleware, createOrder);
 router.get("/all", getAllOrders);
 router.get("/getFormateOrder",getFormattedOrders)
 router.get("/getSalesGraphData",getSalesGraphData)

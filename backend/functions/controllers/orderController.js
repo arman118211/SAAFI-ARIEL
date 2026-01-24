@@ -11,6 +11,9 @@ export const createOrder = async (req, res) => {
 		const { sellerId, items, offerId } = req.body;
 		console.log({ sellerId, items, offerId });
 
+		const loggedInSeller = req.user;
+		console.log("loggedInSeller-->",loggedInSeller)
+
 		// calculate totalQty & totalAmount
 		let totalQty = 0;
 		let totalAmount = 0;
@@ -30,6 +33,27 @@ export const createOrder = async (req, res) => {
 			totalAmount += netAmount;
 			console.log("totalAmount===>", totalAmount);
 		});
+
+		if (!offerId) {
+			let minAmount = 5000;
+			let minQty = 5;
+
+			if (loggedInSeller.role === "dealer") {
+				minAmount = 10000;
+				minQty = 20;
+			} else if (loggedInSeller.role === "retailer") {
+				minAmount = 5000;
+				minQty = 5;
+			}
+
+			if (totalAmount < minAmount && totalQty < minQty) {
+				return res.status(400).json({
+					message: `Minimum order requirement not met. 
+					Minimum amount ₹${minAmount} OR minimum quantity ${minQty}`,
+				});
+			}
+		}
+
 
 		const order = await Order.create({
 			sellerId,

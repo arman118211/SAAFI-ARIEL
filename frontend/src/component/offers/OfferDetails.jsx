@@ -206,6 +206,7 @@ export default function OfferDetails({ offer, onAddToCart }) {
 			{
 				headers: {
 					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
 				},
 			}
 		);
@@ -434,7 +435,7 @@ export default function OfferDetails({ offer, onAddToCart }) {
 					<div className="lg:w-96 shrink-0">
 						<div className="sticky top-18">
 							<div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
-								<h3 className="text-lg font-bold text-gray-900 mb-6">
+								<h3 className="text-lg font-bold text-gray-900 mb-6 ">
 									Order Summary
 								</h3>
 

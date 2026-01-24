@@ -38,6 +38,7 @@ export default function ShoppingCartComponent() {
 	const seller = useSelector((state) => state.auth.seller);
 	const token = useSelector((state) => state.auth.token);
 	const cartItems = useSelector((state) => state.cart.items);
+	const [minOrderError, setMinOrderError] = useState(null);
 
 	const calculateItemTotal = (item) => {
 		return item.packSize * item.price * item.qty;
@@ -73,8 +74,8 @@ export default function ShoppingCartComponent() {
 		try {
 			if (!seller?._id || !token) {
 				toast.error("Please login to continue");
-        localStorage.setItem("current", "/cart");
-				navigate("/login"); 
+				localStorage.setItem("current", "/cart");
+				navigate("/login");
 				return;
 			}
 
@@ -82,7 +83,7 @@ export default function ShoppingCartComponent() {
 				toast.error("Cart is empty");
 				return;
 			}
-
+			setMinOrderError(null);
 			setCheckoutStatus("loading");
 
 			const payload = {
@@ -110,7 +111,14 @@ export default function ShoppingCartComponent() {
 			}, 6000);
 		} catch (error) {
 			console.error(error);
-			toast.error(error.response?.data?.message || "Order failed");
+			setCheckoutStatus("idle");
+			const message = error.response?.data?.message;
+
+			if (error.response?.status === 400 && message) {
+				setMinOrderError(message);
+			} else {
+				toast.error("Order failed");
+			}
 		}
 	};
 
@@ -190,7 +198,7 @@ export default function ShoppingCartComponent() {
 
 	return (
 		<div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 py-8 sm:py-12 lg:py-16 px-3 sm:px-4">
-			<ScrollToTop/>
+			<ScrollToTop />
 			<div className="max-w-7xl mx-auto">
 				<motion.div
 					initial={{ opacity: 0, y: -20 }}
@@ -360,6 +368,39 @@ export default function ShoppingCartComponent() {
 							</motion.div>
 						))}
 					</div>
+
+					{minOrderError && (
+						<motion.div
+							initial={{ opacity: 0, y: -10 }}
+							animate={{ opacity: 1, y: 0 }}
+							exit={{ opacity: 0 }}
+							className="mb-4 rounded-xl border border-red-200 dark:border-red-800 
+			bg-red-50 dark:bg-red-900/20 p-4 shadow-sm"
+						>
+							<div className="flex items-start gap-3">
+								<div
+									className="flex-shrink-0 w-8 h-8 rounded-full bg-red-100 dark:bg-red-900 
+				flex items-center justify-center"
+								>
+									<ShoppingBag className="w-4 h-4 text-red-600 dark:text-red-400" />
+								</div>
+
+								<div className="flex-1">
+									<h4 className="font-semibold text-red-700 dark:text-red-300 mb-1">
+										Minimum Order Requirement
+									</h4>
+
+									<p className="text-sm text-red-600 dark:text-red-400 leading-relaxed">
+										{minOrderError}
+									</p>
+
+									<div className="mt-3 text-xs text-red-500 dark:text-red-400">
+										Add more items to your cart to continue checkout.
+									</div>
+								</div>
+							</div>
+						</motion.div>
+					)}
 
 					<motion.div
 						initial={{ opacity: 0, x: 20 }}
