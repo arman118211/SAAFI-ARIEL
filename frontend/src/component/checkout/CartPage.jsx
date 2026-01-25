@@ -221,8 +221,41 @@ export default function ShoppingCartComponent() {
 						{cartItems.length === 1 ? "item" : "items"} ready for checkout
 					</p>
 				</motion.div>
+				{minOrderError && (
+						<motion.div
+							initial={{ opacity: 0, y: -10 }}
+							animate={{ opacity: 1, y: 0 }}
+							exit={{ opacity: 0 }}
+							className="mb-4 rounded-xl border border-red-200 dark:border-red-800 
+			bg-red-50 dark:bg-red-900/20 p-4 shadow-sm"
+						>
+							<div className="flex items-start gap-3">
+								<div
+									className="flex-shrink-0 w-8 h-8 rounded-full bg-red-100 dark:bg-red-900 
+				flex items-center justify-center"
+								>
+									<ShoppingBag className="w-4 h-4 text-red-600 dark:text-red-400" />
+								</div>
+
+								<div className="flex-1">
+									<h4 className="font-semibold text-red-700 dark:text-red-300 mb-1">
+										Minimum Order Requirement
+									</h4>
+
+									<p className="text-sm text-red-600 dark:text-red-400 leading-relaxed">
+										{minOrderError}
+									</p>
+
+									<div className="mt-3 text-xs text-red-500 dark:text-red-400">
+										Add more items to your cart to continue checkout.
+									</div>
+								</div>
+							</div>
+						</motion.div>
+					)}
 
 				<div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+					
 					{/* Cart Items Section */}
 					<div className="lg:col-span-2 space-y-3 sm:space-y-4">
 						{cartItems.map((item, index) => (
@@ -369,38 +402,7 @@ export default function ShoppingCartComponent() {
 						))}
 					</div>
 
-					{minOrderError && (
-						<motion.div
-							initial={{ opacity: 0, y: -10 }}
-							animate={{ opacity: 1, y: 0 }}
-							exit={{ opacity: 0 }}
-							className="mb-4 rounded-xl border border-red-200 dark:border-red-800 
-			bg-red-50 dark:bg-red-900/20 p-4 shadow-sm"
-						>
-							<div className="flex items-start gap-3">
-								<div
-									className="flex-shrink-0 w-8 h-8 rounded-full bg-red-100 dark:bg-red-900 
-				flex items-center justify-center"
-								>
-									<ShoppingBag className="w-4 h-4 text-red-600 dark:text-red-400" />
-								</div>
-
-								<div className="flex-1">
-									<h4 className="font-semibold text-red-700 dark:text-red-300 mb-1">
-										Minimum Order Requirement
-									</h4>
-
-									<p className="text-sm text-red-600 dark:text-red-400 leading-relaxed">
-										{minOrderError}
-									</p>
-
-									<div className="mt-3 text-xs text-red-500 dark:text-red-400">
-										Add more items to your cart to continue checkout.
-									</div>
-								</div>
-							</div>
-						</motion.div>
-					)}
+					
 
 					<motion.div
 						initial={{ opacity: 0, x: 20 }}

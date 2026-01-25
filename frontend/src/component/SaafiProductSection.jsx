@@ -58,7 +58,7 @@ const SaafiProductSection = () => {
             {/* Image container without 3D hover effect */}
             <div className="relative w-full pb-[98.5%] overflow-hidden bg-gradient-to-br from-purple-50 to-white">
               <img
-                src="/product/b1.jpg"
+                src="/banner/ca1.png"
                 alt="Saafi product types"
                 className="absolute inset-0 w-full h-full object-contain transition-transform duration-500 hover:scale-105"
               />
@@ -95,7 +95,7 @@ const SaafiProductSection = () => {
             {/* Image container without 3D hover effect */}
             <div className="relative w-full pb-[98.5%] overflow-hidden bg-gradient-to-br from-red-50 to-white">
               <img
-                src="/product/b2.jpg"
+                src="/banner/Extra.png"
                 alt="Saafi product needs"
                 className="absolute inset-0 w-full h-full object-contain transition-transform duration-500 hover:scale-105"
               />

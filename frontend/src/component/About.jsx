@@ -322,7 +322,7 @@ const CEOSection = () => {
                 className="absolute -bottom-8 -right-8 w-72 h-20 bg-gradient-to-r from-[#5851DB] to-red-600 rounded-lg flex items-center justify-center z-20 shadow-xl"
               >
                 <div className="text-center text-white">
-                  <p className="font-bold text-2xl">Mr. Kalamuddeen</p>
+                  <p className="font-bold text-2xl">Mr. Kalamuddin</p>
                   <p className="text-sm opacity-90">Founder & Chief Executive Officer</p>
                 </div>
               </motion.div>

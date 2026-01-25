@@ -26,6 +26,7 @@ import {
   Shield,
   Trophy,
   Plus,
+  QrCode ,
   Minus,
 } from "lucide-react"
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Line } from "recharts"
@@ -43,6 +44,7 @@ import { useLocation } from "react-router-dom";
 import WinnerOffers from "../seller-dasboared/WinnerOffers"
 import DealerManagement from "../admin-dashboard/DealerManagement"
 import ScrollToTop from "../ScrollToTop"
+import DynamicQR from "../../utils/DynamicQr"
 
 
 
@@ -490,8 +492,11 @@ export default function AdminDashboard() {
     { id: "offers", label: "Offers", icon: Tag },
     { id: "orders", label: "Orders", icon: ShoppingBag },
     { id: "winner", label: "Winner", icon: Trophy },
+    { id: "qr", label: "QR Genration", icon: QrCode },
     { id: "retailer", label: "Retailer", icon: User },
     { id: "dealer", label: "Dealer", icon: User },
+    
+
   ]
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -570,9 +575,9 @@ export default function AdminDashboard() {
               {bottomMenuItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => {
+                  onClick={async () => {
                     setActiveTab(item.id)
-                    localStorage.setItem("adminCurrentPage",item.id)
+                    await localStorage.setItem("adminCurrentPage",item.id)
                     setIsMobileMenuOpen(false);
                   }}
                   className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
@@ -663,7 +668,7 @@ export default function AdminDashboard() {
                     </div>
                     <WinnerOffers/>
                     </div>
-                ) : activeTab === "dealer" ? <DealerManagement/> : (
+                ) : activeTab === "dealer" ? <DealerManagement/> : activeTab === "qr"? <DynamicQR/>: (
                   <div className="h-96 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
                     <Activity className="w-12 h-12 text-gray-300 mb-4" />
                     <h3 className="text-gray-900 font-medium">Module Under Development</h3>

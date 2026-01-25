@@ -50,96 +50,100 @@
 import mongoose from "mongoose";
 
 const ProductSchema = new mongoose.Schema(
-  {
-    // 🔹 Basic Info
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+	{
+		// 🔹 Basic Info
+		name: {
+			type: String,
+			required: true,
+			trim: true,
+		},
 
-    description: {
-      type: String,
-      default: "",
-    },
+		description: {
+			type: String,
+			default: "",
+		},
 
-    category: {
-      type: String,
-      default: "",
-    },
+		category: {
+			type: String,
+			default: "",
+		},
 
-    imageUrl: {
-      type: String,
-      default: "",
-    },
+		imageUrl: {
+			type: String,
+			default: "",
+		},
 
-    // 🔹 Features & Usage
-    keyFeatures: {
-      type: [String], // array of bullet points
-      default: [],
-    },
+		// 🔹 Features & Usage
+		keyFeatures: {
+			type: [String], // array of bullet points
+			default: [],
+		},
 
-    usageInstruction: {
-      type: String,
-      default: "",
-    },
+		usageInstruction: {
+			type: String,
+			default: "",
+		},
 
-    // 🔹 Quantity & Packing
-    quantity: {
-      type: String,
-      required: true, // e.g. 150gm, 1kg, 1L
-    },
+		// 🔹 Quantity & Packing
+		quantity: {
+			type: String,
+			required: true, // e.g. 150gm, 1kg, 1L
+		},
+		brand: {
+			type: String,
+			default: "gaay chaap",
+			trim: true,
+		},
+		packSize: {
+			type: Number,
+			required: true, // e.g. 10, 12, 25 packets in one bag
+		},
 
-    packSize: {
-      type: Number,
-      required: true, // e.g. 10, 12, 25 packets in one bag
-    },
+		// 🔹 Market Price
+		marketPrice: {
+			type: Number,
+			required: true,
+		},
 
-    // 🔹 Market Price
-    marketPrice: {
-      type: Number,
-      required: true,
-    },
+		marketDiscount: {
+			type: Number,
+			default: 0, // percentage
+		},
 
-    marketDiscount: {
-      type: Number,
-      default: 0, // percentage
-    },
+		// 🔹 Retailer Price
+		retailerPrice: {
+			type: Number,
+			required: true,
+		},
 
-    // 🔹 Retailer Price
-    retailerPrice: {
-      type: Number,
-      required: true,
-    },
+		retailerDiscount: {
+			type: Number,
+			default: 0, // percentage
+		},
 
-    retailerDiscount: {
-      type: Number,
-      default: 0, // percentage
-    },
+		// 🔹 Dealer Price
+		dealerPrice: {
+			type: Number,
+			required: true,
+		},
 
-    // 🔹 Dealer Price
-    dealerPrice: {
-      type: Number,
-      required: true,
-    },
+		dealerDiscount: {
+			type: Number,
+			default: 0, // percentage
+		},
 
-    dealerDiscount: {
-      type: Number,
-      default: 0, // percentage
-    },
+		// 🔹 Inventory
+		stock: {
+			type: Number,
+			default: 0,
+		},
 
-    // 🔹 Inventory
-    stock: {
-      type: Number,
-      default: 0,
-    },
-
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
-  },
-  { timestamps: true }
+		isActive: {
+			type: Boolean,
+			default: true,
+		},
+	},
+	{ timestamps: true },
 );
 
 export default mongoose.model("Product", ProductSchema);

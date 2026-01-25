@@ -16,31 +16,7 @@ export default function ShopPage() {
 	const [sortBy, setSortBy] = useState("newest");
 	const [cartItems, setCartItems] = useState([]);
 	const { seller } = useSelector((state) => state.auth);
-	// const [PRODUCTS,setProducts] = useState([])
 
-	// const getProductData = async () => {
-	//   try{
-	//     const role = seller.role ?
-	//        seller.role === "admin" ? "common" : seller.role
-	//        :
-	//         "common"
-	//     console.log("role -->",role)
-	//     const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/products/getProductss`,{
-	//       role:role
-	//     })
-	//     console.log("product api response-->",res)
-	//     setProducts(res.data.products)
-
-	//   }catch(error){
-	//     toast.error("Failed to laod Product .Please check internet connection.")
-	//   }
-	// }
-
-	// useEffect(()=>{
-	//   getProductData()
-	// },[])
-
-	// Filter and Sort Products
 	const {
 		products: PRODUCTS,
 		loading,
@@ -71,7 +47,7 @@ export default function ShopPage() {
 				filtered = filtered.filter((p) => p.discount > 0);
 			} else {
 				filtered = filtered.filter(
-					(p) => p.category.toLowerCase() === activeFilter.toLowerCase()
+					(p) => p.category.toLowerCase() === activeFilter.toLowerCase(),
 				);
 			}
 		}
@@ -95,6 +71,22 @@ export default function ShopPage() {
 		return sorted;
 	}, [PRODUCTS, activeFilter, sortBy]);
 
+	const productsByBrand = useMemo(() => {
+		const grouped = {};
+
+		filteredProducts.forEach((product) => {
+			const brand = product.brand || "Other";
+
+			if (!grouped[brand]) {
+				grouped[brand] = [];
+			}
+
+			grouped[brand].push(product);
+		});
+
+		return grouped;
+	}, [filteredProducts]);
+
 	const handleAddToCart = (product) => {
 		setCartItems([...cartItems, product]);
 		// You can add toast notification here
@@ -102,7 +94,7 @@ export default function ShopPage() {
 	};
 
 	return (
-		<div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+		<div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-20">
 			<ScrollToTop />
 			{/* Header */}
 			<ShopHeader />
@@ -117,8 +109,8 @@ export default function ShopPage() {
 
 				{/* Products Grid */}
 				<div className="mb-16">
-					<div className="flex items-center justify-between mb-8">
-						<h2 className="text-3xl font-bold text-gray-900">
+					{/* <div className="flex items-center justify-between mb-8">
+						<h2 className="text-md font-bold text-gray-900">
 							{activeFilter === "all"
 								? "All Products"
 								: activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)}
@@ -126,49 +118,44 @@ export default function ShopPage() {
 						<p className="text-gray-600 font-semibold">
 							{filteredProducts.length} Products
 						</p>
-					</div>
-
-					{/* {loading ? 
-          (
-            <ProductGridShimmer count={8} />
-          ):
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
-              <ProductCard key={product._id} product={product} onAddToCart={handleAddToCart} />
-            ))}
-          </div>} */}
+					</div> */}
 
 					<AnimatePresence mode="wait">
 						{loading ? (
-							<motion.div
-								key="shimmer"
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-								exit={{ opacity: 0 }}
-							>
-								<ProductGridShimmer />
-							</motion.div>
+							<ProductGridShimmer />
 						) : (
-							<motion.div
-								key="products"
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-							>
-								<div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
-									{filteredProducts.map((product) => (
-										<ProductCard
-											key={product._id}
-											product={product}
-											onAddToCart={handleAddToCart}
-										/>
-									))}
-								</div>
-							</motion.div>
+							Object.entries(productsByBrand).map(([brand, products]) => (
+								<motion.div
+									key={brand}
+									initial={{ opacity: 0, y: 20 }}
+									animate={{ opacity: 1, y: 0 }}
+									className="mb-14"
+								>
+									{/* Brand Title */}
+									<div className="flex items-center justify-between mb-6">
+										<h2 className="text-2xl font-bold text-gray-900 uppercase">
+											{brand}
+										</h2>
+										<span className="text-sm text-gray-500 font-semibold">
+											{products.length} Products
+										</span>
+									</div>
+
+									{/* Brand Products Grid */}
+									<div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+										{products.map((product) => (
+											<ProductCard
+												key={product._id}
+												product={product}
+												onAddToCart={handleAddToCart}
+											/>
+										))}
+									</div>
+								</motion.div>
+							))
 						)}
 					</AnimatePresence>
 				</div>
-
-				
 			</div>
 		</div>
 	);

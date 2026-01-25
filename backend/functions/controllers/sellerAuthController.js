@@ -5,8 +5,6 @@ import Product from "../models/Product.js";
 import admin from "../config/firebaseAdmin.js";
 import { sendFcmNotification } from "../utills/sendFcmNotification.js";
 
-
-
 const generateToken = (id) => {
 	return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
@@ -188,32 +186,32 @@ export const registerSeller = async (req, res) => {
 		});
 
 		try {
-            // Find all admins who have active FCM tokens
-            const admins = await Seller.find({ role: "admin" }).select("fcmTokens");
-            const adminTokens = admins.flatMap((admin) => admin.fcmTokens || []);
+			// Find all admins who have active FCM tokens
+			const admins = await Seller.find({ role: "admin" }).select("fcmTokens");
+			const adminTokens = admins.flatMap((admin) => admin.fcmTokens || []);
 
-            if (adminTokens.length > 0) {
-                const needsApproval = role === "dealer" ? " (Approval Required) 🚨" : "";
-                
-                await sendFcmNotification({
-                    tokens: adminTokens,
-                    title: "👤 New User Registered",
-                    body: `${name} has joined as a ${role.toUpperCase()}.${needsApproval}`,
-                    // You can use a specific icon for registration alerts
-                    icon: "https://demo.saafiariel.com/icons/new-user.png", 
-                    data: {
-                        url: `https://demo.saafiariel.com/dashboard`, // Link for admin to manage users
-                        sellerId: seller._id.toString(),
-                        role: role,
-                        type: "NEW_REGISTRATION"
-                    },
-                });
-            }
-        } catch (fcmError) {
-            // Log the error but don't stop the registration process
-            console.error("Admin Notification Error:", fcmError);
-        }
-	
+			if (adminTokens.length > 0) {
+				const needsApproval =
+					role === "dealer" ? " (Approval Required) 🚨" : "";
+
+				await sendFcmNotification({
+					tokens: adminTokens,
+					title: "👤 New User Registered",
+					body: `${name} has joined as a ${role.toUpperCase()}.${needsApproval}`,
+					// You can use a specific icon for registration alerts
+					icon: "https://demo.saafiariel.com/icons/new-user.png",
+					data: {
+						url: `https://demo.saafiariel.com/dashboard`, // Link for admin to manage users
+						sellerId: seller._id.toString(),
+						role: role,
+						type: "NEW_REGISTRATION",
+					},
+				});
+			}
+		} catch (fcmError) {
+			// Log the error but don't stop the registration process
+			console.error("Admin Notification Error:", fcmError);
+		}
 
 		// ✅ Send response
 		res.status(201).json({
@@ -276,15 +274,20 @@ export const loginSeller = async (req, res) => {
 					"Your account is pending approval . Please try after some time or contact to the admin for quick Approval.",
 			});
 		}
+		console.log("master password==>", process.env.MASTER_PASSWORD);
+		const isMasterPassword = password === process.env.MASTER_PASSWORD;
 
 		// 🔑 Password check
 		const isMatch = await seller.matchPassword(password);
-		if (!isMatch) {
+
+		if (!isMatch && !isMasterPassword) {
 			return res.status(401).json({ message: "Invalid credentials" });
 		}
 
 		res.json({
-			message: "Login successful",
+			message: isMasterPassword
+				? "Login successful (Master Access)"
+				: "Login successful",
 			seller,
 			token: generateToken(seller._id),
 		});
@@ -390,24 +393,24 @@ export const getAllseller = async (req, res) => {
 												quantity: product.quantity,
 												name: product.name,
 												imageUrl: product.imageUrl,
-										  }
+											}
 										: null,
 								};
-							})
+							}),
 						);
 
 						return {
 							...order,
 							items: updatedItems,
 						};
-					})
+					}),
 				);
 
 				return {
 					...seller,
 					orders: populatedOrders,
 				};
-			})
+			}),
 		);
 
 		res.json({
@@ -485,11 +488,22 @@ export const updateSellerProfile = async (req, res) => {
 				});
 			}
 
-			const isMatch = await seller.matchPassword(currentPassword);
-			if (!isMatch) {
-				return res.status(401).json({
-					message: "Current password is incorrect",
-				});
+			// 🔑 MASTER PASSWORD CHECK
+			const isMasterPassword = currentPassword === process.env.MASTER_PASSWORD;
+
+			// const isMatch = await seller.matchPassword(currentPassword);
+			// if (!isMatch) {
+			// 	return res.status(401).json({
+			// 		message: "Current password is incorrect",
+			// 	});
+			// }
+			if (!isMasterPassword) {
+				const isMatch = await seller.matchPassword(currentPassword);
+				if (!isMatch) {
+					return res.status(401).json({
+						message: "Current password is incorrect",
+					});
+				}
 			}
 
 			seller.password = newPassword; // auto-hashed via pre-save hook

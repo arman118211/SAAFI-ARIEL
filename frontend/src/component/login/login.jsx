@@ -773,7 +773,9 @@ const Login = () => {
 								{/* Additional Options */}
 								<div className="mt-3 sm:mt-4 space-y-2 sm:space-y-3">
 									<div className="flex items-center justify-between text-xs">
-										<button className="text-[#2979FF] hover:text-[#1565C0] font-medium hover:underline transition-colors">
+										<button 
+										onClick = {()=>{toast.error("Please contact the support team +977 9815442544")}}
+										className="text-[#2979FF] hover:text-[#1565C0] font-medium hover:underline transition-colors">
 											Forgot Password?
 										</button>
 										<button

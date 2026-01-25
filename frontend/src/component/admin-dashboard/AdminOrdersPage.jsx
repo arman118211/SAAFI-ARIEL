@@ -23,6 +23,7 @@ import toast from "react-hot-toast";
 import ScrollToTop from "../ScrollToTop";
 import Lottie from "lottie-react";
 import statusLoader from "../../../public/lottie/Loader.json";
+import { useNavigate } from "react-router-dom";
 
 const StatsShimmer = () => (
 	<div className="bg-white rounded-lg p-4 shadow-md animate-pulse relative overflow-hidden">
@@ -57,6 +58,7 @@ const OrderCardShimmer = () => (
 const AdminOrdersPage = () => {
 	const dispatch = useDispatch();
 	const [orders, setOrders] = useState([]);
+	const navigate = useNavigate();
 
 	const [searchTerm, setSearchTerm] = useState("");
 	const [statusFilter, setStatusFilter] = useState("all");
@@ -408,9 +410,9 @@ const AdminOrdersPage = () => {
 									<div
 										className="p-4 "
 										onClick={() =>
-											setSelectedOrder(
-												selectedOrder === order._id ? null : order._id
-											)
+											navigate(`/orders/${order._id}`, {
+												state: { order },
+											})
 										}
 									>
 										<div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-3">

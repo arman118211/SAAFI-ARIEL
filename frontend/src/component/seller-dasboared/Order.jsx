@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+
 import {
 	Package,
 	ShoppingCart,
@@ -60,6 +62,7 @@ function Order() {
 	const [orders, setOrders] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [expandedOrder, setExpandedOrder] = useState(null);
+	const navigate = useNavigate();
 
 	const getItemTotal = (item) => {
 		const packSize = item.productId?.packSize || 1;
@@ -97,6 +100,11 @@ function Order() {
 		}
 	};
 
+	const goToOrderDetail = (order) => {
+		navigate(`/orders/${order._id}`, {
+			state: { order },
+		});
+	};
 
 	useEffect(() => {
 		getorder();
@@ -273,7 +281,7 @@ function Order() {
 								{/* Order Header */}
 								<div
 									className="p-6 border-b border-gray-200"
-									onClick={() => toggleOrderExpansion(order._id)}
+									onClick={() => goToOrderDetail(order)}
 								>
 									<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 										<div className="flex items-start gap-4">
@@ -325,7 +333,10 @@ function Order() {
 											</div>
 
 											<button
-												onClick={() => toggleOrderExpansion(order._id)}
+												onClick={(e) => {
+													e.stopPropagation();
+													toggleOrderExpansion(order._id);
+												}}
 												className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-100 hover:bg-gray-200 rounded-lg 
 		flex items-center justify-center transition-colors shrink-0"
 											>

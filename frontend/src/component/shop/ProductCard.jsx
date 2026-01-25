@@ -134,7 +134,7 @@ export default function ProductCard({ product, onAddToCart }) {
 						{product.category}
 					</p>
 					<h3 className="text-xs lg:text-sm font-bold text-gray-900 mb-1 line-clamp-2 min-h-[2.5rem]">
-						{product.name}
+						{product.name} {product.quantity}
 					</h3>
 
 					{/* Description - Hidden on very small screens to save space, visible on tablet/desktop */}

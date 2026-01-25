@@ -91,11 +91,11 @@ const OffersPage = () => <OfferDetailsPage />;
 
 export default function SellerDashboard() {
 	const location = useLocation();
-	const getSellerCurrentPage = localStorage.getItem("sellerCurrentPage");
+	const getSellerCurrentPage = async () => {
+		await localStorage.getItem("sellerCurrentPage");
+	} 
 
-	const [activeTab, setActiveTab] = useState(
-		getSellerCurrentPage || "dashboard"
-	);
+	const [activeTab, setActiveTab] = useState( "dashboard");
 
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const { seller, token } = useSelector((state) => state.auth);

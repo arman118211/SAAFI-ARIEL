@@ -83,13 +83,26 @@ export default function MobileNavbar() {
 
 	const isActive = (path) => location.pathname === path;
 
+	useEffect(() => {
+		if (location.pathname === "/dashboard" && seller) {
+			
+			localStorage.removeItem("adminCurrentPage");
+			localStorage.removeItem("sellerCurrentPage");
+
+			
+			if (seller.role === "admin") {
+				localStorage.setItem("adminCurrentPage", "dashboard");
+			} else {
+				localStorage.setItem("sellerCurrentPage", "dashboard");
+			}
+		}
+	}, [location.pathname, seller]);
+
 	// Closes side menu on route change
 	useEffect(() => {
 		setIsMenuOpen(false);
 		setShowUserMenu(false);
 	}, [location.pathname]);
-
-	
 
 	// Handle Logic for User Icon
 	const handleUserClick = () => {
@@ -123,6 +136,7 @@ export default function MobileNavbar() {
 	};
 
 	const menuItems = [
+		{ path: "/new-offer", label: "Offers", icon: Droplets },
 		{ path: "/how-to-wash", label: "Washing Guide", icon: Droplets },
 		{ path: "/about", label: "Our Journey", icon: Info },
 		{ path: "/why-choose-us", label: "Quality Standards", icon: Award },
@@ -148,7 +162,7 @@ export default function MobileNavbar() {
 				// 	path: "/profile",
 				// 	icon: User,
 				// },
-		  ]
+			]
 		: [];
 
 	return (
@@ -304,7 +318,7 @@ export default function MobileNavbar() {
 										<button
 											onClick={() => {
 												const filtered = recentSearches.filter(
-													(_, i) => i !== idx
+													(_, i) => i !== idx,
 												);
 												setRecentSearches(filtered);
 												saveSearches(filtered);

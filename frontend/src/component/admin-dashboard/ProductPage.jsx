@@ -47,6 +47,14 @@ const ProductManager = () => {
 		"Handwash",
 		"Other",
 	];
+	const BRAND_OPTIONS = [
+		"Gaay Chaap",
+		"Extra Tite",
+		"Saafi",
+		"Saafi Nepali",
+		"Detergent Cake",
+		"Liquid Item",
+	];
 
 	const getProductData = async () => {
 		try {
@@ -84,6 +92,7 @@ const ProductManager = () => {
 		name: "",
 		description: "",
 		category: "",
+		brand: "Gaay Chaap",
 		imageUrl: "",
 
 		// 🔹 New fields
@@ -139,13 +148,13 @@ const ProductManager = () => {
 			if (editingProduct) {
 				await axios.put(
 					`${import.meta.env.VITE_BASE_URL}/products/${editingProduct._id}`,
-					payload
+					payload,
 				);
 				toast.success("Product updated successfully");
 			} else {
 				await axios.post(
 					`${import.meta.env.VITE_BASE_URL}/products/add`,
-					payload
+					payload,
 				);
 				toast.success("Product added successfully");
 			}
@@ -221,7 +230,7 @@ const ProductManager = () => {
 									setDeletingId(id);
 
 									await axios.delete(
-										`${import.meta.env.VITE_BASE_URL}/products/${id}`
+										`${import.meta.env.VITE_BASE_URL}/products/${id}`,
 									);
 
 									toast.success("Product deleted successfully");
@@ -239,7 +248,7 @@ const ProductManager = () => {
 					</div>
 				</div>
 			),
-			{ duration: 5000 }
+			{ duration: 5000 },
 		);
 	};
 
@@ -269,12 +278,12 @@ const ProductManager = () => {
 	const filteredProducts = products.filter(
 		(p) =>
 			p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			p.category.toLowerCase().includes(searchTerm.toLowerCase())
+			p.category.toLowerCase().includes(searchTerm.toLowerCase()),
 	);
 
 	const totalValue = products.reduce(
 		(sum, p) => sum + p.marketPrice * p.stock,
-		0
+		0,
 	);
 	const lowStockCount = products.filter((p) => p.stock < 20).length;
 
@@ -570,7 +579,7 @@ const ProductManager = () => {
 												onClick={() => setSelectedProduct(product)}
 												className="cursor-pointer hover:bg-blue-50/50 transition-all duration-300"
 											>
-												<td className="px-3 md:px-4 py-3 md:py-3.5">
+												<td className="px-3 md:px-4 py-3 md:py-3.5 ">
 													<div className="flex items-center gap-2 md:gap-3">
 														<div className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0 border border-gray-200 shadow-sm">
 															{product.imageUrl ? (
@@ -587,9 +596,10 @@ const ProductManager = () => {
 															)}
 														</div>
 														<div className="min-w-0">
-															<div className="font-bold text-gray-900 text-xs md:text-sm truncate">
-																{product.name}
+															<div className="font-bold text-gray-900 text-xs md:text-sm truncate500">
+																{product.name}{product.quantity}
 															</div>
+
 															<div className="hidden sm:block max-w-xs">
 																<p
 																	className={`text-xs text-gray-500 transition-all ${
@@ -618,9 +628,9 @@ const ProductManager = () => {
 														</div>
 													</div>
 												</td>
-												<td className="hidden md:table-cell px-3 md:px-4 py-3 md:py-3.5">
+												<td className="hidden md:table-cell px-3 md:px-4 py-3 md:py-3.5 ">
 													<span className="inline-flex px-2.5 py-1 text-xs font-bold rounded-lg bg-blue-100 text-blue-700 border border-blue-300">
-														{product.category || "Uncategorized"}
+														{product.brand || "Uncategorized"}
 													</span>
 												</td>
 												<td className="px-3 md:px-4 py-3 md:py-3.5">
@@ -834,6 +844,27 @@ const ProductManager = () => {
 													/>
 												</div>
 											</div>
+											<div>
+												<label className="block text-sm font-bold text-gray-700 mb-2">
+													Brand <span className="text-red-500">*</span>
+												</label>
+
+												<select
+													name="brand"
+													value={formData.brand}
+													onChange={handleInputChange}
+													required
+													className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl
+    focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none
+    text-gray-900 transition-all"
+												>
+													{BRAND_OPTIONS.map((brand) => (
+														<option key={brand} value={brand}>
+															{brand}
+														</option>
+													))}
+												</select>
+											</div>
 
 											<div>
 												<label className="block text-sm font-bold text-gray-700 mb-2">
@@ -918,7 +949,7 @@ const ProductManager = () => {
 																	setFormData({
 																		...formData,
 																		keyFeatures: formData.keyFeatures.filter(
-																			(_, i) => i !== index
+																			(_, i) => i !== index,
 																		),
 																	})
 																}

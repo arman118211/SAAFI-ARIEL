@@ -7,19 +7,20 @@ const PosterCarousel = () => {
 
   // 🖥 Desktop Posters (5)
   const desktopPosters = [
-    { id: 1, src: "./web/web1.jpeg", alt: "Poster 1" },
-    { id: 2, src: "./web/web2.jpeg", alt: "Poster 2" },
-    { id: 3, src: "./web/web3.jpeg", alt: "Poster 3" },
-    { id: 4, src: "./web/web4.jpeg", alt: "Poster 4" },
-    { id: 5, src: "./web/web5.jpeg", alt: "Poster 5" },
+    { id: 1, src: "./banner/lg4.jpeg", alt: "Poster 1" },
+    // { id: 2, src: "./banner/lg2.png", alt: "Poster 2" },
+    // { id: 3, src: "./web/web3.jpeg", alt: "Poster 3" },
+    // { id: 4, src: "./web/web4.jpeg", alt: "Poster 4" },
+    // { id: 5, src: "./web/web5.jpeg", alt: "Poster 5" },
   ];
 
   // 📱 Mobile Posters (ONLY 4)
   const mobilePosters = [
-    { id: 1, src: "./mobile/mob1.jpeg", alt: "Poster 1" },
-    { id: 2, src: "./mobile/mob2.jpeg", alt: "Poster 2" },
-    { id: 3, src: "./mobile/mob3.jpeg", alt: "Poster 3" },
-    { id: 4, src: "./mobile/mob4.jpeg", alt: "Poster 4" },
+       { id: 1, src: "./banner/lg4.jpeg", alt: "Poster 1" },
+
+    // { id: 2, src: "./mobile/mob2.jpeg", alt: "Poster 2" },
+    // { id: 3, src: "./mobile/mob3.jpeg", alt: "Poster 3" },
+    // { id: 4, src: "./mobile/mob4.jpeg", alt: "Poster 4" },
   ];
 
   // 🔁 Detect screen size
