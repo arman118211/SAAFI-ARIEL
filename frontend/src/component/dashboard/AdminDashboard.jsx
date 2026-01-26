@@ -45,6 +45,8 @@ import WinnerOffers from "../seller-dasboared/WinnerOffers"
 import DealerManagement from "../admin-dashboard/DealerManagement"
 import ScrollToTop from "../ScrollToTop"
 import DynamicQR from "../../utils/DynamicQr"
+import AdminScratchCampaign from "../admin-dashboard/AdminScratchCampaign"
+import AdminRewardManager from "../admin-dashboard/AdminRewardManager"
 
 
 
@@ -493,6 +495,8 @@ export default function AdminDashboard() {
     { id: "orders", label: "Orders", icon: ShoppingBag },
     { id: "winner", label: "Winner", icon: Trophy },
     { id: "qr", label: "QR Genration", icon: QrCode },
+    { id: "stch", label: "Coupon", icon: QrCode },
+    { id: "reward", label: "Reward", icon: User },
     { id: "retailer", label: "Retailer", icon: User },
     { id: "dealer", label: "Dealer", icon: User },
     
@@ -668,7 +672,8 @@ export default function AdminDashboard() {
                     </div>
                     <WinnerOffers/>
                     </div>
-                ) : activeTab === "dealer" ? <DealerManagement/> : activeTab === "qr"? <DynamicQR/>: (
+                ) : activeTab === "dealer" ? <DealerManagement/> : activeTab === "qr"? <DynamicQR/>:activeTab ==='stch'?<AdminScratchCampaign/>:
+                activeTab ==="reward"?<AdminRewardManager/>: (
                   <div className="h-96 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
                     <Activity className="w-12 h-12 text-gray-300 mb-4" />
                     <h3 className="text-gray-900 font-medium">Module Under Development</h3>

@@ -38,6 +38,7 @@ import FloatingCartBadge from "./component/ProductDetail/FloatingCartBadge";
 import ProductSearch from "./component/Search/SearchPage";
 import OrderDetailPage from "./component/order/OrderDetailPage";
 import DiscountCalculator from "./utils/Calculatediscount";
+import ScratchCouponPage from "./component/scratch/ScratchCouponPage";
 
 function App() {
 	const location = useLocation();
@@ -55,8 +56,8 @@ function App() {
 
 	return (
 		<>
-			<ScrollToTop/>
-			<ISOCertificatePopup  />
+			<ScrollToTop />
+			<ISOCertificatePopup />
 			{!shouldHide && <Navbar />}
 			<Routes>
 				<Route path="/" element={<Home />} />
@@ -79,7 +80,11 @@ function App() {
 				<Route path="/cart" element={<CheckoutPage />} />
 				<Route path="/search/:searchQuery" element={<ProductSearch />} />
 				<Route path="/orders/:orderId" element={<OrderDetailPage />} />
-				<Route path="/discount" element={<DiscountCalculator/>} />
+				<Route path="/discount" element={<DiscountCalculator />} />
+				<Route
+					path="/scratch/:scratchCouponId"
+					element={<ScratchCouponPage />}
+				/>
 
 				<Route path="/Ne-how-to-wash" element={<NeWashCloth />} />
 				<Route path="/Ne-shop" element={<NeShop />} />

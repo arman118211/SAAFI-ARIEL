@@ -91,7 +91,7 @@ const ProductSchema = new mongoose.Schema(
 		},
 		brand: {
 			type: String,
-			default: "gaay chaap",
+			default: "Gaay Chaap",
 			trim: true,
 		},
 		packSize: {

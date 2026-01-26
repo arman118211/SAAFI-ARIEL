@@ -8,11 +8,14 @@ import SaafiGram from './SaafiGram'
 import HappyCustomer from './HappyCustomer'
 import OneStepNation from './OneStepNation'
 import ProfessionalOffers from './OffersSection'
+import FloatingCartBadge from './ProductDetail/FloatingCartBadge'
+import FloatingBadges from '../utils/FloatingBadges'
 
 function Home() {
   return (
     <div>
       <HeroSection/>
+      <FloatingBadges/>
       <SaafiProductSection/>
       <ProfessionalOffers/>
       <BannerSection />

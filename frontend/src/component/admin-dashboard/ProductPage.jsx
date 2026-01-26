@@ -40,10 +40,10 @@ const ProductManager = () => {
 	const [expandedDesc, setExpandedDesc] = useState({});
 
 	const CATEGORY_OPTIONS = [
-		"Detergent",
+		"Detergent Powder",
 		"Dishwashing",
 		"Surface Cleaner",
-		"Soap",
+		"Detergent Cake",
 		"Handwash",
 		"Other",
 	];
