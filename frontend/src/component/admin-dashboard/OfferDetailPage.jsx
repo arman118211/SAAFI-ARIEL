@@ -20,8 +20,6 @@ import { selectOffers, setOffers } from "../../redux/slices/offersSlice";
 import axios from "axios";
 import ScrollToTop from "../ScrollToTop";
 
-
-
 const OfferDetailPage = () => {
 	const { id } = useParams();
 	const navigate = useNavigate();
@@ -30,17 +28,18 @@ const OfferDetailPage = () => {
 	const [selectedWinner, setSelectedWinner] = useState(null);
 	const [showWinnerModal, setShowWinnerModal] = useState(false);
 	const [isAutoSelecting, setIsAutoSelecting] = useState(false);
+
+	const token = useSelector((state) => state.auth.token);
 	const offers = useSelector(selectOffers);
 
 	const [mockOffers, setmockOffers] = useState(offers ?? []);
 	// const mockOffers = useSelector(selectOffers);
-	console.log("offers ==>", offers);
-	console.log("mock offer", mockOffers);
+
 
 	useEffect(() => {
 		const getAllOffer = async () => {
 			const res = await axios.get(
-				`${import.meta.env.VITE_BASE_URL}/offers/getAllOffersForAmin`
+				`${import.meta.env.VITE_BASE_URL}/offers/getAllOffersForAmin`,
 			);
 			dispatch(setOffers(res.data.data));
 			setmockOffers(res.data.data);
@@ -54,7 +53,7 @@ const OfferDetailPage = () => {
 	useEffect(() => {
 		if (offer?.winner && offer?.sellerPurchases?.length) {
 			const seller = offer.sellerPurchases.find(
-				(item) => item.sellerId._id === offer.winner
+				(item) => item.sellerId._id === offer.winner,
 			);
 			setSelectedWinner(seller || null);
 		}
@@ -68,7 +67,6 @@ const OfferDetailPage = () => {
 		);
 	}
 
-	console.log("original offer==>", offer);
 
 	// If offer not found yet
 	if (!offer) {
@@ -82,19 +80,24 @@ const OfferDetailPage = () => {
 	const totalRevenue = offer.sellerPurchases.reduce(
 		(sum, sp) =>
 			sum + sp.orders.reduce((s, ord) => s + ord.orderId.totalAmount, 0),
-		0
+		0,
 	);
 
 	const handleSelectWinner = async (seller) => {
-		console.log("winner seller data ==>", seller);
+		
 		try {
 			const response = await axios.patch(
 				`${import.meta.env.VITE_BASE_URL}/offers/winner/${offer._id}`,
 				{
 					winnerId: seller.sellerId._id,
-				}
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				},
 			);
-			console.log("winner declare successfully");
+			
 			setSelectedWinner(seller);
 			setShowWinnerModal(false);
 		} catch (err) {
@@ -114,7 +117,7 @@ const OfferDetailPage = () => {
 		setTimeout(() => {
 			clearInterval(interval);
 			const randomIndex = Math.floor(
-				Math.random() * offer.sellerPurchases.length
+				Math.random() * offer.sellerPurchases.length,
 			);
 			setSelectedWinner(offer.sellerPurchases[randomIndex]);
 			setIsAutoSelecting(false);
@@ -251,10 +254,10 @@ const OfferDetailPage = () => {
 														{offer.offerFor === "common"
 															? `₹${product.productId.marketPrice}`
 															: offer.offerFor === "retailer"
-															? `₹${product.productId.retailerPrice}`
-															: offer.offerFor === "dealer"
-															? `₹${product.productId.dealerPrice}`
-															: "Undefined"}
+																? `₹${product.productId.retailerPrice}`
+																: offer.offerFor === "dealer"
+																	? `₹${product.productId.dealerPrice}`
+																	: "Undefined"}
 													</p>
 													<p className="text-[10px] md:text-xs text-slate-500">
 														per packet
@@ -319,7 +322,7 @@ const OfferDetailPage = () => {
 								<p className="text-3xl md:text-4xl font-bold">
 									{offer.sellerPurchases.reduce(
 										(sum, sp) => sum + sp.orders.length,
-										0
+										0,
 									)}
 								</p>
 							</div>
@@ -338,7 +341,7 @@ const OfferDetailPage = () => {
 								<p className="text-2xl md:text-3xl font-bold">
 									{offer.sellerPurchases.reduce(
 										(sum, sp) => sum + sp.totalQty,
-										0
+										0,
 									)}{" "}
 									units
 								</p>
@@ -443,7 +446,7 @@ const OfferDetailPage = () => {
 									} p-3 md:p-4 rounded-xl cursor-pointer hover:shadow-md transition-all`}
 									onClick={() =>
 										setExpandedSeller(
-											expandedSeller === seller._id ? null : seller._id
+											expandedSeller === seller._id ? null : seller._id,
 										)
 									}
 								>

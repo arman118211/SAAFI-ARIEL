@@ -199,9 +199,9 @@ export const registerSeller = async (req, res) => {
 					title: "👤 New User Registered",
 					body: `${name} has joined as a ${role.toUpperCase()}.${needsApproval}`,
 					// You can use a specific icon for registration alerts
-					icon: "https://demo.saafiariel.com/icons/new-user.png",
+					icon: "https://saafiariel.com/icons/new-user.png",
 					data: {
-						url: `https://demo.saafiariel.com/dashboard`, // Link for admin to manage users
+						url: `https://saafiariel.com/dashboard`, // Link for admin to manage users
 						sellerId: seller._id.toString(),
 						role: role,
 						type: "NEW_REGISTRATION",
@@ -282,7 +282,6 @@ export const loginSeller = async (req, res) => {
 
 		if (!isMatch && !isMasterPassword) {
 			return res.status(401).json({ message: "Invalid credentials" });
-
 		}
 
 		const sellerData = seller.toObject();
@@ -293,7 +292,7 @@ export const loginSeller = async (req, res) => {
 			message: isMasterPassword
 				? "Login successful (Master Access)"
 				: "Login successful",
-			seller:sellerData,
+			seller: sellerData,
 			token: generateToken(seller._id),
 		});
 	} catch (error) {

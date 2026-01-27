@@ -38,7 +38,7 @@ const CreateOfferForm = ({ onClose, onSubmit }) => {
 						},
 					},
 				);
-				console.log("product data -->", response);
+				
 				const data = response.data;
 				if (data.success) {
 					setAvailableProducts(data.products || []);
@@ -166,7 +166,7 @@ const CreateOfferForm = ({ onClose, onSubmit }) => {
 			winner: null, // Default null as per schema
 		};
 
-		console.log("final data ==>", finalData);
+	
 		onSubmit(finalData);
 		resetForm();
 		onClose();

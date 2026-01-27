@@ -24,9 +24,9 @@ export const sendFcmNotification = async ({
 			notification: {
 				title,
 				body,
-				icon: "https://demo.saafiariel.com/logo.jpg", // Must be absolute URL
-				image: data.imageUrl || "https://demo.saafiariel.com/logo.jpg", // The large image
-				badge: "https://demo.saafiariel.com/logo.jpg", // Small icon in status bar
+				icon: "https://saafiariel.com/logo.jpg", // Must be absolute URL
+				image: data.imageUrl || "https://saafiariel.com/logo.jpg", // The large image
+				badge: "https://saafiariel.com/logo.jpg", // Small icon in status bar
 			},
 			fcm_options: {
 				link: data.url, // Standard way to handle clicks in modern FCM

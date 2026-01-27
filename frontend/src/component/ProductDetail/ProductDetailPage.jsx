@@ -66,7 +66,7 @@ export default function ProductDetailPage() {
     return <p>Product not found</p>
   }
 
-  console.log("productData-->",productData)
+  // console.log("productData-->",productData)
 
   const product = {
     title: productData.name,

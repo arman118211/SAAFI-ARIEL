@@ -505,7 +505,6 @@ export default function AdminDashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleLogout = () =>{
-    console.log("logout")
     dispatch(logout());
     toast.success("Log out successfully")
     navigate("/")

@@ -17,6 +17,7 @@ import {
   getAllOfferWinners,
   getOfferDashboardData
 } from "../controllers/offerController.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -35,7 +36,7 @@ router.put("/:id", updateOffer);
 router.patch("/activate/:id", activateOffer);
 router.patch("/deactivate/:id", deactivateOffer);
 router.patch("/close/:id", closeOffer);
-router.patch("/winner/:id", declareWinner);
+router.patch("/winner/:id",authMiddleware, declareWinner);
 router.get(
   "/seller/winner/:id",
   getWinningOffersForSeller

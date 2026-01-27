@@ -30,7 +30,7 @@ export default function OrderDetailPage() {
 	const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 	const [updatingStatus, setUpdatingStatus] = useState(null);
 
-	console.log("order-->", orderData);
+	
 
 	useEffect(() => {
 		window.scrollTo({
@@ -82,7 +82,7 @@ export default function OrderDetailPage() {
 
 	const handleStatusUpdate = async (newStatus) => {
 		if (!isAdmin || newStatus === orderData.status) return;
-		console.log("handlestatus -->");
+		
 
 		try {
 			setIsUpdatingStatus(true);

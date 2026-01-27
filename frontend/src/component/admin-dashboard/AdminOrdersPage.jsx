@@ -81,7 +81,6 @@ const AdminOrdersPage = () => {
 			setIsLoading(true);
 			const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/order/all`);
 			setOrders(res.data);
-			console.log("All order -->", res.data);
 		} catch (err) {
 			console.log("something went wrong", err);
 		} finally {
@@ -103,7 +102,7 @@ const AdminOrdersPage = () => {
 					status: newStatus,
 				}
 			);
-			console.log("updated successfully", res);
+			
 			setOrders(
 				orders.map((order) =>
 					order._id === orderId ? { ...order, status: newStatus } : order

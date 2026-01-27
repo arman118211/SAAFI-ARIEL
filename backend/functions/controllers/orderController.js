@@ -12,7 +12,7 @@ export const createOrder = async (req, res) => {
 		console.log({ sellerId, items, offerId });
 
 		const loggedInSeller = req.user;
-		console.log("loggedInSeller-->",loggedInSeller)
+		console.log("loggedInSeller-->", loggedInSeller);
 
 		// calculate totalQty & totalAmount
 		let totalQty = 0;
@@ -54,7 +54,6 @@ export const createOrder = async (req, res) => {
 			}
 		}
 
-
 		const order = await Order.create({
 			sellerId,
 			items,
@@ -71,7 +70,7 @@ export const createOrder = async (req, res) => {
 			if (offer) {
 				// check if seller exists in offer
 				let sellerEntry = offer.sellerPurchases.find(
-					(sp) => sp.sellerId.toString() === sellerId
+					(sp) => sp.sellerId.toString() === sellerId,
 				);
 
 				if (sellerEntry) {
@@ -112,7 +111,7 @@ export const createOrder = async (req, res) => {
 						currentSeller?.name || "A seller"
 					} placed an order for ₹${totalAmount}`,
 					data: {
-						url: `https://demo.saafiariel.com/dashboard`,
+						url: `https://saafiariel.com/dashboard`,
 						orderId: order._id.toString(),
 						type: "NEW_ORDER",
 					},
@@ -193,7 +192,7 @@ export const updateOrderStatus = async (req, res) => {
 		const order = await Order.findByIdAndUpdate(
 			req.params.id,
 			{ status },
-			{ new: true }
+			{ new: true },
 		);
 
 		if (!order) return res.status(404).json({ message: "Order not found" });
@@ -222,7 +221,7 @@ export const updateOrderStatus = async (req, res) => {
 					.toString()
 					.slice(-6)} status: ${status.toUpperCase()}`,
 				data: {
-					url: `https://demo.saafiariel.com/dashboard`,
+					url: `https://saafiariel.com/dashboard`,
 					orderId: order._id.toString(),
 					type: "ORDER_STATUS_UPDATE",
 				},

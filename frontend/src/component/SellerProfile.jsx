@@ -23,7 +23,6 @@ export default function SellerProfile() {
 	const [isEditing, setIsEditing] = useState(false);
 	const [showSuccess, setShowSuccess] = useState(false);
 	const seller = useSelector((state) => state.auth.seller);
-	console.log("seller", seller);
 	const dispatch = useDispatch();
 
 	const { loading } = useSelector((state) => state.auth);

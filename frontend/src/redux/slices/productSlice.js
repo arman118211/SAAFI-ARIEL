@@ -12,14 +12,14 @@ export const fetchProducts = createAsyncThunk(
           : seller.role
         : "common"
 
-      console.log("role -->", role)
+      // console.log("role -->", role)
 
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/products/getProductss`,
         { role }
       )
 
-      console.log("product api response -->", res)
+      // console.log("product api response -->", res)
 
       return res.data.products
     } catch (error) {

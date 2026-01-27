@@ -189,10 +189,10 @@ const NoResults = ({ searchQuery }) => (
 
 export default function ProductSearch() {
 	const { seller } = useSelector((state) => state.auth);
-	console.log("seller-->", seller);
+	// console.log("seller-->", seller);
 
 	const { searchQuery } = useParams();
-	console.log("searchQuery-->", searchQuery);
+	// console.log("searchQuery-->", searchQuery);
 	const navigate = useNavigate();
 
 	// API States
@@ -214,7 +214,7 @@ export default function ProductSearch() {
 					? "common"
 					: seller.role
 				: "common";
-			console.log("role-->", role);
+			// console.log("role-->", role);
 
 			const res = await axios.post(
 				`${import.meta.env.VITE_BASE_URL}/products/products/search`,

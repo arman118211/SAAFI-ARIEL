@@ -114,7 +114,7 @@ export default function DealerDetails() {
 		return originalValue - (originalValue * discountPercent) / 100;
 	}
 	const dealer = dealers.find((d) => d._id === dealerId);
-	console.log("dealer is -->", dealer);
+	
 
 	if (!dealer) {
 		return (

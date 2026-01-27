@@ -11,22 +11,23 @@ export const createOffer = async (req, res) => {
 	try {
 		console.log("req body", req.body);
 		const offer = await Offer.create(req.body);
-		console.log("offer -->",offer)
+		console.log("offer -->", offer);
 
 		const tokens = await getOfferTargetTokens(offer.offerFor);
 
 		await sendFcmNotification({
-            tokens,
-            title: "🎉 New Offer Available!",
-            body: offer.title,
-            // Add icon and image here
-            icon: "https://demo.saafiariel.com/logo.png", 
-            image: offer.imageUrl || "https://www.vecteezy.com/free-vector/sale-banner", 
-            data: {
-                url: `https://demo.saafiariel.com/offers/${offer._id}`,
-                offerId: offer._id.toString(),
-            },
-        });
+			tokens,
+			title: "🎉 New Offer Available!",
+			body: offer.title,
+			// Add icon and image here
+			icon: "https://saafiariel.com/logo.png",
+			image:
+				offer.imageUrl || "https://www.vecteezy.com/free-vector/sale-banner",
+			data: {
+				url: `https://saafiariel.com/offers/${offer._id}`,
+				offerId: offer._id.toString(),
+			},
+		});
 
 		res.status(201).json({ success: true, message: "Offer created", offer });
 	} catch (error) {
@@ -190,7 +191,7 @@ export const addSellerPurchase = async (req, res) => {
 
 		// find existing seller entry
 		const sellerEntry = offer.sellerPurchases.find(
-			(s) => s.sellerId.toString() === sellerId
+			(s) => s.sellerId.toString() === sellerId,
 		);
 
 		if (sellerEntry) {
@@ -215,6 +216,12 @@ export const addSellerPurchase = async (req, res) => {
 // DECLARE WINNER
 export const declareWinner = async (req, res) => {
 	try {
+		console.log("declare  api is calling");
+		const role = req.user.role;
+		console.log("role==>", role);
+		if (role !== "admin") {
+			res.status(500).json({ success: false, error: "not valid user" });
+		}
 		const { winnerId } = req.body;
 		const offer = await Offer.findById(req.params.id);
 
@@ -225,25 +232,25 @@ export const declareWinner = async (req, res) => {
 		await offer.save();
 
 		const winnerDetails = await Seller.findById(winnerId);
-        const targetTokens = await getOfferTargetTokens(offer.offerFor);
+		const targetTokens = await getOfferTargetTokens(offer.offerFor);
 
 		if (targetTokens.length > 0) {
-            const winnerName = winnerDetails?.name || "A lucky participant";
-            
-            // 3. Send Notification to all targeted users
-            await sendFcmNotification({
-                tokens: targetTokens,
-                title: "🏆 Offer Winner Declared!",
-                body: `The winner of "${offer.title}" is ${winnerName}! Congratulations!`,
-                // You can add an image of the offer or a trophy icon
-                image: "https://your-domain.com/winner-banner.jpg", 
-                data: {
-                    url: `https://demo.saafiariel.com/offers/${offer._id}`,
-                    offerId: offer._id.toString(),
-                    type: "OFFER_WINNER_DECLARED"
-                },
-            });
-        }
+			const winnerName = winnerDetails?.name || "A lucky participant";
+
+			// 3. Send Notification to all targeted users
+			await sendFcmNotification({
+				tokens: targetTokens,
+				title: "🏆 Offer Winner Declared!",
+				body: `The winner of "${offer.title}" is ${winnerName}! Congratulations!`,
+				// You can add an image of the offer or a trophy icon
+				image: "https://your-domain.com/winner-banner.jpg",
+				data: {
+					url: `https://saafiariel.com/offers/${offer._id}`,
+					offerId: offer._id.toString(),
+					type: "OFFER_WINNER_DECLARED",
+				},
+			});
+		}
 
 		res.json({ success: true, message: "Winner selected", offer });
 	} catch (error) {
@@ -413,7 +420,7 @@ export const markWinSeen = async (req, res) => {
 				$set: {
 					"sellerPurchases.$.hasSeenWin": true,
 				},
-			}
+			},
 		);
 
 		if (result.modifiedCount === 0) {
@@ -514,7 +521,7 @@ export const getWinningOffersForSeller = async (req, res) => {
 					...offer,
 					orders, // 👈 SAME STRUCTURE as admin API
 				};
-			})
+			}),
 		);
 
 		return res.status(200).json({
@@ -571,7 +578,7 @@ export const getAllOfferWinners = async (req, res) => {
 			winner: { $ne: null },
 		})
 			.select(
-				"title description startDate endDate status winner products createdAt offerFor"
+				"title description startDate endDate status winner products createdAt offerFor",
 			)
 			.populate({
 				path: "winner",
@@ -602,7 +609,7 @@ export const getAllOfferWinners = async (req, res) => {
 					...offer,
 					orders, // 👈 attached here
 				};
-			})
+			}),
 		);
 
 		return res.status(200).json({
@@ -634,7 +641,7 @@ export const getOfferDashboardData = async (req, res) => {
 			})
 				.populate(
 					"products.productId",
-					"name imageUrl marketPrice retailerPrice dealerPrice"
+					"name imageUrl marketPrice retailerPrice dealerPrice",
 				)
 				.select("title description startDate endDate products"),
 

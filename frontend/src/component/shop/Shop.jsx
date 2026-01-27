@@ -90,7 +90,7 @@ export default function ShopPage() {
 	const handleAddToCart = (product) => {
 		setCartItems([...cartItems, product]);
 		// You can add toast notification here
-		console.log("Added to cart:", product.name);
+		// console.log("Added to cart:", product.name);
 	};
 
 	return (

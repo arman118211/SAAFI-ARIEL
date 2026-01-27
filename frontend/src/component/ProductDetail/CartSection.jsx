@@ -23,7 +23,7 @@ const CartSection = ({
 	pricePerProduct,
 }) => {
 	const dispatch = useDispatch();
-	console.log("seller-->", seller);
+	
 	const navigate = useNavigate();
 
 	const { seller: authSeller, token } = useSelector((state) => state.auth);
@@ -32,16 +32,16 @@ const CartSection = ({
 		state.cart.items.find((i) => i.productId === seller.productId)
 	);
 
-	console.log(
-		"cart data-->",
-		seller.productId,
-		seller.productName,
-		quantity,
-		pricePerProduct,
-		packSize,
-		seller.imageUrl,
-		discount
-	);
+	// console.log(
+	// 	"cart data-->",
+	// 	seller.productId,
+	// 	seller.productName,
+	// 	quantity,
+	// 	pricePerProduct,
+	// 	packSize,
+	// 	seller.imageUrl,
+	// 	discount
+	// );
 
 	const handleAddToCart = () => {
 		if (!authSeller || !token) {
@@ -60,7 +60,7 @@ const CartSection = ({
 				discount,
 			})
 		);
-		console.log("added successfully");
+		// console.log("added successfully")
 	};
 
 	const subtotal = price * quantity;
