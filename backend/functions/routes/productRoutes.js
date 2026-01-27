@@ -11,13 +11,14 @@ import {
   getProductsByRole,
   searchProductsByRole
 } from "../controllers/productController.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 // PRODUCT CRUD ROUTES
-router.post("/add", addProduct);
+router.post("/add",authMiddleware, addProduct);
 
-router.get("/", getProducts);
+router.get("/",authMiddleware, getProducts);
 
 router.get("/allStates",allStats)
 router.get("/getInventoryGraphData",getInventoryGraphData)
@@ -28,7 +29,7 @@ router.post("/products/search", searchProductsByRole);
 
 router.get("/:id", getProduct);
 router.put("/:id", updateProduct);
-router.delete("/:id", deleteProduct);
+router.delete("/:id", authMiddleware,deleteProduct);
 
 // TOGGLE ACTIVE/INACTIVE
 router.patch("/toggle/:id", toggleActive);

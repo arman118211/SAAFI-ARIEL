@@ -19,6 +19,7 @@ import {
 	DollarSign,
 	Tag,
 } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
 import { uploadImage } from "../../utils/uploadImage";
 import toast from "react-hot-toast";
 
@@ -38,6 +39,7 @@ const ProductManager = () => {
 	const [deletingId, setDeletingId] = useState(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [expandedDesc, setExpandedDesc] = useState({});
+	const token = useSelector((state) => state.auth.token);
 
 	const CATEGORY_OPTIONS = [
 		"Detergent Powder",
@@ -59,7 +61,11 @@ const ProductManager = () => {
 	const getProductData = async () => {
 		try {
 			setIsLoading(true);
-			const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/products`);
+			const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/products`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 			// console.log("response", res.data);
 			setProducts(res.data.products);
 		} catch (err) {
@@ -155,6 +161,11 @@ const ProductManager = () => {
 				await axios.post(
 					`${import.meta.env.VITE_BASE_URL}/products/add`,
 					payload,
+					{
+						headers: {
+							Authorization: `Bearer ${token}`,
+						},
+					},
 				);
 				toast.success("Product added successfully");
 			}
@@ -231,6 +242,11 @@ const ProductManager = () => {
 
 									await axios.delete(
 										`${import.meta.env.VITE_BASE_URL}/products/${id}`,
+										{
+											headers: {
+												Authorization: `Bearer ${token}`,
+											},
+										},
 									);
 
 									toast.success("Product deleted successfully");
@@ -597,7 +613,8 @@ const ProductManager = () => {
 														</div>
 														<div className="min-w-0">
 															<div className="font-bold text-gray-900 text-xs md:text-sm truncate500">
-																{product.name}{product.quantity}
+																{product.name}
+																{product.quantity}
 															</div>
 
 															<div className="hidden sm:block max-w-xs">

@@ -282,13 +282,18 @@ export const loginSeller = async (req, res) => {
 
 		if (!isMatch && !isMasterPassword) {
 			return res.status(401).json({ message: "Invalid credentials" });
+
 		}
+
+		const sellerData = seller.toObject();
+		delete sellerData.password;
+		delete sellerData.fcmTokens;
 
 		res.json({
 			message: isMasterPassword
 				? "Login successful (Master Access)"
 				: "Login successful",
-			seller,
+			seller:sellerData,
 			token: generateToken(seller._id),
 		});
 	} catch (error) {

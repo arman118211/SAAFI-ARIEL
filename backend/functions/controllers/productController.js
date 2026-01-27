@@ -6,7 +6,14 @@ import { deleteFromStorage } from "../controllers/uploadController.js";
 // ADD PRODUCT
 export const addProduct = async (req, res) => {
 	try {
+
 		console.log("add product cxalling", req.body);
+		console.log("api is calling")
+		const role = req.user.role;
+		console.log("role==>", role);
+		if (role !== "admin") {
+			res.status(500).json({ success: false, error: "not valid user" });
+		}
 		const product = new Product(req.body);
 		await product.save();
 
@@ -23,6 +30,12 @@ export const addProduct = async (req, res) => {
 // GET ALL PRODUCTS
 export const getProducts = async (req, res) => {
 	try {
+		console.log("api is calling")
+		const role = req.user.role;
+		console.log("role==>", role);
+		if (role !== "admin") {
+			res.status(500).json({ success: false, error: "not valid user" });
+		}
 		const products = await Product.find();
 
 		res.status(200).json({ success: true, products });
@@ -82,6 +95,13 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
 	try {
+
+		console.log("delete api is calling")
+		const role = req.user.role;
+		console.log("role==>", role);
+		if (role !== "admin") {
+			res.status(500).json({ success: false, error: "not valid user" });
+		}
 		// 1️⃣ Find product first
 		const product = await Product.findById(req.params.id);
 

@@ -1,8 +1,5 @@
 import RewardBadge from "../models/RewardBadge.js";
 
-/**
- * ✅ Create new reward badge (Admin)
- */
 export const createRewardBadge = async (req, res) => {
   try {
     const badge = await RewardBadge.create(req.body);
@@ -20,9 +17,6 @@ export const createRewardBadge = async (req, res) => {
   }
 };
 
-/**
- * ✅ Get all ACTIVE & VALID badges (User / Modal)
- */
 export const getActiveBadges = async (req, res) => {
   try {
     const today = new Date();
@@ -45,9 +39,7 @@ export const getActiveBadges = async (req, res) => {
   }
 };
 
-/**
- * ✅ Calculate reward (Modal scratch / spin)
- */
+
 export const calculateReward = async (req, res) => {
   try {
     const { badgeId, purchasedQty } = req.body;
@@ -101,9 +93,7 @@ export const calculateReward = async (req, res) => {
   }
 };
 
-/**
- * ✅ Get ALL badges (Admin)
- */
+
 export const getAllBadgesForAdmin = async (req, res) => {
   try {
     const badges = await RewardBadge.find().sort({ createdAt: -1 });
@@ -120,9 +110,7 @@ export const getAllBadgesForAdmin = async (req, res) => {
   }
 };
 
-/**
- * ✅ Update badge (Admin)
- */
+
 export const updateRewardBadge = async (req, res) => {
   try {
     const { id } = req.params;
@@ -152,9 +140,7 @@ export const updateRewardBadge = async (req, res) => {
   }
 };
 
-/**
- * ✅ Delete badge (Admin)
- */
+
 export const deleteRewardBadge = async (req, res) => {
   try {
     const { id } = req.params;

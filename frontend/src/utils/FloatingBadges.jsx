@@ -45,7 +45,7 @@ const FloatingBadges = () => {
       setLoading(true);
       try {
         const res = await axios.get(`${BASE}/reward`);
-        setBadges(false ? res.data.data : fallbackBadges);
+        setBadges(res.data.data.length ? res.data.data : fallbackBadges);
       } catch (err) {
         setBadges(fallbackBadges);
       } finally {
@@ -295,7 +295,7 @@ const FloatingBadges = () => {
               </div>
               
               <div className="mt-1 text-[11px] font-medium text-gray-500">
-                Min. Order: <span className="text-gray-900">{badge.minPurchaseQty} units</span>
+                Min. Order: <span className="text-gray-900">{badge.minPurchaseQty} Bags</span>
               </div>
             </div>
           ))}

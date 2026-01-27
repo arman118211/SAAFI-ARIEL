@@ -55,11 +55,9 @@ export default function OrderDetailPage() {
 	const savings = subtotal - orderData.totalAmount;
 
 	const { seller } = useSelector((state) => state.auth);
-	console.log("seller-->", seller);
 	const isAdmin = seller?.role === "admin";
 
-	// const ORDER_STATUSES = ["pending", "confirmed", "delivered", "cancelled"];
-	// ✅ Timeline should NOT include cancelled
+	
 	const TIMELINE_STATUSES = ["pending", "confirmed", "delivered"];
 
 	// ✅ Admin menu should include cancelled
